@@ -1,0 +1,38 @@
+
+> launchops-frontend@0.1.0 test
+> react-scripts test --watchAll=false --runInBand
+
+PASS src/pages/instructor/LiveQuizHost.test.js
+PASS src/pages/onboarding/taskState.test.js
+PASS src/App.test.js
+
+Test Suites: 3 passed, 3 total
+Tests:       4 passed, 4 total
+Snapshots:   0 total
+Time:        7.166 s
+Ran all test suites.
+
+> launchops-frontend@0.1.0 build
+> react-scripts build
+
+Creating an optimized production build...
+Compiled successfully.
+
+File sizes after gzip:
+
+  317.5 kB  build/static/js/main.7355fd8e.js
+  7.69 kB   build/static/css/main.e3a3ef27.css
+
+The project was built assuming it is hosted at /.
+You can control this with the homepage field in your package.json.
+
+The build folder is ready to be deployed.
+You may serve it with a static server:
+
+  npm install -g serve
+  serve -s build
+
+Find out more about deployment here:
+
+  https://cra.link/deployment
+

@@ -1,0 +1,37 @@
+[
+  {
+    "failure": "Student reconnect snapshot included host-only chart and leaderboard fields",
+    "evidence": "Direct WebSocket probe returned Student snapshot exposes host-only leaderboard: True; code snapshot() emitted both fields unconditionally",
+    "fix": "Restrict fields to b.Host; final live check asserts absence"
+  },
+  {
+    "failure": "Reveal button accepted a click before host WebSocket opened",
+    "evidence": "browser-connection-race.log; Redis HGETALL for room 3NBR3G returned status active, index -1 after click",
+    "fix": "Disable host controls until onOpen; disable again onClose"
+  },
+  {
+    "failure": "Original docker compose build could not start Buildx",
+    "evidence": "initial-build.log",
+    "fix": "Review wrapper uses DOCKER_BUILDKIT=0; all six targets built"
+  },
+  {
+    "failure": "Early up attempt redundantly built frontend while initial build was pending",
+    "evidence": "startup.log exit 137",
+    "fix": "Explicitly stopped only duplicate build container; initial npm ci exited 0; later startup uses --no-build"
+  },
+  {
+    "failure": "Frontend test invoked before container startup completed",
+    "evidence": "First exec returned service frontend is not running",
+    "fix": "Rerun after startup; 3 original and 1 new test pass"
+  },
+  {
+    "failure": "Live test login attempted before seed transaction committed",
+    "evidence": "live-initial.log 401",
+    "fix": "Waited for seed completion; subsequent login and full checks pass"
+  },
+  {
+    "failure": "New Jest test could not resolve react-router-dom through legacy Jest resolver",
+    "evidence": "frontend-reconnect-initial.log",
+    "fix": "Use virtual mock for useParams in component test; production routing unchanged"
+  }
+]

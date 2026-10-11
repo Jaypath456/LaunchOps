@@ -1,0 +1,1 @@
+[{"Type":"volume","Name":"launchops_postgres_data","Source":"/var/lib/docker/volumes/launchops_postgres_data/_data","Destination":"/var/lib/postgresql/data","Driver":"local","Mode":"rw","RW":true,"Propagation":""}]

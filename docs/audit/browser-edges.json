@@ -1,0 +1,13 @@
+{
+  "checks": [
+    "Task page refresh unlocks prerequisite after another role completes it",
+    "Final signoff refused for open receipt issue",
+    "HR resolution and final signoff succeed through UI",
+    "Learning/course/lesson next/previous and both assessment-result return routes",
+    "Injected result API failure renders recovery link without a crash",
+    "Employee cannot open instructor page",
+    "Another employee task URL has an unavailable state and workspace return link"
+  ],
+  "errors": [],
+  "result": "PASS"
+}

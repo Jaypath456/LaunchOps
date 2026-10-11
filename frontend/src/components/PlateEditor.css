@@ -1,0 +1,122 @@
+.editor-wrapper {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  flex-wrap: wrap;
+}
+
+.toolbar-btn {
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: #374151;
+  min-width: 28px;
+  transition: all 0.1s;
+}
+
+.toolbar-btn:hover {
+  background: #e5e7eb;
+}
+
+.toolbar-btn.active {
+  background: #e0e7ff;
+  border-color: #a5b4fc;
+  color: #4f46e5;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background: #d1d5db;
+  margin: 0 4px;
+}
+
+.editor-body {
+  padding: 16px 20px;
+  min-height: 280px;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.editor-body h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 16px 0 8px;
+}
+
+.editor-body h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 14px 0 8px;
+}
+
+.editor-body p {
+  margin: 8px 0;
+}
+
+.editor-body blockquote {
+  border-left: 3px solid #d1d5db;
+  padding-left: 16px;
+  color: #6b7280;
+  margin: 12px 0;
+  font-style: italic;
+}
+
+.editor-body ul, .editor-body ol {
+  padding-left: 24px;
+  margin: 8px 0;
+}
+
+.editor-body code {
+  background: #f3f4f6;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+/* Read-only mode */
+.editor-readonly {
+  padding: 0;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #1f2937;
+}
+
+.editor-readonly h1 { font-size: 26px; font-weight: 700; margin: 20px 0 10px; }
+.editor-readonly h2 { font-size: 20px; font-weight: 600; margin: 16px 0 8px; }
+.editor-readonly p { margin: 10px 0; }
+
+.editor-readonly blockquote {
+  border-left: 3px solid #d1d5db;
+  padding-left: 16px;
+  color: #6b7280;
+  font-style: italic;
+  margin: 16px 0;
+}
+
+.editor-readonly ul, .editor-readonly ol {
+  padding-left: 24px;
+  margin: 10px 0;
+}
+
+.editor-readonly code {
+  background: #f3f4f6;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 13px;
+}

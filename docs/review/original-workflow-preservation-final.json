@@ -1,0 +1,10 @@
+{
+  "checked_at_utc": "2026-09-28T09:43:38.859110+00:00",
+  "original_onboarding_data_unchanged": true,
+  "normalized_sha256": [
+    "4ecf2faebdf203c1927220071a704c81b79c4733583327ef06c5cc61bc082f33",
+    "4ecf2faebdf203c1927220071a704c81b79c4733583327ef06c5cc61bc082f33"
+  ],
+  "normalization": "Exclude random pg_dump restrict tokens and dump-tool/server minor-version comments; all data rows and sequence values exactly match. Original dump16.14 versus isolated verifier16.15.",
+  "method": "Original volume mounted read-only and copied to a project-scoped isolated PostgreSQL verifier without network/host ports. Original stack remains stopped."
+}

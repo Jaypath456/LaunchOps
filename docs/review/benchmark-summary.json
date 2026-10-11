@@ -1,0 +1,270 @@
+{
+  "source": "docs/review/live_comparison_verified.json",
+  "methodology": "All valid runs included. Reveal/ack percentiles pool learner observations; observations within a run are correlated. Chart has one sample/run: report median/range, no reliable p95/p99 at 3\u20135 runs. Invalid runs excluded from latency comparison but retained in counts and raw source.",
+  "groups": [
+    {
+      "users": 10,
+      "engine": "django",
+      "valid_runs": 3,
+      "attempts": 3,
+      "invalid_runs": 0,
+      "requested_connections": 30,
+      "connected": 30,
+      "accepted": 30,
+      "connection_failures": 0,
+      "missing_reveals": 0,
+      "missing_charts": 0,
+      "metrics": {
+        "reveal": {
+          "sample_count": 30,
+          "p50_ms": 67.22956150042592,
+          "p95_ms": 147.95394259272143,
+          "p99_ms": 148.16232670389581
+        },
+        "accept": {
+          "sample_count": 30,
+          "p50_ms": 323.69576349447016,
+          "p95_ms": 618.074671801878,
+          "p99_ms": 678.9677237790602
+        }
+      },
+      "chart": {
+        "sample_count": 3,
+        "median_ms": 774.5093919947976,
+        "min_ms": 573.645205993671,
+        "max_ms": 835.0867849949282
+      }
+    },
+    {
+      "users": 10,
+      "engine": "go",
+      "valid_runs": 3,
+      "attempts": 3,
+      "invalid_runs": 0,
+      "requested_connections": 30,
+      "connected": 30,
+      "accepted": 30,
+      "connection_failures": 0,
+      "missing_reveals": 0,
+      "missing_charts": 0,
+      "metrics": {
+        "reveal": {
+          "sample_count": 30,
+          "p50_ms": 3.4363180020591244,
+          "p95_ms": 5.504436146293301,
+          "p99_ms": 6.429437274055091
+        },
+        "accept": {
+          "sample_count": 30,
+          "p50_ms": 6.285952993493993,
+          "p95_ms": 24.090057099238038,
+          "p99_ms": 24.217682993621565
+        }
+      },
+      "chart": {
+        "sample_count": 3,
+        "median_ms": 9.795126999961212,
+        "min_ms": 4.657778001273982,
+        "max_ms": 24.948912992840633
+      }
+    },
+    {
+      "users": 25,
+      "engine": "django",
+      "valid_runs": 3,
+      "attempts": 3,
+      "invalid_runs": 0,
+      "requested_connections": 75,
+      "connected": 75,
+      "accepted": 75,
+      "connection_failures": 0,
+      "missing_reveals": 0,
+      "missing_charts": 0,
+      "metrics": {
+        "reveal": {
+          "sample_count": 75,
+          "p50_ms": 80.46889999241102,
+          "p95_ms": 91.50782189244637,
+          "p99_ms": 91.67346375208581
+        },
+        "accept": {
+          "sample_count": 75,
+          "p50_ms": 611.0308710049139,
+          "p95_ms": 1506.4514621990384,
+          "p99_ms": 1553.5354059335077
+        }
+      },
+      "chart": {
+        "sample_count": 3,
+        "median_ms": 2226.956993996282,
+        "min_ms": 2151.5626710024662,
+        "max_ms": 2298.3170519873966
+      }
+    },
+    {
+      "users": 25,
+      "engine": "go",
+      "valid_runs": 3,
+      "attempts": 3,
+      "invalid_runs": 0,
+      "requested_connections": 75,
+      "connected": 75,
+      "accepted": 75,
+      "connection_failures": 0,
+      "missing_reveals": 0,
+      "missing_charts": 0,
+      "metrics": {
+        "reveal": {
+          "sample_count": 75,
+          "p50_ms": 2.3916930076666176,
+          "p95_ms": 6.850561109604314,
+          "p99_ms": 7.001756825775374
+        },
+        "accept": {
+          "sample_count": 75,
+          "p50_ms": 9.724671006551944,
+          "p95_ms": 27.284552800119855,
+          "p99_ms": 27.363528318237513
+        }
+      },
+      "chart": {
+        "sample_count": 3,
+        "median_ms": 26.96212001319509,
+        "min_ms": 9.864823994576,
+        "max_ms": 28.439187008189037
+      }
+    },
+    {
+      "users": 50,
+      "engine": "django",
+      "valid_runs": 3,
+      "attempts": 3,
+      "invalid_runs": 0,
+      "requested_connections": 150,
+      "connected": 150,
+      "accepted": 150,
+      "connection_failures": 0,
+      "missing_reveals": 0,
+      "missing_charts": 0,
+      "metrics": {
+        "reveal": {
+          "sample_count": 150,
+          "p50_ms": 133.0010354940896,
+          "p95_ms": 285.6942238002375,
+          "p99_ms": 286.4203505103069
+        },
+        "accept": {
+          "sample_count": 150,
+          "p50_ms": 1271.0877465069643,
+          "p95_ms": 2582.336191001377,
+          "p99_ms": 2725.6530149301393
+        }
+      },
+      "chart": {
+        "sample_count": 3,
+        "median_ms": 3910.0634490023367,
+        "min_ms": 3663.9007050107466,
+        "max_ms": 4388.97835300304
+      }
+    },
+    {
+      "users": 50,
+      "engine": "go",
+      "valid_runs": 3,
+      "attempts": 3,
+      "invalid_runs": 0,
+      "requested_connections": 150,
+      "connected": 150,
+      "accepted": 150,
+      "connection_failures": 0,
+      "missing_reveals": 0,
+      "missing_charts": 0,
+      "metrics": {
+        "reveal": {
+          "sample_count": 150,
+          "p50_ms": 4.776979003509041,
+          "p95_ms": 13.699845294468105,
+          "p99_ms": 13.859642719035037
+        },
+        "accept": {
+          "sample_count": 150,
+          "p50_ms": 16.421226995589677,
+          "p95_ms": 68.888623505336,
+          "p99_ms": 70.0684019565233
+        }
+      },
+      "chart": {
+        "sample_count": 3,
+        "median_ms": 28.53155299089849,
+        "min_ms": 26.07628000259865,
+        "max_ms": 71.42205399577506
+      }
+    },
+    {
+      "users": 100,
+      "engine": "django",
+      "valid_runs": 3,
+      "attempts": 5,
+      "invalid_runs": 2,
+      "requested_connections": 500,
+      "connected": 362,
+      "accepted": 362,
+      "connection_failures": 138,
+      "missing_reveals": 0,
+      "missing_charts": 0,
+      "metrics": {
+        "reveal": {
+          "sample_count": 300,
+          "p50_ms": 100.28381600568537,
+          "p95_ms": 106.00637710740557,
+          "p99_ms": 106.77889522106852
+        },
+        "accept": {
+          "sample_count": 300,
+          "p50_ms": 1810.0124560005497,
+          "p95_ms": 3410.3262175944114,
+          "p99_ms": 3561.9463013591303
+        }
+      },
+      "chart": {
+        "sample_count": 3,
+        "median_ms": 6018.684822993237,
+        "min_ms": 5815.685282999766,
+        "max_ms": 6201.338689003023
+      }
+    },
+    {
+      "users": 100,
+      "engine": "go",
+      "valid_runs": 5,
+      "attempts": 5,
+      "invalid_runs": 0,
+      "requested_connections": 500,
+      "connected": 500,
+      "accepted": 500,
+      "connection_failures": 0,
+      "missing_reveals": 0,
+      "missing_charts": 0,
+      "metrics": {
+        "reveal": {
+          "sample_count": 500,
+          "p50_ms": 7.068240491207689,
+          "p95_ms": 11.374757103476439,
+          "p99_ms": 11.929407529678429
+        },
+        "accept": {
+          "sample_count": 500,
+          "p50_ms": 22.111146994575392,
+          "p95_ms": 41.01754749499378,
+          "p99_ms": 44.13593417775701
+        }
+      },
+      "chart": {
+        "sample_count": 5,
+        "median_ms": 43.303477999870665,
+        "min_ms": 36.73616399464663,
+        "max_ms": 240.7296660094289
+      }
+    }
+  ]
+}

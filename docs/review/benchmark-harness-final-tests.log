@@ -1,0 +1,19 @@
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.042s
+
+OK
+Setting up: 2 students against http://unused (ws://unused for WebSocket)...
+Live session started: room_code=ABC123, quiz_id=1, question_id=2
+Authenticating 2 students before socket setup...
+Connecting 2 students...
+  WARNING: handshake failed
+  WARNING: handshake failed
+0/2 students connected successfully.
+No students connected; recording an invalid sample and continuing.
+
+=== Results (room ABC123, 0 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): no samples collected (all connections may have failed - see errors above)
+accept_latency_ms  (answer.submit -> private answer.accepted): no samples collected (all connections may have failed - see errors above)
+chart_latency_ms   (answer spike -> host sees all accepted answers): no samples collected (all connections may have failed - see errors above)
+  WARNING: host did not receive a complete chart within 15s.

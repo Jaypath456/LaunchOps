@@ -1,0 +1,25 @@
+  [user] demo_instructor (instructor): created
+  [user] demo_student (student): created
+  [user] demo_student2 (student): created
+  [user] demo_student3 (student): created
+  [course] Introduction to Python: created
+  [chapter] Introduction to Python / Getting Started: created
+  [chapter] Introduction to Python / Variables & Data Types: created
+  [chapter] Introduction to Python / Instructor Notes: created
+  [enrollment] demo_student -> Introduction to Python: created
+  [enrollment] demo_student2 -> Introduction to Python: created
+  [enrollment] demo_student3 -> Introduction to Python: created
+  [course] Advanced Django: created
+  [chapter] Advanced Django / ORM Internals: created
+  [chapter] Advanced Django / Middleware & Request Lifecycle: created
+  [enrollment] demo_student -> Advanced Django: created
+  [enrollment] demo_student2 -> Advanced Django: created
+  [enrollment] demo_student3 -> Advanced Django: created
+  [course] Unpublished Draft Course: created
+  [quiz] Load Test Quiz: created
+  [question] Load Test Quiz / 1: created
+  [loadtest] seeded/verified 100 students (loadtest_student_0000..0099) enrolled in "Introduction to Python", quiz_id=1, question_id=1
+
+Demo data seeding complete.
+  Instructor login: demo_instructor / password123
+  Student login:    demo_student / password123

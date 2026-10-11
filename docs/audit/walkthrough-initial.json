@@ -1,0 +1,313 @@
+{
+  "started": "2026-09-27T04:23:53.271Z",
+  "pages": [],
+  "actions": [
+    {
+      "workflow": 3,
+      "action": "HR corrected copied year-1111 workflow through UI"
+    },
+    {
+      "workflow": 1,
+      "task": "profile",
+      "actor": "demo_hr",
+      "mode": "simulation",
+      "action": "UI → API → persisted evidence + single event"
+    },
+    {
+      "workflow": 1,
+      "task": "equipment",
+      "actor": "demo_it",
+      "mode": "simulation",
+      "action": "UI → API → persisted evidence + single event"
+    },
+    {
+      "workflow": 1,
+      "task": "access",
+      "actor": "demo_it",
+      "mode": "simulation",
+      "action": "UI → API → persisted evidence + single event"
+    },
+    {
+      "workflow": 1,
+      "task": "mentor",
+      "actor": "demo_manager",
+      "mode": "local_record",
+      "action": "UI → API → persisted evidence + single event"
+    },
+    {
+      "workflow": 1,
+      "lesson": 1,
+      "action": "acknowledged in browser"
+    },
+    {
+      "workflow": 1,
+      "lesson": 2,
+      "action": "acknowledged in browser"
+    },
+    {
+      "workflow": 1,
+      "lesson": 3,
+      "action": "acknowledged in browser"
+    },
+    {
+      "workflow": 1,
+      "lesson": 4,
+      "action": "acknowledged in browser"
+    },
+    {
+      "workflow": 1,
+      "lesson": 5,
+      "action": "acknowledged in browser"
+    },
+    {
+      "workflow": 1,
+      "quiz": 5,
+      "action": "passed in browser"
+    },
+    {
+      "workflow": 1,
+      "quiz": 4,
+      "action": "passed in browser"
+    },
+    {
+      "workflow": 1,
+      "quiz": 3,
+      "action": "passed in browser"
+    },
+    {
+      "workflow": 1,
+      "quiz": 2,
+      "action": "passed in browser"
+    }
+  ],
+  "attacks": [
+    {
+      "label": "Other employee workflow",
+      "status": 404
+    },
+    {
+      "label": "Other employee completion",
+      "status": 403
+    },
+    {
+      "label": "Skipped prerequisites",
+      "status": 400
+    },
+    {
+      "label": "Employee cannot complete IT work",
+      "status": 403
+    },
+    {
+      "label": "Forged simulation proof",
+      "status": 400
+    },
+    {
+      "label": "Other manager workflow",
+      "status": 404
+    },
+    {
+      "label": "Other manager completion",
+      "status": 403
+    }
+  ],
+  "errors": [],
+  "timings": [
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/",
+      "ms": 273,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/",
+      "ms": 113,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/1/",
+      "ms": 47,
+      "status": 404
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/steps/75/complete/",
+      "ms": 33,
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/steps/65/complete/",
+      "ms": 40,
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/steps/65/complete/",
+      "ms": 35,
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/steps/61/complete/",
+      "ms": 37,
+      "status": 400
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/3/",
+      "ms": 29,
+      "status": 404
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/steps/44/complete/",
+      "ms": 30,
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/1/",
+      "ms": 48,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/steps/1/",
+      "ms": 47,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/steps/1/complete/",
+      "ms": 640,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/steps/1/",
+      "ms": 42,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/1/",
+      "ms": 52,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/steps/2/",
+      "ms": 38,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/steps/2/complete/",
+      "ms": 212,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/steps/2/",
+      "ms": 50,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/1/",
+      "ms": 65,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/steps/3/",
+      "ms": 68,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/steps/3/complete/",
+      "ms": 43,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/steps/3/",
+      "ms": 46,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/1/",
+      "ms": 51,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/steps/4/",
+      "ms": 47,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/steps/4/complete/",
+      "ms": 46,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/steps/4/",
+      "ms": 45,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/1/",
+      "ms": 86,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/steps/5/",
+      "ms": 49,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/quizzes/5/my-result/",
+      "ms": 42,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/quizzes/4/my-result/",
+      "ms": 30,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/quizzes/3/my-result/",
+      "ms": 40,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/quizzes/2/my-result/",
+      "ms": 29,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/quizzes/1/my-result/",
+      "ms": 29,
+      "status": 404
+    }
+  ],
+  "createdWorkflow": 4,
+  "createdEmployee": "audit_employee_1790483064179",
+  "result": "FAIL",
+  "failure": "locator.check: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.quiz-question-card').first().locator('label').filter({ hasText: /Report it without opening it|A unique password|Multi-factor authentication|Report to IT|Ask IT to inspect it|Tell IT promptly|Lock the screen|Report it to IT immediately|Apply the update|An approved work system|Only the access they need|Report the incident promptly|Refuse and alert IT|The time and what happened|An approved IT channel/ }).locator('input')\u001b[22m\n\n    at /home/jay/Documents/LaunchOps/scripts/walkthrough.cjs:114:111",
+  "finished": "2026-09-27T04:25:54.438Z"
+}

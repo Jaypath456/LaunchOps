@@ -1,0 +1,50 @@
+Found 256 test(s).
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+.....Cache GET failed for key=course_catalog:published; treating as a miss.
+Traceback (most recent call last):
+  File "/app/lms_project/safe_cache.py", line 21, in safe_get
+    return cache.get(key, default)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1198, in _execute_mock_call
+    raise effect
+ConnectionError: redis down
+.Cache SET failed for key=course_catalog:published; continuing without caching.
+Traceback (most recent call last):
+  File "/app/lms_project/safe_cache.py", line 29, in safe_set
+    cache.set(key, value, timeout)
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1198, in _execute_mock_call
+    raise effect
+ConnectionError: redis down
+.......................................................................................................................Cache ADD failed for key=quiz_submit_lock:92:440; degrading gracefully.
+Traceback (most recent call last):
+  File "/app/lms_project/safe_cache.py", line 68, in safe_add
+    return cache.add(key, value, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1198, in _execute_mock_call
+    raise effect
+ConnectionError: redis down
+...................................................................................................................................
+----------------------------------------------------------------------
+Ran 256 tests in 662.912s
+
+OK
+Destroying test database for alias 'default'...

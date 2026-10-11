@@ -1,0 +1,7 @@
+ Volume launchops-review-20260927_original_verification_clone Creating 
+ Volume launchops-review-20260927_original_verification_clone Created 
+time="2026-09-28T05:40:56-04:00" level=warning msg="Found orphan containers ([launchops-review-20260927-frontend-1 launchops-review-20260927-go-live-b-1 launchops-review-20260927-go-live-a-1 launchops-review-20260927-live-gateway-1 launchops-review-20260927-beat-1 launchops-review-20260927-worker-1 launchops-review-20260927-backend-1 launchops-review-20260927-postgres-1 launchops-review-20260927-redis-1 launchops-review-20260927-mongo-1]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container launchops-review-20260927-original-snapshot-verifier-1 Creating 
+ Container launchops-review-20260927-original-snapshot-verifier-1 Created 
+ Container launchops-review-20260927-original-snapshot-verifier-1 Starting 
+ Container launchops-review-20260927-original-snapshot-verifier-1 Started 

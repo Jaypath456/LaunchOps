@@ -1,0 +1,90 @@
+ Image launchops-review-20260927-go-live-b Building 
+ Image launchops-review-20260927-go-live-a Building 
+ Image launchops-review-20260927-go-live-b Building 
+ Image launchops-review-20260927-go-live-a Building 
+Sending build context to Docker daemon  10.14kB
+Sending build context to Docker daemon  10.14kB
+Step 1/13 : FROM golang:1.22-alpine AS build
+Step 1/13 : FROM golang:1.22-alpine AS build
+ ---> 4129f51f28c9
+Step 2/13 : WORKDIR /src
+ ---> 4129f51f28c9
+Step 2/13 : WORKDIR /src
+ ---> Using cache
+ ---> 5de56a40531d
+Step 3/13 : COPY go.mod go.sum ./
+ ---> Using cache
+ ---> 5de56a40531d
+Step 3/13 : COPY go.mod go.sum ./
+ ---> a37fc92bbb07
+Step 4/13 : RUN go mod download
+ ---> 3e946a136333
+Step 4/13 : RUN go mod download
+ ---> Running in fa3ab20d7399
+ ---> Running in 339ed68c523f
+ ---> Removed intermediate container 339ed68c523f
+ ---> a1cc13d3d704
+Step 5/13 : COPY . .
+ ---> a9b7dfb30f23
+Step 6/13 : RUN go test ./... && CGO_ENABLED=0 go build -mod=readonly -trimpath -ldflags='-s -w' -o /live .
+ ---> Running in e68b770b4082
+ ---> Removed intermediate container fa3ab20d7399
+ ---> 24ffba5d190e
+Step 5/13 : COPY . .
+ ---> 3a3079289f24
+Step 6/13 : RUN go test ./... && CGO_ENABLED=0 go build -mod=readonly -trimpath -ldflags='-s -w' -o /live .
+ ---> Running in 83616679b8b0
+ok  	launchops/go-live	0.004s
+ok  	launchops/go-live	0.006s
+ ---> Removed intermediate container e68b770b4082
+ ---> ba9374b9e9e1
+Step 7/13 : FROM alpine:3.20
+ ---> bf8527eb54c3
+Step 8/13 : RUN adduser -D -H live
+ ---> Removed intermediate container 83616679b8b0
+ ---> 7a59767ebc56
+Step 7/13 : FROM alpine:3.20
+ ---> bf8527eb54c3
+Step 8/13 : RUN adduser -D -H live
+ ---> Using cache
+ ---> c8e48b7cd4ca
+Step 9/13 : USER live
+ ---> Using cache
+ ---> c8e48b7cd4ca
+Step 9/13 : USER live
+ ---> Using cache
+ ---> 8c2b01c229df
+ ---> Using cache
+ ---> 8c2b01c229df
+Step 10/13 : COPY --from=build /live /live
+Step 10/13 : COPY --from=build /live /live
+ ---> Using cache
+ ---> Using cache
+ ---> adefca489d62
+Step 11/13 : EXPOSE 8080
+ ---> adefca489d62
+Step 11/13 : EXPOSE 8080
+ ---> Using cache
+ ---> e7c7cf04cbd3
+Step 12/13 : ENTRYPOINT ["/live"]
+ ---> Using cache
+ ---> e7c7cf04cbd3
+Step 12/13 : ENTRYPOINT ["/live"]
+ ---> Using cache
+ ---> 798fa38a060d
+ ---> Using cache
+ ---> 798fa38a060d
+Step 13/13 : LABEL com.docker.compose.image.builder=classicStep 13/13 : LABEL com.docker.compose.image.builder=classic
+
+ ---> Using cache
+ ---> 8258d8816060
+ ---> Using cache
+ ---> 8258d8816060
+Successfully built 8258d8816060
+Successfully built 8258d8816060
+Successfully tagged launchops-review-20260927-go-live-b:latest
+ Image launchops-review-20260927-go-live-b Built 
+Successfully tagged launchops-review-20260927-go-live-a:latest
+ Image launchops-review-20260927-go-live-b Built 
+ Image launchops-review-20260927-go-live-a Built 
+ Image launchops-review-20260927-go-live-a Built 

@@ -1,0 +1,13 @@
+
+> launchops-frontend@0.1.0 test
+> react-scripts test --watchAll=false --runInBand
+
+PASS src/pages/instructor/LiveQuizHost.test.js (11.572 s)
+PASS src/pages/onboarding/taskState.test.js
+PASS src/App.test.js
+
+Test Suites: 3 passed, 3 total
+Tests:       4 passed, 4 total
+Snapshots:   0 total
+Time:        24.571 s
+Ran all test suites.

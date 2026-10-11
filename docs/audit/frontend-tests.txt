@@ -1,0 +1,12 @@
+
+> launchops-frontend@0.1.0 test
+> react-scripts test --watchAll=false --runInBand
+
+PASS src/pages/onboarding/taskState.test.js (6.266 s)
+PASS src/App.test.js
+
+Test Suites: 2 passed, 2 total
+Tests:       3 passed, 3 total
+Snapshots:   0 total
+Time:        7.865 s
+Ran all test suites.

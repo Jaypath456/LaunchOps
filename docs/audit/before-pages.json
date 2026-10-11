@@ -1,0 +1,726 @@
+[
+  {
+    "role": "hr",
+    "pages": [
+      {
+        "workflow": 2,
+        "key": "profile",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nVerify employee profile.\n\nConfirm identity, start date and team.\n\nCOMPLETED\nCompleted task\n\nCompleted by demo_hr on 9/26/2026, 11:43:56 PM.\n\nThis task was completed before detailed task forms were introduced.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/4/1111, 12:03:58 PM\n\nDepends on\nNo prerequisites\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "equipment",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nPrepare equipment.\n\nAssign a laptop and confirm delivery.\n\nREADY\nTask details\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n11/8/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "access",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nProvision work access.\n\nSimulated account provisioning; confirm access with the employee.\n\nREADY\nTask details\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n11/9/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "mentor",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nAssign a mentor.\n\nIntroduce the new hire to a team mentor.\n\nREADY\nTask details\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/10/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "training",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nComplete security training.\n\nReview the training track and pass its assessments.\n\nBLOCKED\nTask details\nFinish these tasks first: access. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/14/1111, 12:03:58 PM\n\nDepends on\naccess\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "welcome",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nAttend team orientation.\n\nConfirm the orientation session has taken place.\n\nBLOCKED\nTask details\nFinish these tasks first: equipment, mentor. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/12/1111, 12:03:58 PM\n\nDepends on\nequipment, mentor\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "ready",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nConfirm onboarding readiness.\n\nReview all completed steps before closing onboarding.\n\nBLOCKED\nTask details\nFinish these tasks first: payroll, policy, it_handoff, manager_signoff, contact, receipt, feedback. Open them from the workspace checklist.\nFinal review summary\nI checked all required tasks\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/16/1111, 12:03:58 PM\n\nDepends on\npayroll, policy, it_handoff, manager_signoff, contact, receipt, feedback\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "contract",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nConfirm paperwork.\n\nRecord the signed paperwork reference and review date.\n\nREADY\nTask details\nPaperwork ticket reference\nDate paperwork was reviewed\nSubmit and complete task →\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/5/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "payroll",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nConfirm payroll setup.\n\nRecord the internal payroll ticket without financial details.\n\nBLOCKED\nTask details\nFinish these tasks first: contract. Open them from the workspace checklist.\nPayroll setup ticket reference\nPayroll team confirmed setup\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/6/1111, 12:03:58 PM\n\nDepends on\ncontract\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "policy",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nAssign required policies.\n\nChoose the policy packet and record its distribution.\n\nREADY\nTask details\nPolicy packet\nChoose an option\nStandard\nRemote\nOn site\nDate packet was sent\nSubmit and complete task →\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/7/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "mfa",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nVerify multi-factor authentication.\n\nConfirm MFA enrollment without recording recovery codes.\n\nBLOCKED\nTask details\nFinish these tasks first: access. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n11/10/1111, 12:03:58 PM\n\nDepends on\naccess\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "endpoint",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nVerify device security.\n\nConfirm encryption and endpoint protection.\n\nBLOCKED\nTask details\nFinish these tasks first: equipment. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n11/11/1111, 12:03:58 PM\n\nDepends on\nequipment\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "it_handoff",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nComplete IT handoff.\n\nConfirm the new hire received device and support instructions.\n\nBLOCKED\nTask details\nFinish these tasks first: mfa, endpoint. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n11/12/1111, 12:03:58 PM\n\nDepends on\nmfa, endpoint\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "goals",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nSet first-week goals.\n\nDocument a concrete goal and owner.\n\nBLOCKED\nTask details\nFinish these tasks first: welcome. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/13/1111, 12:03:58 PM\n\nDepends on\nwelcome\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "calendar",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nSchedule check-ins.\n\nRecord the date of the first one-to-one meeting.\n\nBLOCKED\nTask details\nFinish these tasks first: welcome. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/13/1111, 12:03:58 PM\n\nDepends on\nwelcome\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "manager_signoff",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nManager check-in.\n\nConfirm goals and check-ins have been discussed.\n\nBLOCKED\nTask details\nFinish these tasks first: goals, calendar. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/15/1111, 12:03:58 PM\n\nDepends on\ngoals, calendar\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "contact",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nConfirm contact preferences.\n\nTell the team how to reach you at work.\n\nREADY\nTask details\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/12/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "handbook",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nReview team handbook.\n\nRead the handbook and confirm the version.\n\nBLOCKED\nTask details\nFinish these tasks first: policy. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/13/1111, 12:03:58 PM\n\nDepends on\npolicy\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "receipt",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nAcknowledge equipment receipt.\n\nConfirm the device arrived and report its condition.\n\nBLOCKED\nTask details\nFinish these tasks first: it_handoff. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/14/1111, 12:03:58 PM\n\nDepends on\nit_handoff\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "feedback",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nShare first-week feedback.\n\nReport any blockers or confirm you have none.\n\nBLOCKED\nTask details\nFinish these tasks first: training, handbook. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/15/1111, 12:03:58 PM\n\nDepends on\ntraining, handbook\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "profile",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nVerify employee profile.\n\nConfirm identity, start date and team.\n\nREADY\nTask details\nVerification method\nChoose an option\nHR records\nVideo call\nIn person\nI confirmed the employee and start date\nSubmit and complete task →\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/27/2026, 1:00:00 PM\n\nDepends on\nNo prerequisites\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "equipment",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nPrepare equipment.\n\nAssign a laptop and confirm delivery.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/1/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "access",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nProvision work access.\n\nSimulated account provisioning; confirm access with the employee.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/2/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "mentor",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nAssign a mentor.\n\nIntroduce the new hire to a team mentor.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/3/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "training",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nComplete security training.\n\nReview the training track and pass its assessments.\n\nBLOCKED\nTask details\nFinish these tasks first: access. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/7/2026, 1:00:00 PM\n\nDepends on\naccess\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "welcome",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nAttend team orientation.\n\nConfirm the orientation session has taken place.\n\nBLOCKED\nTask details\nFinish these tasks first: equipment, mentor. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/5/2026, 1:00:00 PM\n\nDepends on\nequipment, mentor\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "ready",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nConfirm onboarding readiness.\n\nReview all completed steps before closing onboarding.\n\nBLOCKED\nTask details\nFinish these tasks first: payroll, policy, it_handoff, manager_signoff, contact, receipt, feedback. Open them from the workspace checklist.\nFinal review summary\nI checked all required tasks\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nhr\n\nDue\n10/9/2026, 1:00:00 PM\n\nDepends on\npayroll, policy, it_handoff, manager_signoff, contact, receipt, feedback\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "contract",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nConfirm paperwork.\n\nRecord the signed paperwork reference and review date.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\nPaperwork ticket reference\nDate paperwork was reviewed\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/28/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "payroll",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nConfirm payroll setup.\n\nRecord the internal payroll ticket without financial details.\n\nBLOCKED\nTask details\nFinish these tasks first: contract. Open them from the workspace checklist.\nPayroll setup ticket reference\nPayroll team confirmed setup\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/29/2026, 1:00:00 PM\n\nDepends on\ncontract\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "policy",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nAssign required policies.\n\nChoose the policy packet and record its distribution.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\nPolicy packet\nChoose an option\nStandard\nRemote\nOn site\nDate packet was sent\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/30/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "mfa",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nVerify multi-factor authentication.\n\nConfirm MFA enrollment without recording recovery codes.\n\nBLOCKED\nTask details\nFinish these tasks first: access. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/3/2026, 1:00:00 PM\n\nDepends on\naccess\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "endpoint",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nVerify device security.\n\nConfirm encryption and endpoint protection.\n\nBLOCKED\nTask details\nFinish these tasks first: equipment. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/4/2026, 1:00:00 PM\n\nDepends on\nequipment\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "it_handoff",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nComplete IT handoff.\n\nConfirm the new hire received device and support instructions.\n\nBLOCKED\nTask details\nFinish these tasks first: mfa, endpoint. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/5/2026, 1:00:00 PM\n\nDepends on\nmfa, endpoint\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "goals",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nSet first-week goals.\n\nDocument a concrete goal and owner.\n\nBLOCKED\nTask details\nFinish these tasks first: welcome. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/6/2026, 1:00:00 PM\n\nDepends on\nwelcome\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "calendar",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nSchedule check-ins.\n\nRecord the date of the first one-to-one meeting.\n\nBLOCKED\nTask details\nFinish these tasks first: welcome. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/6/2026, 1:00:00 PM\n\nDepends on\nwelcome\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "manager_signoff",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nManager check-in.\n\nConfirm goals and check-ins have been discussed.\n\nBLOCKED\nTask details\nFinish these tasks first: goals, calendar. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/8/2026, 1:00:00 PM\n\nDepends on\ngoals, calendar\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "contact",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nConfirm contact preferences.\n\nTell the team how to reach you at work.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/5/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "handbook",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nReview team handbook.\n\nRead the handbook and confirm the version.\n\nBLOCKED\nTask details\nFinish these tasks first: policy. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/6/2026, 1:00:00 PM\n\nDepends on\npolicy\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "receipt",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nAcknowledge equipment receipt.\n\nConfirm the device arrived and report its condition.\n\nBLOCKED\nTask details\nFinish these tasks first: it_handoff. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/7/2026, 1:00:00 PM\n\nDepends on\nit_handoff\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "feedback",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nShare first-week feedback.\n\nReport any blockers or confirm you have none.\n\nBLOCKED\nTask details\nFinish these tasks first: training, handbook. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/8/2026, 1:00:00 PM\n\nDepends on\ntraining, handbook\n\nAll task updates are saved to the workflow activity log."
+      }
+    ],
+    "errors": []
+  },
+  {
+    "role": "it",
+    "pages": [
+      {
+        "workflow": 2,
+        "key": "profile",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nVerify employee profile.\n\nConfirm identity, start date and team.\n\nCOMPLETED\nCompleted task\n\nCompleted by demo_hr on 9/26/2026, 11:43:56 PM.\n\nThis task was completed before detailed task forms were introduced.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/4/1111, 12:03:58 PM\n\nDepends on\nNo prerequisites\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "equipment",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nPrepare equipment.\n\nAssign a laptop and confirm delivery.\n\nREADY\nTask details\nDevice asset tag\nDelivery or collection date\nSubmit and complete task →\nAt a glance\n\nAssigned to\nit\n\nDue\n11/8/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "access",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nProvision work access.\n\nSimulated account provisioning; confirm access with the employee.\n\nREADY\nTask details\nAccess request ticket\nServices enabled (no credentials)\nSubmit and complete task →\nAt a glance\n\nAssigned to\nit\n\nDue\n11/9/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "mentor",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nAssign a mentor.\n\nIntroduce the new hire to a team mentor.\n\nREADY\nTask details\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/10/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "training",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nComplete security training.\n\nReview the training track and pass its assessments.\n\nBLOCKED\nTask details\nFinish these tasks first: access. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/14/1111, 12:03:58 PM\n\nDepends on\naccess\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "welcome",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nAttend team orientation.\n\nConfirm the orientation session has taken place.\n\nBLOCKED\nTask details\nFinish these tasks first: equipment, mentor. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/12/1111, 12:03:58 PM\n\nDepends on\nequipment, mentor\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "ready",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nConfirm onboarding readiness.\n\nReview all completed steps before closing onboarding.\n\nBLOCKED\nTask details\nFinish these tasks first: payroll, policy, it_handoff, manager_signoff, contact, receipt, feedback. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/16/1111, 12:03:58 PM\n\nDepends on\npayroll, policy, it_handoff, manager_signoff, contact, receipt, feedback\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "contract",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nConfirm paperwork.\n\nRecord the signed paperwork reference and review date.\n\nREADY\nTask details\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/5/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "payroll",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nConfirm payroll setup.\n\nRecord the internal payroll ticket without financial details.\n\nBLOCKED\nTask details\nFinish these tasks first: contract. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/6/1111, 12:03:58 PM\n\nDepends on\ncontract\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "policy",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nAssign required policies.\n\nChoose the policy packet and record its distribution.\n\nREADY\nTask details\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/7/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "mfa",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nVerify multi-factor authentication.\n\nConfirm MFA enrollment without recording recovery codes.\n\nBLOCKED\nTask details\nFinish these tasks first: access. Open them from the workspace checklist.\nMFA method\nChoose an option\nAuthenticator app\nSecurity key\nMFA enrollment tested\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nit\n\nDue\n11/10/1111, 12:03:58 PM\n\nDepends on\naccess\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "endpoint",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nVerify device security.\n\nConfirm encryption and endpoint protection.\n\nBLOCKED\nTask details\nFinish these tasks first: equipment. Open them from the workspace checklist.\nDevice asset tag\nDisk encryption checked\nEndpoint protection checked\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nit\n\nDue\n11/11/1111, 12:03:58 PM\n\nDepends on\nequipment\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "it_handoff",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nComplete IT handoff.\n\nConfirm the new hire received device and support instructions.\n\nBLOCKED\nTask details\nFinish these tasks first: mfa, endpoint. Open them from the workspace checklist.\nHandoff date\nSupport channel shared\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nit\n\nDue\n11/12/1111, 12:03:58 PM\n\nDepends on\nmfa, endpoint\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "goals",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nSet first-week goals.\n\nDocument a concrete goal and owner.\n\nBLOCKED\nTask details\nFinish these tasks first: welcome. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/13/1111, 12:03:58 PM\n\nDepends on\nwelcome\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "calendar",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nSchedule check-ins.\n\nRecord the date of the first one-to-one meeting.\n\nBLOCKED\nTask details\nFinish these tasks first: welcome. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/13/1111, 12:03:58 PM\n\nDepends on\nwelcome\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "manager_signoff",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nManager check-in.\n\nConfirm goals and check-ins have been discussed.\n\nBLOCKED\nTask details\nFinish these tasks first: goals, calendar. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/15/1111, 12:03:58 PM\n\nDepends on\ngoals, calendar\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "contact",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nConfirm contact preferences.\n\nTell the team how to reach you at work.\n\nREADY\nTask details\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/12/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "handbook",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nReview team handbook.\n\nRead the handbook and confirm the version.\n\nBLOCKED\nTask details\nFinish these tasks first: policy. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/13/1111, 12:03:58 PM\n\nDepends on\npolicy\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "receipt",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nAcknowledge equipment receipt.\n\nConfirm the device arrived and report its condition.\n\nBLOCKED\nTask details\nFinish these tasks first: it_handoff. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/14/1111, 12:03:58 PM\n\nDepends on\nit_handoff\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "feedback",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nShare first-week feedback.\n\nReport any blockers or confirm you have none.\n\nBLOCKED\nTask details\nFinish these tasks first: training, handbook. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/15/1111, 12:03:58 PM\n\nDepends on\ntraining, handbook\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "profile",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nVerify employee profile.\n\nConfirm identity, start date and team.\n\nREADY\nTask details\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/27/2026, 1:00:00 PM\n\nDepends on\nNo prerequisites\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "equipment",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nPrepare equipment.\n\nAssign a laptop and confirm delivery.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\nDevice asset tag\nDelivery or collection date\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nit\n\nDue\n10/1/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "access",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nProvision work access.\n\nSimulated account provisioning; confirm access with the employee.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\nAccess request ticket\nServices enabled (no credentials)\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nit\n\nDue\n10/2/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "mentor",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nAssign a mentor.\n\nIntroduce the new hire to a team mentor.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/3/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "training",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nComplete security training.\n\nReview the training track and pass its assessments.\n\nBLOCKED\nTask details\nFinish these tasks first: access. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/7/2026, 1:00:00 PM\n\nDepends on\naccess\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "welcome",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nAttend team orientation.\n\nConfirm the orientation session has taken place.\n\nBLOCKED\nTask details\nFinish these tasks first: equipment, mentor. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/5/2026, 1:00:00 PM\n\nDepends on\nequipment, mentor\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "ready",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nConfirm onboarding readiness.\n\nReview all completed steps before closing onboarding.\n\nBLOCKED\nTask details\nFinish these tasks first: payroll, policy, it_handoff, manager_signoff, contact, receipt, feedback. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n10/9/2026, 1:00:00 PM\n\nDepends on\npayroll, policy, it_handoff, manager_signoff, contact, receipt, feedback\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "contract",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nConfirm paperwork.\n\nRecord the signed paperwork reference and review date.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/28/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "payroll",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nConfirm payroll setup.\n\nRecord the internal payroll ticket without financial details.\n\nBLOCKED\nTask details\nFinish these tasks first: contract. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/29/2026, 1:00:00 PM\n\nDepends on\ncontract\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "policy",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nAssign required policies.\n\nChoose the policy packet and record its distribution.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/30/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "mfa",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nVerify multi-factor authentication.\n\nConfirm MFA enrollment without recording recovery codes.\n\nBLOCKED\nTask details\nFinish these tasks first: access. Open them from the workspace checklist.\nMFA method\nChoose an option\nAuthenticator app\nSecurity key\nMFA enrollment tested\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nit\n\nDue\n10/3/2026, 1:00:00 PM\n\nDepends on\naccess\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "endpoint",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nVerify device security.\n\nConfirm encryption and endpoint protection.\n\nBLOCKED\nTask details\nFinish these tasks first: equipment. Open them from the workspace checklist.\nDevice asset tag\nDisk encryption checked\nEndpoint protection checked\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nit\n\nDue\n10/4/2026, 1:00:00 PM\n\nDepends on\nequipment\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "it_handoff",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nComplete IT handoff.\n\nConfirm the new hire received device and support instructions.\n\nBLOCKED\nTask details\nFinish these tasks first: mfa, endpoint. Open them from the workspace checklist.\nHandoff date\nSupport channel shared\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nit\n\nDue\n10/5/2026, 1:00:00 PM\n\nDepends on\nmfa, endpoint\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "goals",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nSet first-week goals.\n\nDocument a concrete goal and owner.\n\nBLOCKED\nTask details\nFinish these tasks first: welcome. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/6/2026, 1:00:00 PM\n\nDepends on\nwelcome\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "calendar",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nSchedule check-ins.\n\nRecord the date of the first one-to-one meeting.\n\nBLOCKED\nTask details\nFinish these tasks first: welcome. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/6/2026, 1:00:00 PM\n\nDepends on\nwelcome\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "manager_signoff",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nManager check-in.\n\nConfirm goals and check-ins have been discussed.\n\nBLOCKED\nTask details\nFinish these tasks first: goals, calendar. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/8/2026, 1:00:00 PM\n\nDepends on\ngoals, calendar\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "contact",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nConfirm contact preferences.\n\nTell the team how to reach you at work.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/5/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "handbook",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nReview team handbook.\n\nRead the handbook and confirm the version.\n\nBLOCKED\nTask details\nFinish these tasks first: policy. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/6/2026, 1:00:00 PM\n\nDepends on\npolicy\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "receipt",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nAcknowledge equipment receipt.\n\nConfirm the device arrived and report its condition.\n\nBLOCKED\nTask details\nFinish these tasks first: it_handoff. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/7/2026, 1:00:00 PM\n\nDepends on\nit_handoff\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "feedback",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nShare first-week feedback.\n\nReport any blockers or confirm you have none.\n\nBLOCKED\nTask details\nFinish these tasks first: training, handbook. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/8/2026, 1:00:00 PM\n\nDepends on\ntraining, handbook\n\nAll task updates are saved to the workflow activity log."
+      }
+    ],
+    "errors": []
+  },
+  {
+    "role": "manager",
+    "pages": [
+      {
+        "workflow": 2,
+        "key": "profile",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nVerify employee profile.\n\nConfirm identity, start date and team.\n\nCOMPLETED\nCompleted task\n\nCompleted by demo_hr on 9/26/2026, 11:43:56 PM.\n\nThis task was completed before detailed task forms were introduced.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/4/1111, 12:03:58 PM\n\nDepends on\nNo prerequisites\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "equipment",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nPrepare equipment.\n\nAssign a laptop and confirm delivery.\n\nREADY\nTask details\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n11/8/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "access",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nProvision work access.\n\nSimulated account provisioning; confirm access with the employee.\n\nREADY\nTask details\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n11/9/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "mentor",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nAssign a mentor.\n\nIntroduce the new hire to a team mentor.\n\nREADY\nTask details\nMentor name\nIntroduction sent\nSubmit and complete task →\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/10/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "training",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nComplete security training.\n\nReview the training track and pass its assessments.\n\nBLOCKED\nTask details\nFinish these tasks first: access. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/14/1111, 12:03:58 PM\n\nDepends on\naccess\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "welcome",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nAttend team orientation.\n\nConfirm the orientation session has taken place.\n\nBLOCKED\nTask details\nFinish these tasks first: equipment, mentor. Open them from the workspace checklist.\nOrientation date\nMeeting place or call link reference\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/12/1111, 12:03:58 PM\n\nDepends on\nequipment, mentor\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "ready",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nConfirm onboarding readiness.\n\nReview all completed steps before closing onboarding.\n\nBLOCKED\nTask details\nFinish these tasks first: payroll, policy, it_handoff, manager_signoff, contact, receipt, feedback. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/16/1111, 12:03:58 PM\n\nDepends on\npayroll, policy, it_handoff, manager_signoff, contact, receipt, feedback\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "contract",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nConfirm paperwork.\n\nRecord the signed paperwork reference and review date.\n\nREADY\nTask details\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/5/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "payroll",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nConfirm payroll setup.\n\nRecord the internal payroll ticket without financial details.\n\nBLOCKED\nTask details\nFinish these tasks first: contract. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/6/1111, 12:03:58 PM\n\nDepends on\ncontract\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "policy",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / HR\nAssign required policies.\n\nChoose the policy packet and record its distribution.\n\nREADY\nTask details\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n11/7/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "mfa",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nVerify multi-factor authentication.\n\nConfirm MFA enrollment without recording recovery codes.\n\nBLOCKED\nTask details\nFinish these tasks first: access. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n11/10/1111, 12:03:58 PM\n\nDepends on\naccess\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "endpoint",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nVerify device security.\n\nConfirm encryption and endpoint protection.\n\nBLOCKED\nTask details\nFinish these tasks first: equipment. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n11/11/1111, 12:03:58 PM\n\nDepends on\nequipment\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "it_handoff",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / IT\nComplete IT handoff.\n\nConfirm the new hire received device and support instructions.\n\nBLOCKED\nTask details\nFinish these tasks first: mfa, endpoint. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n11/12/1111, 12:03:58 PM\n\nDepends on\nmfa, endpoint\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "goals",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nSet first-week goals.\n\nDocument a concrete goal and owner.\n\nBLOCKED\nTask details\nFinish these tasks first: welcome. Open them from the workspace checklist.\nSpecific first-week goal\nGoal review date\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/13/1111, 12:03:58 PM\n\nDepends on\nwelcome\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "calendar",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nSchedule check-ins.\n\nRecord the date of the first one-to-one meeting.\n\nBLOCKED\nTask details\nFinish these tasks first: welcome. Open them from the workspace checklist.\nFirst check-in date\nMeeting location or channel\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/13/1111, 12:03:58 PM\n\nDepends on\nwelcome\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "manager_signoff",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / MANAGER\nManager check-in.\n\nConfirm goals and check-ins have been discussed.\n\nBLOCKED\nTask details\nFinish these tasks first: goals, calendar. Open them from the workspace checklist.\nSummary of the check-in\nGoals and check-ins reviewed with the employee\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nmanager\n\nDue\n11/15/1111, 12:03:58 PM\n\nDepends on\ngoals, calendar\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "contact",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nConfirm contact preferences.\n\nTell the team how to reach you at work.\n\nREADY\nTask details\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/12/1111, 12:03:58 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "handbook",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nReview team handbook.\n\nRead the handbook and confirm the version.\n\nBLOCKED\nTask details\nFinish these tasks first: policy. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/13/1111, 12:03:58 PM\n\nDepends on\npolicy\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "receipt",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nAcknowledge equipment receipt.\n\nConfirm the device arrived and report its condition.\n\nBLOCKED\nTask details\nFinish these tasks first: it_handoff. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/14/1111, 12:03:58 PM\n\nDepends on\nit_handoff\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 2,
+        "key": "feedback",
+        "text": "← Back to workspace\nWORKFLOW #2 / jay / EMPLOYEE\nShare first-week feedback.\n\nReport any blockers or confirm you have none.\n\nBLOCKED\nTask details\nFinish these tasks first: training, handbook. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n11/15/1111, 12:03:58 PM\n\nDepends on\ntraining, handbook\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "profile",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nVerify employee profile.\n\nConfirm identity, start date and team.\n\nREADY\nTask details\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/27/2026, 1:00:00 PM\n\nDepends on\nNo prerequisites\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "equipment",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nPrepare equipment.\n\nAssign a laptop and confirm delivery.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/1/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "access",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nProvision work access.\n\nSimulated account provisioning; confirm access with the employee.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/2/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "mentor",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nAssign a mentor.\n\nIntroduce the new hire to a team mentor.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\nMentor name\nIntroduction sent\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/3/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "training",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nComplete security training.\n\nReview the training track and pass its assessments.\n\nBLOCKED\nTask details\nFinish these tasks first: access. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/7/2026, 1:00:00 PM\n\nDepends on\naccess\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "welcome",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nAttend team orientation.\n\nConfirm the orientation session has taken place.\n\nBLOCKED\nTask details\nFinish these tasks first: equipment, mentor. Open them from the workspace checklist.\nOrientation date\nMeeting place or call link reference\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/5/2026, 1:00:00 PM\n\nDepends on\nequipment, mentor\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "ready",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nConfirm onboarding readiness.\n\nReview all completed steps before closing onboarding.\n\nBLOCKED\nTask details\nFinish these tasks first: payroll, policy, it_handoff, manager_signoff, contact, receipt, feedback. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n10/9/2026, 1:00:00 PM\n\nDepends on\npayroll, policy, it_handoff, manager_signoff, contact, receipt, feedback\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "contract",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nConfirm paperwork.\n\nRecord the signed paperwork reference and review date.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/28/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "payroll",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nConfirm payroll setup.\n\nRecord the internal payroll ticket without financial details.\n\nBLOCKED\nTask details\nFinish these tasks first: contract. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/29/2026, 1:00:00 PM\n\nDepends on\ncontract\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "policy",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nAssign required policies.\n\nChoose the policy packet and record its distribution.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/30/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "mfa",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nVerify multi-factor authentication.\n\nConfirm MFA enrollment without recording recovery codes.\n\nBLOCKED\nTask details\nFinish these tasks first: access. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/3/2026, 1:00:00 PM\n\nDepends on\naccess\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "endpoint",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nVerify device security.\n\nConfirm encryption and endpoint protection.\n\nBLOCKED\nTask details\nFinish these tasks first: equipment. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/4/2026, 1:00:00 PM\n\nDepends on\nequipment\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "it_handoff",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nComplete IT handoff.\n\nConfirm the new hire received device and support instructions.\n\nBLOCKED\nTask details\nFinish these tasks first: mfa, endpoint. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/5/2026, 1:00:00 PM\n\nDepends on\nmfa, endpoint\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "goals",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nSet first-week goals.\n\nDocument a concrete goal and owner.\n\nBLOCKED\nTask details\nFinish these tasks first: welcome. Open them from the workspace checklist.\nSpecific first-week goal\nGoal review date\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/6/2026, 1:00:00 PM\n\nDepends on\nwelcome\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "calendar",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nSchedule check-ins.\n\nRecord the date of the first one-to-one meeting.\n\nBLOCKED\nTask details\nFinish these tasks first: welcome. Open them from the workspace checklist.\nFirst check-in date\nMeeting location or channel\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/6/2026, 1:00:00 PM\n\nDepends on\nwelcome\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "manager_signoff",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nManager check-in.\n\nConfirm goals and check-ins have been discussed.\n\nBLOCKED\nTask details\nFinish these tasks first: goals, calendar. Open them from the workspace checklist.\nSummary of the check-in\nGoals and check-ins reviewed with the employee\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/8/2026, 1:00:00 PM\n\nDepends on\ngoals, calendar\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "contact",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nConfirm contact preferences.\n\nTell the team how to reach you at work.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/5/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "handbook",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nReview team handbook.\n\nRead the handbook and confirm the version.\n\nBLOCKED\nTask details\nFinish these tasks first: policy. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/6/2026, 1:00:00 PM\n\nDepends on\npolicy\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "receipt",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nAcknowledge equipment receipt.\n\nConfirm the device arrived and report its condition.\n\nBLOCKED\nTask details\nFinish these tasks first: it_handoff. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/7/2026, 1:00:00 PM\n\nDepends on\nit_handoff\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "feedback",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nShare first-week feedback.\n\nReport any blockers or confirm you have none.\n\nBLOCKED\nTask details\nFinish these tasks first: training, handbook. Open them from the workspace checklist.\n\nThe assigned employee completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/8/2026, 1:00:00 PM\n\nDepends on\ntraining, handbook\n\nAll task updates are saved to the workflow activity log."
+      }
+    ],
+    "errors": []
+  },
+  {
+    "role": "employee",
+    "pages": [
+      {
+        "workflow": 1,
+        "key": "profile",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nVerify employee profile.\n\nConfirm identity, start date and team.\n\nREADY\nTask details\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/27/2026, 1:00:00 PM\n\nDepends on\nNo prerequisites\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "equipment",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nPrepare equipment.\n\nAssign a laptop and confirm delivery.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/1/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "access",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nProvision work access.\n\nSimulated account provisioning; confirm access with the employee.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/2/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "mentor",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nAssign a mentor.\n\nIntroduce the new hire to a team mentor.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/3/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "training",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nComplete security training.\n\nReview the training track and pass its assessments.\n\nBLOCKED\nTask details\nFinish these tasks first: access. Open them from the workspace checklist.\n\nRead the linked lessons and pass every published assessment with at least 70%. Return here to confirm completion.\n\nOpen lessons and quizzes ↗\nIncident response check · Not attempted\nTake quiz\nData handling check · Not attempted\nTake quiz\nDevice safety check · Not attempted\nTake quiz\nPhishing response check · Not attempted\nTake quiz\nSecurity readiness check · Not attempted\nTake quiz\nI completed the linked lessons and assessments\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/7/2026, 1:00:00 PM\n\nDepends on\naccess\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "welcome",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nAttend team orientation.\n\nConfirm the orientation session has taken place.\n\nBLOCKED\nTask details\nFinish these tasks first: equipment, mentor. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/5/2026, 1:00:00 PM\n\nDepends on\nequipment, mentor\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "ready",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nConfirm onboarding readiness.\n\nReview all completed steps before closing onboarding.\n\nBLOCKED\nTask details\nFinish these tasks first: payroll, policy, it_handoff, manager_signoff, contact, receipt, feedback. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n10/9/2026, 1:00:00 PM\n\nDepends on\npayroll, policy, it_handoff, manager_signoff, contact, receipt, feedback\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "contract",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nConfirm paperwork.\n\nRecord the signed paperwork reference and review date.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/28/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "payroll",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nConfirm payroll setup.\n\nRecord the internal payroll ticket without financial details.\n\nBLOCKED\nTask details\nFinish these tasks first: contract. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/29/2026, 1:00:00 PM\n\nDepends on\ncontract\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "policy",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / HR\nAssign required policies.\n\nChoose the policy packet and record its distribution.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\n\nThe assigned hr completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nhr\n\nDue\n9/30/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "mfa",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nVerify multi-factor authentication.\n\nConfirm MFA enrollment without recording recovery codes.\n\nBLOCKED\nTask details\nFinish these tasks first: access. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/3/2026, 1:00:00 PM\n\nDepends on\naccess\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "endpoint",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nVerify device security.\n\nConfirm encryption and endpoint protection.\n\nBLOCKED\nTask details\nFinish these tasks first: equipment. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/4/2026, 1:00:00 PM\n\nDepends on\nequipment\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "it_handoff",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / IT\nComplete IT handoff.\n\nConfirm the new hire received device and support instructions.\n\nBLOCKED\nTask details\nFinish these tasks first: mfa, endpoint. Open them from the workspace checklist.\n\nThe assigned it completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nit\n\nDue\n10/5/2026, 1:00:00 PM\n\nDepends on\nmfa, endpoint\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "goals",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nSet first-week goals.\n\nDocument a concrete goal and owner.\n\nBLOCKED\nTask details\nFinish these tasks first: welcome. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/6/2026, 1:00:00 PM\n\nDepends on\nwelcome\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "calendar",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nSchedule check-ins.\n\nRecord the date of the first one-to-one meeting.\n\nBLOCKED\nTask details\nFinish these tasks first: welcome. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/6/2026, 1:00:00 PM\n\nDepends on\nwelcome\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "manager_signoff",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / MANAGER\nManager check-in.\n\nConfirm goals and check-ins have been discussed.\n\nBLOCKED\nTask details\nFinish these tasks first: goals, calendar. Open them from the workspace checklist.\n\nThe assigned manager completes this task. You can follow its progress here.\n\nAt a glance\n\nAssigned to\nmanager\n\nDue\n10/8/2026, 1:00:00 PM\n\nDepends on\ngoals, calendar\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "contact",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nConfirm contact preferences.\n\nTell the team how to reach you at work.\n\nBLOCKED\nTask details\nFinish these tasks first: profile. Open them from the workspace checklist.\nPreferred work channel\nChoose an option\nWork email\nTeam chat\nPhone\nTypical working hours or timezone\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/5/2026, 1:00:00 PM\n\nDepends on\nprofile\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "handbook",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nReview team handbook.\n\nRead the handbook and confirm the version.\n\nBLOCKED\nTask details\nFinish these tasks first: policy. Open them from the workspace checklist.\nHandbook version or link reference\nI reviewed the team handbook\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/6/2026, 1:00:00 PM\n\nDepends on\npolicy\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "receipt",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nAcknowledge equipment receipt.\n\nConfirm the device arrived and report its condition.\n\nBLOCKED\nTask details\nFinish these tasks first: it_handoff. Open them from the workspace checklist.\nDevice asset tag\nCondition on receipt\nChoose an option\nGood\nNeeds support\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/7/2026, 1:00:00 PM\n\nDepends on\nit_handoff\n\nAll task updates are saved to the workflow activity log."
+      },
+      {
+        "workflow": 1,
+        "key": "feedback",
+        "text": "← Back to workspace\nWORKFLOW #1 / demo_employee / EMPLOYEE\nShare first-week feedback.\n\nReport any blockers or confirm you have none.\n\nBLOCKED\nTask details\nFinish these tasks first: training, handbook. Open them from the workspace checklist.\nFeedback or blockers (write “None” if all is well)\nWaiting for prerequisites\nAt a glance\n\nAssigned to\nemployee\n\nDue\n10/8/2026, 1:00:00 PM\n\nDepends on\ntraining, handbook\n\nAll task updates are saved to the workflow activity log."
+      }
+    ],
+    "errors": []
+  }
+]

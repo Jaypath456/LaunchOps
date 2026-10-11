@@ -1,0 +1,84 @@
+.live-bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.live-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.live-bar-label {
+  width: 120px;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-bar-track {
+  position: relative;
+  flex: 1;
+  height: 28px;
+  background: #f3f4f6;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.live-bar-fill {
+  height: 100%;
+  background: #4f46e5;
+  border-radius: 6px;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.live-bar-fill-correct {
+  background: #16a34a;
+}
+
+.live-bar-count {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.live-bar-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.live-bar-indicator.is-correct {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.live-bar-indicator.is-incorrect {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.live-bar-total {
+  margin-top: 4px;
+  font-size: 13px;
+  text-align: center;
+}

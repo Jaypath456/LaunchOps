@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "Instructor creates/starts room; lobby students receive question and private grading; host chart reaches 2",
+    "Student automatically reconnects; changed duplicate preserves original correctness"
+  ],
+  "errors": [],
+  "result": "FAIL",
+  "failure": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Session T4WVBA has ended.', { exact: true }) to be visible\u001b[22m\n\n    at /home/jay/Documents/LaunchOps/LaunchOps/scripts/live_review_browser.cjs:64:69"
+}

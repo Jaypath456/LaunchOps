@@ -1,0 +1,122 @@
+[
+  {
+    "check": "ws://localhost:39091 rejects unauthenticated connection",
+    "passed": true
+  },
+  {
+    "check": "ws://localhost:39091 rejects non-enrolled user",
+    "passed": true
+  },
+  {
+    "check": "ws://localhost:39091 rejects foreign Origin",
+    "passed": true
+  },
+  {
+    "check": "ws://localhost:39092 rejects unauthenticated connection",
+    "passed": true
+  },
+  {
+    "check": "ws://localhost:39092 rejects non-enrolled user",
+    "passed": true
+  },
+  {
+    "check": "ws://localhost:39092 rejects foreign Origin",
+    "passed": true
+  },
+  {
+    "check": "REST result, service bootstrap and host lifecycle permission gates",
+    "passed": true
+  },
+  {
+    "check": "student denied question.advance",
+    "passed": true
+  },
+  {
+    "check": "student denied session.end",
+    "passed": true
+  },
+  {
+    "check": "host receives private answer key",
+    "passed": true
+  },
+  {
+    "check": "cross-worker reveal without student answer key",
+    "passed": true
+  },
+  {
+    "check": "separate room receives no reveal",
+    "passed": true
+  },
+  {
+    "check": "host cannot answer",
+    "passed": true
+  },
+  {
+    "check": "malformed answer rejected ['b', 'b']",
+    "passed": true
+  },
+  {
+    "check": "malformed answer rejected ['forged']",
+    "passed": true
+  },
+  {
+    "check": "malformed answer rejected {'answer': 'b'}",
+    "passed": true
+  },
+  {
+    "check": "malformed answer rejected None",
+    "passed": true
+  },
+  {
+    "check": "cross-worker reconnect gets sanitized current question",
+    "passed": true
+  },
+  {
+    "check": "student reconnect excludes host-only aggregates",
+    "passed": true
+  },
+  {
+    "check": "concurrent duplicate has accepted answer",
+    "passed": true
+  },
+  {
+    "check": "duplicate retry preserves first saved correctness",
+    "passed": true
+  },
+  {
+    "check": "incorrect answer saved privately",
+    "passed": true
+  },
+  {
+    "check": "reconnect across workers preserves question",
+    "passed": true
+  },
+  {
+    "check": "multiple-choice correct and partial answers accepted",
+    "passed": true
+  },
+  {
+    "check": "gateway reconnect after worker A stop preserves room",
+    "passed": true
+  },
+  {
+    "check": "surviving worker grades short answers after failover",
+    "passed": true
+  },
+  {
+    "check": "late answer rejected",
+    "passed": true
+  },
+  {
+    "check": "Mongo saved scores match 6 unique answers and point totals",
+    "passed": true
+  },
+  {
+    "check": "student results contain only own score",
+    "passed": true
+  },
+  {
+    "check": "reconnect after end restores ended status",
+    "passed": true
+  }
+]

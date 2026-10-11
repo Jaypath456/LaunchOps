@@ -1,0 +1,9 @@
+{
+  "checked_at_utc": "2026-09-28T09:42:29.242533+00:00",
+  "original_onboarding_data_unchanged": false,
+  "normalized_sha256": [
+    "f8b9784dc886ea803b3a426de32719881cedcb2a521eba75145405904d4c4a80",
+    "25d11165360d260d93c41b0e5a1e90b6d8f3361c9111e590daebe8ae7c99d858"
+  ],
+  "method": "Original stack is stopped; original volume mounted read-only, copied into isolated review verification volume; pg_dump executed only against clone, no host ports/network. Original stack not started."
+}

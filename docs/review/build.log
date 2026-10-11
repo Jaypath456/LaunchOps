@@ -1,0 +1,499 @@
+ Image launchops-review-20260927-backend Building 
+ Image launchops-review-20260927-backend Building 
+Sending build context to Docker daemon  93.29kB
+Step 1/12 : FROM python:3.12-slim
+ ---> 9e87977b8678
+Step 2/12 : ENV PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1
+ ---> Using cache
+ ---> 5af472151032
+Step 3/12 : WORKDIR /app
+ ---> Using cache
+ ---> a62ee676b818
+Step 4/12 : RUN apt-get update     && apt-get install -y --no-install-recommends libpq5     && rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> 0ba87ac7e1c0
+Step 5/12 : COPY requirements.txt .
+ ---> 89d8318817dc
+Step 6/12 : RUN pip install --no-cache-dir -r requirements.txt
+ ---> Running in f010215a4398
+Collecting Django==6.0.6 (from -r requirements.txt (line 1))
+  Downloading django-6.0.6-py3-none-any.whl.metadata (3.9 kB)
+Collecting djangorestframework==3.17.1 (from -r requirements.txt (line 2))
+  Downloading djangorestframework-3.17.1-py3-none-any.whl.metadata (7.9 kB)
+Collecting djangorestframework-simplejwt==5.5.1 (from -r requirements.txt (line 3))
+  Downloading djangorestframework_simplejwt-5.5.1-py3-none-any.whl.metadata (4.6 kB)
+Collecting django-cors-headers==4.9.0 (from -r requirements.txt (line 4))
+  Downloading django_cors_headers-4.9.0-py3-none-any.whl.metadata (16 kB)
+Collecting psycopg2-binary==2.9.12 (from -r requirements.txt (line 5))
+  Downloading psycopg2_binary-2.9.12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (4.9 kB)
+Collecting pymongo==4.10.1 (from -r requirements.txt (line 6))
+  Downloading pymongo-4.10.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (22 kB)
+Collecting python-dotenv==1.2.2 (from -r requirements.txt (line 7))
+  Downloading python_dotenv-1.2.2-py3-none-any.whl.metadata (27 kB)
+Collecting redis==7.4.0 (from -r requirements.txt (line 8))
+  Downloading redis-7.4.0-py3-none-any.whl.metadata (12 kB)
+Collecting django-redis==7.0.0 (from -r requirements.txt (line 9))
+  Downloading django_redis-7.0.0-py3-none-any.whl.metadata (32 kB)
+Collecting celery==5.6.3 (from -r requirements.txt (line 10))
+  Downloading celery-5.6.3-py3-none-any.whl.metadata (23 kB)
+Collecting channels==4.3.2 (from -r requirements.txt (line 11))
+  Downloading channels-4.3.2-py3-none-any.whl.metadata (4.7 kB)
+Collecting channels-redis==4.3.0 (from -r requirements.txt (line 12))
+  Downloading channels_redis-4.3.0-py3-none-any.whl.metadata (13 kB)
+Collecting daphne==4.2.2 (from -r requirements.txt (line 13))
+  Downloading daphne-4.2.2-py3-none-any.whl.metadata (1.7 kB)
+Collecting asgiref>=3.9.1 (from Django==6.0.6->-r requirements.txt (line 1))
+  Downloading asgiref-3.12.1-py3-none-any.whl.metadata (9.4 kB)
+Collecting sqlparse>=0.5.0 (from Django==6.0.6->-r requirements.txt (line 1))
+  Downloading sqlparse-0.6.0-py3-none-any.whl.metadata (6.0 kB)
+Collecting pyjwt>=1.7.1 (from djangorestframework-simplejwt==5.5.1->-r requirements.txt (line 3))
+  Downloading pyjwt-2.15.0-py3-none-any.whl.metadata (3.5 kB)
+Collecting dnspython<3.0.0,>=1.16.0 (from pymongo==4.10.1->-r requirements.txt (line 6))
+  Downloading dnspython-2.8.0-py3-none-any.whl.metadata (5.7 kB)
+Collecting typing_extensions>=4.12 (from django-redis==7.0.0->-r requirements.txt (line 9))
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting billiard<5.0,>=4.2.1 (from celery==5.6.3->-r requirements.txt (line 10))
+  Downloading billiard-4.3.0-py3-none-any.whl.metadata (5.0 kB)
+Collecting kombu>=5.6.0 (from celery==5.6.3->-r requirements.txt (line 10))
+  Downloading kombu-5.6.2-py3-none-any.whl.metadata (3.5 kB)
+Collecting vine<6.0,>=5.1.0 (from celery==5.6.3->-r requirements.txt (line 10))
+  Downloading vine-5.1.0-py3-none-any.whl.metadata (2.7 kB)
+Collecting click<9.0,>=8.1.2 (from celery==5.6.3->-r requirements.txt (line 10))
+  Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+Collecting click-didyoumean>=0.3.0 (from celery==5.6.3->-r requirements.txt (line 10))
+  Downloading click_didyoumean-0.3.1-py3-none-any.whl.metadata (3.9 kB)
+Collecting click-repl>=0.2.0 (from celery==5.6.3->-r requirements.txt (line 10))
+  Downloading click_repl-0.4.0-py3-none-any.whl.metadata (3.7 kB)
+Collecting click-plugins>=1.1.1 (from celery==5.6.3->-r requirements.txt (line 10))
+  Downloading click_plugins-1.1.1.2-py2.py3-none-any.whl.metadata (6.5 kB)
+Collecting python-dateutil>=2.8.2 (from celery==5.6.3->-r requirements.txt (line 10))
+  Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+Collecting tzlocal (from celery==5.6.3->-r requirements.txt (line 10))
+  Downloading tzlocal-5.4.4-py3-none-any.whl.metadata (7.7 kB)
+Collecting msgpack~=1.0 (from channels-redis==4.3.0->-r requirements.txt (line 12))
+  Downloading msgpack-1.2.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.3 kB)
+Collecting autobahn>=22.4.2 (from daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading autobahn-26.7.1-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (32 kB)
+Collecting twisted>=22.4 (from twisted[tls]>=22.4->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading twisted-26.4.0-py3-none-any.whl.metadata (15 kB)
+Collecting cbor2>=5.2.0 (from autobahn>=22.4.2->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading cbor2-6.1.4-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (5.5 kB)
+Collecting cffi>=2.0.0 (from autobahn>=22.4.2->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.5 kB)
+Collecting cryptography>=3.4.6 (from autobahn>=22.4.2->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading cryptography-50.0.1-cp311-abi3-manylinux_2_34_x86_64.whl.metadata (4.3 kB)
+Collecting hyperlink>=21.0.0 (from autobahn>=22.4.2->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading hyperlink-21.0.0-py2.py3-none-any.whl.metadata (1.5 kB)
+Collecting txaio>=25.12.2 (from autobahn>=22.4.2->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading txaio-26.6.1-py3-none-any.whl.metadata (7.1 kB)
+Collecting ujson>=4.0.2 (from autobahn>=22.4.2->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading ujson-6.0.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (10.0 kB)
+Collecting prompt_toolkit>=3.0.36 (from click-repl>=0.2.0->celery==5.6.3->-r requirements.txt (line 10))
+  Downloading prompt_toolkit-3.0.53-py3-none-any.whl.metadata (6.4 kB)
+Collecting amqp<6.0.0,>=5.1.1 (from kombu>=5.6.0->celery==5.6.3->-r requirements.txt (line 10))
+  Downloading amqp-5.4.0-py3-none-any.whl.metadata (9.4 kB)
+Collecting tzdata>=2025.2 (from kombu>=5.6.0->celery==5.6.3->-r requirements.txt (line 10))
+  Downloading tzdata-2026.4-py2.py3-none-any.whl.metadata (1.4 kB)
+Collecting packaging (from kombu>=5.6.0->celery==5.6.3->-r requirements.txt (line 10))
+  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+Collecting six>=1.5 (from python-dateutil>=2.8.2->celery==5.6.3->-r requirements.txt (line 10))
+  Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+Collecting attrs>=22.2.0 (from twisted>=22.4->twisted[tls]>=22.4->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+Collecting automat>=24.8.0 (from twisted>=22.4->twisted[tls]>=22.4->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading automat-25.4.16-py3-none-any.whl.metadata (8.4 kB)
+Collecting constantly>=15.1 (from twisted>=22.4->twisted[tls]>=22.4->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading constantly-23.10.4-py3-none-any.whl.metadata (1.8 kB)
+Collecting incremental>=24.7.0 (from twisted>=22.4->twisted[tls]>=22.4->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading incremental-24.11.0-py3-none-any.whl.metadata (9.5 kB)
+Collecting zope-interface>=5 (from twisted>=22.4->twisted[tls]>=22.4->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading zope_interface-8.6-cp312-cp312-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl.metadata (47 kB)
+Collecting idna>=2.4 (from twisted[tls]>=22.4->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+Collecting pyopenssl>=25.2.0 (from twisted[tls]>=22.4->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading pyopenssl-26.4.0-py3-none-any.whl.metadata (22 kB)
+Collecting service-identity>=18.1.0 (from twisted[tls]>=22.4->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading service_identity-26.1.0-py3-none-any.whl.metadata (4.8 kB)
+Collecting pycparser (from cffi>=2.0.0->autobahn>=22.4.2->daphne==4.2.2->-r requirements.txt (line 13))
+  Downloading pycparser-3.0-py3-none-any.whl.metadata (8.2 kB)
+Collecting wcwidth>=0.1.4 (from prompt_toolkit>=3.0.36->click-repl>=0.2.0->celery==5.6.3->-r requirements.txt (line 10))
+  Downloading wcwidth-0.9.1-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (23 kB)
+Downloading django-6.0.6-py3-none-any.whl (8.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.4/8.4 MB 3.6 MB/s eta 0:00:00
+Downloading djangorestframework-3.17.1-py3-none-any.whl (898 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 898.8/898.8 kB 12.6 MB/s eta 0:00:00
+Downloading djangorestframework_simplejwt-5.5.1-py3-none-any.whl (107 kB)
+Downloading django_cors_headers-4.9.0-py3-none-any.whl (12 kB)
+Downloading psycopg2_binary-2.9.12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.3/4.3 MB 12.6 MB/s eta 0:00:00
+Downloading pymongo-4.10.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 11.2 MB/s eta 0:00:00
+Downloading python_dotenv-1.2.2-py3-none-any.whl (22 kB)
+Downloading redis-7.4.0-py3-none-any.whl (409 kB)
+Downloading django_redis-7.0.0-py3-none-any.whl (38 kB)
+Downloading celery-5.6.3-py3-none-any.whl (451 kB)
+Downloading channels-4.3.2-py3-none-any.whl (31 kB)
+Downloading channels_redis-4.3.0-py3-none-any.whl (20 kB)
+Downloading daphne-4.2.2-py3-none-any.whl (29 kB)
+Downloading asgiref-3.12.1-py3-none-any.whl (25 kB)
+Downloading autobahn-26.7.1-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (2.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 2.6 MB/s eta 0:00:00
+Downloading billiard-4.3.0-py3-none-any.whl (88 kB)
+Downloading click-8.5.0-py3-none-any.whl (125 kB)
+Downloading click_didyoumean-0.3.1-py3-none-any.whl (3.6 kB)
+Downloading click_plugins-1.1.1.2-py2.py3-none-any.whl (11 kB)
+Downloading click_repl-0.4.0-py3-none-any.whl (14 kB)
+Downloading dnspython-2.8.0-py3-none-any.whl (331 kB)
+Downloading kombu-5.6.2-py3-none-any.whl (214 kB)
+Downloading vine-5.1.0-py3-none-any.whl (9.6 kB)
+Downloading msgpack-1.2.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (420 kB)
+Downloading pyjwt-2.15.0-py3-none-any.whl (33 kB)
+Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+Downloading sqlparse-0.6.0-py3-none-any.whl (50 kB)
+Downloading twisted-26.4.0-py3-none-any.whl (3.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.2/3.2 MB 17.2 MB/s eta 0:00:00
+Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Downloading tzlocal-5.4.4-py3-none-any.whl (18 kB)
+Downloading amqp-5.4.0-py3-none-any.whl (51 kB)
+Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+Downloading automat-25.4.16-py3-none-any.whl (42 kB)
+Downloading cbor2-6.1.4-cp312-cp312-manylinux_2_28_x86_64.whl (461 kB)
+Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (221 kB)
+Downloading constantly-23.10.4-py3-none-any.whl (13 kB)
+Downloading cryptography-50.0.1-cp311-abi3-manylinux_2_34_x86_64.whl (4.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.7/4.7 MB 8.9 MB/s eta 0:00:00
+Downloading hyperlink-21.0.0-py2.py3-none-any.whl (74 kB)
+Downloading idna-3.20-py3-none-any.whl (69 kB)
+Downloading incremental-24.11.0-py3-none-any.whl (21 kB)
+Downloading packaging-26.3-py3-none-any.whl (129 kB)
+Downloading prompt_toolkit-3.0.53-py3-none-any.whl (392 kB)
+Downloading pyopenssl-26.4.0-py3-none-any.whl (56 kB)
+Downloading service_identity-26.1.0-py3-none-any.whl (11 kB)
+Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+Downloading txaio-26.6.1-py3-none-any.whl (31 kB)
+Downloading tzdata-2026.4-py2.py3-none-any.whl (347 kB)
+Downloading ujson-6.0.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (56 kB)
+Downloading zope_interface-8.6-cp312-cp312-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl (270 kB)
+Downloading wcwidth-0.9.1-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (768 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 768.4/768.4 kB 11.7 MB/s eta 0:00:00
+Downloading pycparser-3.0-py3-none-any.whl (48 kB)
+Installing collected packages: zope-interface, wcwidth, vine, ujson, tzlocal, tzdata, typing_extensions, txaio, sqlparse, six, redis, python-dotenv, pyjwt, pycparser, psycopg2-binary, packaging, msgpack, idna, dnspython, constantly, click, cbor2, billiard, automat, attrs, asgiref, python-dateutil, pymongo, prompt_toolkit, incremental, hyperlink, Django, click-plugins, click-didyoumean, cffi, amqp, twisted, kombu, djangorestframework, django-redis, django-cors-headers, cryptography, click-repl, channels, service-identity, pyopenssl, djangorestframework-simplejwt, channels-redis, celery, autobahn, daphne
+Successfully installed Django-6.0.6 amqp-5.4.0 asgiref-3.12.1 attrs-26.1.0 autobahn-26.7.1 automat-25.4.16 billiard-4.3.0 cbor2-6.1.4 celery-5.6.3 cffi-2.1.1 channels-4.3.2 channels-redis-4.3.0 click-8.5.0 click-didyoumean-0.3.1 click-plugins-1.1.1.2 click-repl-0.4.0 constantly-23.10.4 cryptography-50.0.1 daphne-4.2.2 django-cors-headers-4.9.0 django-redis-7.0.0 djangorestframework-3.17.1 djangorestframework-simplejwt-5.5.1 dnspython-2.8.0 hyperlink-21.0.0 idna-3.20 incremental-24.11.0 kombu-5.6.2 msgpack-1.2.2 packaging-26.3 prompt_toolkit-3.0.53 psycopg2-binary-2.9.12 pycparser-3.0 pyjwt-2.15.0 pymongo-4.10.1 pyopenssl-26.4.0 python-dateutil-2.9.0.post0 python-dotenv-1.2.2 redis-7.4.0 service-identity-26.1.0 six-1.17.0 sqlparse-0.6.0 twisted-26.4.0 txaio-26.6.1 typing_extensions-4.16.0 tzdata-2026.4 tzlocal-5.4.4 ujson-6.0.0 vine-5.1.0 wcwidth-0.9.1 zope-interface-8.6
+[91mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+[0m[91m
+[notice] A new release of pip is available: 25.0.1 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+[0m ---> Removed intermediate container f010215a4398
+ ---> 6f72d8a6a5aa
+Step 7/12 : COPY . .
+ ---> 9c5472e4af11
+Step 8/12 : RUN chmod +x docker-entrypoint.sh
+ ---> Running in 43e1828eaff3
+ ---> Removed intermediate container 43e1828eaff3
+ ---> 1629e190ef0a
+Step 9/12 : EXPOSE 8000
+ ---> Running in 6e3c3a902095
+ ---> Removed intermediate container 6e3c3a902095
+ ---> cb9405b7c0c6
+Step 10/12 : ENTRYPOINT ["sh", "./docker-entrypoint.sh"]
+ ---> Running in 7a49db7c9223
+ ---> Removed intermediate container 7a49db7c9223
+ ---> 35ec0442e635
+Step 11/12 : CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+ ---> Running in 44108f7cd663
+ ---> Removed intermediate container 44108f7cd663
+ ---> 952a1e133801
+Step 12/12 : LABEL com.docker.compose.image.builder=classic
+ ---> Running in 1e45adca0da3
+ ---> Removed intermediate container 1e45adca0da3
+ ---> 2b43cfbe4682
+Successfully built 2b43cfbe4682
+Successfully tagged launchops-review-20260927-backend:latest
+ Image launchops-review-20260927-backend Built 
+ Image launchops-review-20260927-backend Built 
+ Image launchops-review-20260927-go-live-a Building 
+ Image launchops-review-20260927-beat Building 
+ Image launchops-review-20260927-go-live-b Building 
+ Image launchops-review-20260927-frontend Building 
+ Image launchops-review-20260927-worker Building 
+ Image launchops-review-20260927-go-live-b Building 
+ Image launchops-review-20260927-go-live-a Building 
+ Image launchops-review-20260927-frontend Building 
+ Image launchops-review-20260927-worker Building 
+ Image launchops-review-20260927-beat Building 
+Sending build context to Docker daemon  6.806kB
+Sending build context to Docker daemon  6.806kB
+Step 1/13 : FROM golang:1.22-alpine AS build
+Step 1/13 : FROM golang:1.22-alpine AS build
+ ---> 4129f51f28c9
+Step 2/13 : WORKDIR /src
+ ---> 4129f51f28c9
+Step 2/13 : WORKDIR /src
+ ---> Using cache
+ ---> 5de56a40531d
+Step 3/13 : COPY go.mod ./
+ ---> Using cache
+ ---> 5de56a40531d
+Step 3/13 : COPY go.mod ./
+Sending build context to Docker daemon  93.29kB
+Sending build context to Docker daemon  93.29kB
+ ---> 1cb0559ce9fd
+Step 4/13 : RUN go mod download
+ ---> 1dc35f5232fe
+Step 4/13 : RUN go mod download
+Step 1/12 : FROM python:3.12-slim
+Sending build context to Docker daemon  211.6kB
+ ---> 9e87977b8678
+Step 2/12 : ENV PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1
+ ---> Using cache
+ ---> 5af472151032
+Step 3/12 : WORKDIR /app
+Step 1/12 : FROM python:3.12-slim
+ ---> 9e87977b8678
+Step 2/12 : ENV PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1
+ ---> Using cache
+ ---> 5af472151032
+Step 3/12 : WORKDIR /app
+ ---> Using cache
+ ---> a62ee676b818
+Step 4/12 : RUN apt-get update     && apt-get install -y --no-install-recommends libpq5     && rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> a62ee676b818
+Step 4/12 : RUN apt-get update     && apt-get install -y --no-install-recommends libpq5     && rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> 0ba87ac7e1c0
+Step 5/12 : COPY requirements.txt .
+ ---> Using cache
+ ---> 89d8318817dc
+Step 6/12 : RUN pip install --no-cache-dir -r requirements.txt
+ ---> Using cache
+ ---> Using cache
+ ---> 0ba87ac7e1c0
+Step 5/12 : COPY requirements.txt .
+ ---> Using cache
+ ---> 89d8318817dc
+Step 6/12 : RUN pip install --no-cache-dir -r requirements.txt
+ ---> Using cache
+ ---> 6f72d8a6a5aa
+Step 7/12 : COPY . .
+ ---> 6f72d8a6a5aa
+Step 7/12 : COPY . .
+ ---> Using cache
+ ---> 9c5472e4af11
+Step 8/12 : RUN chmod +x docker-entrypoint.sh
+ ---> Using cache
+ ---> 9c5472e4af11
+Step 8/12 : RUN chmod +x docker-entrypoint.sh
+ ---> Using cache
+ ---> 1629e190ef0a
+Step 9/12 : EXPOSE 8000
+ ---> Using cache
+ ---> cb9405b7c0c6
+Step 10/12 : ENTRYPOINT ["sh", "./docker-entrypoint.sh"]
+ ---> Using cache
+ ---> 35ec0442e635
+Step 11/12 : CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"] ---> Using cache
+ ---> 1629e190ef0a
+Step 9/12 : EXPOSE 8000
+ ---> Using cache
+ ---> cb9405b7c0c6
+Step 10/12 : ENTRYPOINT ["sh", "./docker-entrypoint.sh"]
+
+ ---> Using cache
+ ---> Using cache
+ ---> 952a1e133801
+Step 12/12 : LABEL com.docker.compose.image.builder=classic
+ ---> 35ec0442e635
+Step 11/12 : CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+Step 1/9 : FROM node:20-alpine
+ ---> 11cedc39e663
+Step 2/9 : WORKDIR /app
+ ---> Using cache
+ ---> 2b43cfbe4682
+ ---> Using cache
+ ---> 952a1e133801
+Step 12/12 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 2b43cfbe4682
+ ---> Using cache
+ ---> d9aab26ce03c
+Step 3/9 : ENV CHOKIDAR_USEPOLLING=true     WATCHPACK_POLLING=true     BROWSER=none
+Successfully built 2b43cfbe4682
+Successfully built 2b43cfbe4682
+ ---> Using cache
+ ---> 0d610fbd9f2a
+Step 4/9 : COPY package.json package-lock.json ./
+ ---> Running in fcf354d9d26b
+Successfully tagged launchops-review-20260927-beat:latest
+Successfully tagged launchops-review-20260927-worker:latest
+ Image launchops-review-20260927-beat Built 
+ Image launchops-review-20260927-beat Built 
+ Image launchops-review-20260927-worker Built 
+ Image launchops-review-20260927-worker Built 
+ ---> Running in 706e68cb3bbc
+ ---> 4e79ad3512c5
+Step 5/9 : RUN npm ci
+ ---> Running in 07b78fae5c4c
+ ---> Removed intermediate container 706e68cb3bbc
+ ---> fad402063732
+Step 5/13 : COPY . .
+ ---> Removed intermediate container fcf354d9d26b
+ ---> 57bc0cd785b1
+Step 5/13 : COPY . .
+ ---> 5939ad2cd71c
+Step 6/13 : RUN go mod tidy && CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /live .
+ ---> 83c6c3ffca8d
+Step 6/13 : RUN go mod tidy && CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /live .
+ ---> Running in f933a2a7c716
+ ---> Running in 37c6f59e4fe5
+[91mgo: downloading github.com/cespare/xxhash/v2 v2.2.0
+go: downloading github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f
+[0m[91mgo: downloading github.com/bsm/ginkgo/v2 v2.12.0
+[0m[91mgo: downloading github.com/bsm/gomega v1.27.10
+[0m[91mgo: downloading github.com/cespare/xxhash/v2 v2.2.0
+[0m[91mgo: downloading github.com/google/go-cmp v0.6.0
+[0m[91mgo: downloading github.com/bsm/ginkgo/v2 v2.12.0
+go: downloading github.com/bsm/gomega v1.27.10
+go: downloading github.com/klauspost/compress v1.16.7
+go: downloading github.com/davecgh/go-spew v1.1.1
+[0m[91mgo: downloading github.com/golang/snappy v0.0.4
+go: downloading github.com/montanaflynn/stats v0.7.1
+[0m[91mgo: downloading github.com/xdg-go/stringprep v1.0.4
+[0m[91mgo: downloading github.com/golang/snappy v0.0.4
+go: downloading github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78
+go: downloading github.com/xdg-go/scram v1.1.2
+go: downloading github.com/xdg-go/stringprep v1.0.4
+[0m[91mgo: downloading github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f
+[0m[91mgo: downloading github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78
+[0m[91mgo: downloading github.com/google/go-cmp v0.6.0
+[0m[91mgo: downloading github.com/xdg-go/scram v1.1.2
+[0m[91mgo: downloading github.com/davecgh/go-spew v1.1.1
+[0m[91mgo: downloading golang.org/x/crypto v0.26.0
+go: downloading github.com/klauspost/compress v1.16.7
+[0m[91mgo: downloading golang.org/x/sync v0.8.0
+[0m[91mgo: downloading golang.org/x/text v0.17.0
+[0m[91mgo: downloading github.com/xdg-go/pbkdf2 v1.0.0
+[0m[91mgo: downloading github.com/montanaflynn/stats v0.7.1
+[0m[91mgo: downloading golang.org/x/crypto v0.26.0
+[0m[91mgo: downloading golang.org/x/sync v0.8.0
+[0m[91mgo: downloading golang.org/x/text v0.17.0
+[0m[91mgo: downloading github.com/xdg-go/pbkdf2 v1.0.0
+[0m[91mnpm warn deprecated whatwg-encoding@1.0.5: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+[0m[91mnpm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+[0m[91mnpm warn deprecated workbox-cacheable-response@6.6.0: workbox-background-sync@6.6.0
+[0m[91mnpm warn deprecated workbox-google-analytics@6.6.0: It is not compatible with newer versions of GA starting with v4, as long as you are using GAv3 it should be ok, but the package is not longer being maintained
+[0m[91mnpm warn deprecated stable@0.1.8: Modern JS already guarantees Array#sort() is a stable sort, so this library is deprecated. See the compatibility table on MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#browser_compatibility
+[0m[91mnpm warn deprecated sourcemap-codec@1.4.8: Please use @jridgewell/sourcemap-codec instead
+[0m[91mnpm warn deprecated uuid@8.3.2: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+[0m[91mnpm warn deprecated svgo@1.3.2: This SVGO version is no longer supported. Upgrade to v2.x.x.
+[0m[91mnpm warn deprecated rollup-plugin-terser@7.0.2: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-terser
+[0m[91mnpm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+[0m[91mnpm warn deprecated q@1.5.1: You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
+npm warn deprecated
+npm warn deprecated (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
+[0m[91mnpm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+[0m[91mnpm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+[0m[91mnpm warn deprecated domexception@2.0.1: Use your platform's native DOMException instead
+[0m[91mnpm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+[0m[91mnpm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+[0m[91mnpm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+[0m[91mnpm warn deprecated @babel/plugin-proposal-numeric-separator@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-numeric-separator instead.
+npm warn deprecated @babel/plugin-proposal-nullish-coalescing-operator@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-nullish-coalescing-operator instead.
+npm warn deprecated @babel/plugin-proposal-private-methods@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-private-methods instead.
+[0m[91mnpm warn deprecated @babel/plugin-proposal-optional-chaining@7.21.0: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-optional-chaining instead.
+[0m[91mnpm warn deprecated @babel/plugin-proposal-class-properties@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-class-properties instead.
+[0m[91mnpm warn deprecated @babel/plugin-proposal-private-property-in-object@7.21.11: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-private-property-in-object instead.
+[0m[91mnpm warn deprecated source-map@0.8.0-beta.0: The work that was done in this beta branch won't be included in future versions
+[0m[91mnpm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+[0m
+added 1409 packages, and audited 1410 packages in 2m
+
+275 packages are looking for funding
+  run `npm fund` for details
+
+45 vulnerabilities (10 low, 12 moderate, 23 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+[91mnpm notice
+npm notice New major version of npm available! 10.8.2 -> 12.1.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.1.0
+npm notice To update run: npm install -g npm@12.1.0
+npm notice
+[0m ---> Removed intermediate container 37c6f59e4fe5
+ ---> a0df6c89bae9
+Step 7/13 : FROM alpine:3.20
+ ---> bf8527eb54c3
+Step 8/13 : RUN adduser -D -H live
+ ---> Using cache
+ ---> c8e48b7cd4ca
+Step 9/13 : USER live
+ ---> Using cache
+ ---> 8c2b01c229df
+Step 10/13 : COPY --from=build /live /live
+ ---> Removed intermediate container f933a2a7c716
+ ---> f5f27a8233a3
+Step 7/13 : FROM alpine:3.20
+ ---> bf8527eb54c3
+Step 8/13 : RUN adduser -D -H live
+ ---> Using cache
+ ---> c8e48b7cd4ca
+Step 9/13 : USER live
+ ---> Using cache
+ ---> 8c2b01c229df
+Step 10/13 : COPY --from=build /live /live
+ ---> Using cache
+ ---> Using cache
+ ---> adefca489d62
+Step 11/13 : EXPOSE 8080
+ ---> adefca489d62
+Step 11/13 : EXPOSE 8080
+ ---> Using cache
+ ---> e7c7cf04cbd3
+Step 12/13 : ENTRYPOINT ["/live"]
+ ---> Using cache
+ ---> e7c7cf04cbd3
+Step 12/13 : ENTRYPOINT ["/live"]
+ ---> Using cache
+ ---> 798fa38a060d
+Step 13/13 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 798fa38a060d
+Step 13/13 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 8258d8816060
+ ---> Using cache
+ ---> 8258d8816060
+Successfully built 8258d8816060
+Successfully built 8258d8816060
+Successfully tagged launchops-review-20260927-go-live-a:latest
+Successfully tagged launchops-review-20260927-go-live-b:latest
+ Image launchops-review-20260927-go-live-a Built 
+ Image launchops-review-20260927-go-live-b Built 
+ Image launchops-review-20260927-go-live-a Built 
+ Image launchops-review-20260927-go-live-b Built 
+ ---> Removed intermediate container 07b78fae5c4c
+ ---> eb9b16e822df
+Step 6/9 : COPY . .
+ ---> 64343bb8cbc3
+Step 7/9 : EXPOSE 3000
+ ---> Running in bddcaf4fe983
+ ---> Removed intermediate container bddcaf4fe983
+ ---> 27d5454d457c
+Step 8/9 : CMD ["npm", "start"]
+ ---> Running in 91ac2b477751
+ ---> Removed intermediate container 91ac2b477751
+ ---> d1250290d284
+Step 9/9 : LABEL com.docker.compose.image.builder=classic
+ ---> Running in ffa2fc582a3d
+ ---> Removed intermediate container ffa2fc582a3d
+ ---> 0ccd556e83ae
+Successfully built 0ccd556e83ae
+Successfully tagged launchops-review-20260927-frontend:latest
+ Image launchops-review-20260927-frontend Built 
+ Image launchops-review-20260927-frontend Built 

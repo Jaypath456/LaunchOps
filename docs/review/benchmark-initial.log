@@ -1,0 +1,220 @@
+
+--- users=10, repeat=1, engine=django ---
+Setting up: 10 students against http://localhost:38000 (ws://localhost:38000 for WebSocket)...
+Live session started: room_code=A1Q88S, quiz_id=5, question_id=14
+Connecting 10 students...
+10/10 students connected successfully.
+
+=== Results (room A1Q88S, 10 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=10 mean=68.3ms p50=68.7ms p95=68.9ms p99=68.9ms max=68.9ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=10 mean=225.7ms p50=223.2ms p95=385.3ms p99=398.0ms max=401.2ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=440.5ms p50=440.5ms p95=440.5ms p99=440.5ms max=440.5ms
+
+--- users=10, repeat=1, engine=go ---
+Setting up: 10 students against http://localhost:38000 (ws://localhost:39090 for WebSocket)...
+Live session started: room_code=KBTJK9, quiz_id=6, question_id=15
+Connecting 10 students...
+10/10 students connected successfully.
+
+=== Results (room KBTJK9, 10 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=10 mean=1.4ms p50=1.5ms p95=1.7ms p99=1.7ms max=1.7ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=10 mean=23.6ms p50=23.4ms p95=24.2ms p99=24.2ms max=24.2ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=25.9ms p50=25.9ms p95=25.9ms p99=25.9ms max=25.9ms
+
+--- users=10, repeat=2, engine=go ---
+Setting up: 10 students against http://localhost:38000 (ws://localhost:39090 for WebSocket)...
+Live session started: room_code=VX3TH5, quiz_id=7, question_id=16
+Connecting 10 students...
+10/10 students connected successfully.
+
+=== Results (room VX3TH5, 10 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=10 mean=2.4ms p50=2.4ms p95=2.5ms p99=2.5ms max=2.5ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=10 mean=4.0ms p50=4.3ms p95=4.4ms p99=4.5ms max=4.6ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=4.6ms p50=4.6ms p95=4.6ms p99=4.6ms max=4.6ms
+
+--- users=10, repeat=2, engine=django ---
+Setting up: 10 students against http://localhost:38000 (ws://localhost:38000 for WebSocket)...
+Live session started: room_code=MR2B9A, quiz_id=8, question_id=17
+Connecting 10 students...
+10/10 students connected successfully.
+
+=== Results (room MR2B9A, 10 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=10 mean=57.5ms p50=57.5ms p95=57.7ms p99=57.7ms max=57.7ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=10 mean=223.5ms p50=225.5ms p95=387.0ms p99=399.7ms max=402.9ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=481.7ms p50=481.7ms p95=481.7ms p99=481.7ms max=481.7ms
+
+--- users=10, repeat=3, engine=django ---
+Setting up: 10 students against http://localhost:38000 (ws://localhost:38000 for WebSocket)...
+Live session started: room_code=MVHLSQ, quiz_id=9, question_id=18
+Connecting 10 students...
+10/10 students connected successfully.
+
+=== Results (room MVHLSQ, 10 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=10 mean=77.7ms p50=76.8ms p95=82.0ms p99=85.3ms max=86.2ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=10 mean=348.1ms p50=346.5ms p95=610.2ms p99=631.3ms max=636.6ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=998.4ms p50=998.4ms p95=998.4ms p99=998.4ms max=998.4ms
+
+--- users=10, repeat=3, engine=go ---
+Setting up: 10 students against http://localhost:38000 (ws://localhost:39090 for WebSocket)...
+Live session started: room_code=8KVB1B, quiz_id=10, question_id=19
+Connecting 10 students...
+10/10 students connected successfully.
+
+=== Results (room 8KVB1B, 10 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=10 mean=2.5ms p50=2.5ms p95=2.7ms p99=2.7ms max=2.7ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=10 mean=3.5ms p50=3.3ms p95=4.3ms p99=4.3ms max=4.3ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=5.3ms p50=5.3ms p95=5.3ms p99=5.3ms max=5.3ms
+
+--- users=25, repeat=1, engine=django ---
+Setting up: 25 students against http://localhost:38000 (ws://localhost:38000 for WebSocket)...
+Live session started: room_code=U4LNXV, quiz_id=11, question_id=20
+Connecting 25 students...
+25/25 students connected successfully.
+
+=== Results (room U4LNXV, 25 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=25 mean=112.0ms p50=112.2ms p95=112.6ms p99=112.6ms max=112.6ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=25 mean=584.8ms p50=587.0ms p95=1043.8ms p99=1082.2ms max=1091.9ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=1675.7ms p50=1675.7ms p95=1675.7ms p99=1675.7ms max=1675.7ms
+
+--- users=25, repeat=1, engine=go ---
+Setting up: 25 students against http://localhost:38000 (ws://localhost:39090 for WebSocket)...
+Live session started: room_code=GNAY85, quiz_id=12, question_id=21
+Connecting 25 students...
+25/25 students connected successfully.
+
+=== Results (room GNAY85, 25 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=25 mean=3.5ms p50=3.7ms p95=4.2ms p99=4.3ms max=4.3ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=25 mean=13.2ms p50=12.2ms p95=29.0ms p99=29.6ms max=29.6ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=30.8ms p50=30.8ms p95=30.8ms p99=30.8ms max=30.8ms
+
+--- users=25, repeat=2, engine=go ---
+Setting up: 25 students against http://localhost:38000 (ws://localhost:39090 for WebSocket)...
+Live session started: room_code=XOFXWU, quiz_id=13, question_id=22
+Connecting 25 students...
+25/25 students connected successfully.
+
+=== Results (room XOFXWU, 25 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=25 mean=2.4ms p50=2.1ms p95=3.2ms p99=3.3ms max=3.3ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=25 mean=9.7ms p50=10.3ms p95=11.6ms p99=12.2ms max=12.3ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=13.4ms p50=13.4ms p95=13.4ms p99=13.4ms max=13.4ms
+
+--- users=25, repeat=2, engine=django ---
+Setting up: 25 students against http://localhost:38000 (ws://localhost:38000 for WebSocket)...
+Live session started: room_code=ENVCKH, quiz_id=14, question_id=23
+Connecting 25 students...
+25/25 students connected successfully.
+
+=== Results (room ENVCKH, 25 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=25 mean=89.3ms p50=89.1ms p95=90.3ms p99=90.4ms max=90.4ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=25 mean=543.5ms p50=543.1ms p95=993.6ms p99=1037.3ms max=1048.0ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=1599.7ms p50=1599.7ms p95=1599.7ms p99=1599.7ms max=1599.7ms
+
+--- users=25, repeat=3, engine=django ---
+Setting up: 25 students against http://localhost:38000 (ws://localhost:38000 for WebSocket)...
+Live session started: room_code=BV3OCG, quiz_id=15, question_id=24
+Connecting 25 students...
+25/25 students connected successfully.
+
+=== Results (room BV3OCG, 25 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=25 mean=101.2ms p50=101.7ms p95=102.7ms p99=102.8ms max=102.8ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=25 mean=644.8ms p50=635.8ms p95=1141.1ms p99=1183.3ms max=1194.0ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=1867.5ms p50=1867.5ms p95=1867.5ms p99=1867.5ms max=1867.5ms
+
+--- users=25, repeat=3, engine=go ---
+Setting up: 25 students against http://localhost:38000 (ws://localhost:39090 for WebSocket)...
+Live session started: room_code=EZLCQS, quiz_id=16, question_id=25
+Connecting 25 students...
+25/25 students connected successfully.
+
+=== Results (room EZLCQS, 25 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=25 mean=2.2ms p50=2.1ms p95=2.6ms p99=2.7ms max=2.7ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=25 mean=5.5ms p50=6.0ms p95=7.0ms p99=7.7ms max=7.9ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=9.2ms p50=9.2ms p95=9.2ms p99=9.2ms max=9.2ms
+
+--- users=50, repeat=1, engine=django ---
+Setting up: 50 students against http://localhost:38000 (ws://localhost:38000 for WebSocket)...
+Live session started: room_code=O900I8, quiz_id=17, question_id=26
+Connecting 50 students...
+50/50 students connected successfully.
+
+=== Results (room O900I8, 50 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=50 mean=86.0ms p50=86.2ms p95=87.2ms p99=87.3ms max=87.3ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=50 mean=1130.7ms p50=1129.2ms p95=2093.0ms p99=2181.4ms max=2206.5ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=3579.0ms p50=3579.0ms p95=3579.0ms p99=3579.0ms max=3579.0ms
+
+--- users=50, repeat=1, engine=go ---
+Setting up: 50 students against http://localhost:38000 (ws://localhost:39090 for WebSocket)...
+Live session started: room_code=628K3I, quiz_id=18, question_id=27
+Connecting 50 students...
+50/50 students connected successfully.
+
+=== Results (room 628K3I, 50 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=50 mean=3.0ms p50=3.0ms p95=4.3ms p99=4.4ms max=4.4ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=50 mean=18.4ms p50=15.9ms p95=28.7ms p99=29.2ms max=29.4ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=29.6ms p50=29.6ms p95=29.6ms p99=29.6ms max=29.6ms
+
+--- users=50, repeat=2, engine=go ---
+Setting up: 50 students against http://localhost:38000 (ws://localhost:39090 for WebSocket)...
+Live session started: room_code=9HQ8U9, quiz_id=19, question_id=28
+Connecting 50 students...
+50/50 students connected successfully.
+
+=== Results (room 9HQ8U9, 50 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=50 mean=5.1ms p50=4.9ms p95=6.8ms p99=6.9ms max=6.9ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=50 mean=13.3ms p50=12.7ms p95=19.3ms p99=22.8ms max=26.1ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=26.6ms p50=26.6ms p95=26.6ms p99=26.6ms max=26.6ms
+
+--- users=50, repeat=2, engine=django ---
+Setting up: 50 students against http://localhost:38000 (ws://localhost:38000 for WebSocket)...
+Live session started: room_code=QMVH3B, quiz_id=20, question_id=29
+Connecting 50 students...
+  WARNING: loadtest_student_0025: connect failed (did not receive a valid HTTP response)
+  WARNING: loadtest_student_0031: connect failed (did not receive a valid HTTP response)
+  WARNING: loadtest_student_0038: connect failed (did not receive a valid HTTP response)
+  WARNING: loadtest_student_0042: connect failed (did not receive a valid HTTP response)
+46/50 students connected successfully.
+
+=== Results (room QMVH3B, 46 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=46 mean=86.1ms p50=88.3ms p95=89.3ms p99=89.4ms max=89.4ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=46 mean=1010.6ms p50=1032.3ms p95=1841.3ms p99=1917.3ms max=1937.4ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=3322.5ms p50=3322.5ms p95=3322.5ms p99=3322.5ms max=3322.5ms
+
+--- users=50, repeat=3, engine=django ---
+Setting up: 50 students against http://localhost:38000 (ws://localhost:38000 for WebSocket)...
+Live session started: room_code=B3E09R, quiz_id=21, question_id=30
+Connecting 50 students...
+50/50 students connected successfully.
+
+=== Results (room B3E09R, 50 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=50 mean=99.4ms p50=99.2ms p95=102.1ms p99=102.2ms max=102.2ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=50 mean=1257.9ms p50=1285.2ms p95=2339.4ms p99=2426.3ms max=2446.5ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=3778.3ms p50=3778.3ms p95=3778.3ms p99=3778.3ms max=3778.3ms
+
+--- users=50, repeat=3, engine=go ---
+Setting up: 50 students against http://localhost:38000 (ws://localhost:39090 for WebSocket)...
+Live session started: room_code=XFTXL5, quiz_id=22, question_id=31
+Connecting 50 students...
+50/50 students connected successfully.
+
+=== Results (room XFTXL5, 50 connected students) ===
+reveal_latency_ms  (question.advance -> question.revealed received): n=50 mean=4.2ms p50=4.4ms p95=4.8ms p99=4.8ms max=4.8ms
+accept_latency_ms  (answer.submit -> private answer.accepted): n=50 mean=16.4ms p50=15.0ms p95=20.4ms p99=25.4ms max=30.1ms
+chart_latency_ms   (answer spike -> host sees all accepted answers): n=1 mean=38.2ms p50=38.2ms p95=38.2ms p99=38.2ms max=38.2ms
+
+--- users=100, repeat=1, engine=django ---
+Setting up: 100 students against http://localhost:38000 (ws://localhost:38000 for WebSocket)...
+Live session started: room_code=GVA17R, quiz_id=23, question_id=32
+Connecting 100 students...
+  WARNING: loadtest_student_0000: connect failed (timed out during opening handshake)
+  WARNING: loadtest_student_0001: connect failed (timed out during opening handshake)
+  WARNING: loadtest_student_0002: connect failed (timed out during opening handshake)
+  WARNING: loadtest_student_0003: connect failed (did not receive a valid HTTP response)
+  WARNING: loadtest_student_0004: connect failed (timed out during opening handshake)
+  WARNING: loadtest_student_0005: connect failed (timed out during opening handshake)
+  WARNING: loadtest_student_0006: connect failed (timed out during opening handshake)
+  WARNING: loadtest_student_0007: connect failed (timed out during opening handshake)
+  WARNING: loadtest_student_0008: connect failed (timed out during opening handshake)
+  WARNING: loadtest_student_0009: connect failed (timed out during opening handshake)
+  ... and 90 more connection errors
+0/100 students connected successfully.
+No students connected - aborting.

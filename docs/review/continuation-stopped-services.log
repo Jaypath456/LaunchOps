@@ -1,0 +1,29 @@
+frontend-1  | 
+frontend-1  | > launchops-frontend@0.1.0 start
+frontend-1  | > react-scripts start
+frontend-1  | 
+frontend-1  | Attempting to bind to HOST environment variable: 0.0.0.0
+frontend-1  | If this was unintentional, check that you haven't mistakenly set it in your shell.
+frontend-1  | Learn more here: https://cra.link/advanced-config
+frontend-1  | 
+frontend-1  | (node:25) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+frontend-1  | (Use `node --trace-deprecation ...` to show where the warning was created)
+frontend-1  | (node:25) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+frontend-1  | Starting the development server...
+frontend-1  | 
+frontend-1  | Compiled successfully!
+frontend-1  | 
+frontend-1  | You can now view launchops-frontend in the browser.
+frontend-1  | 
+frontend-1  |   Local:            http://localhost:3000
+frontend-1  |   On Your Network:  http://172.22.0.11:3000
+frontend-1  | 
+frontend-1  | Note that the development build is not optimized.
+frontend-1  | To create a production build, use npm run build.
+frontend-1  | 
+frontend-1  | webpack compiled successfully
+frontend-1  | npm error path /app
+frontend-1  | npm error command failed
+frontend-1  | npm error signal SIGTERM
+frontend-1  | npm error command sh -c react-scripts start
+frontend-1  | npm error A complete log of this run can be found in: /root/.npm/_logs/2026-09-28T03_02_17_133Z-debug-0.log

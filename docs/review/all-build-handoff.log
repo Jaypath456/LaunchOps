@@ -1,0 +1,253 @@
+ Image launchops-review-20260927-backend Building 
+ Image launchops-review-20260927-backend Building 
+Sending build context to Docker daemon  93.56kB
+Step 1/12 : FROM python:3.12-slim
+ ---> 9e87977b8678
+Step 2/12 : ENV PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1
+ ---> Using cache
+ ---> 5af472151032
+Step 3/12 : WORKDIR /app
+ ---> Using cache
+ ---> a62ee676b818
+Step 4/12 : RUN apt-get update     && apt-get install -y --no-install-recommends libpq5     && rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> 0ba87ac7e1c0
+Step 5/12 : COPY requirements.txt .
+ ---> Using cache
+ ---> 89d8318817dc
+Step 6/12 : RUN pip install --no-cache-dir -r requirements.txt
+ ---> Using cache
+ ---> 6f72d8a6a5aa
+Step 7/12 : COPY . .
+ ---> db785acb10b4
+Step 8/12 : RUN chmod +x docker-entrypoint.sh
+ ---> Running in 9f17c455f694
+ ---> Removed intermediate container 9f17c455f694
+ ---> 066dc428c9d6
+Step 9/12 : EXPOSE 8000
+ ---> Running in 19cd5c40bde3
+ ---> Removed intermediate container 19cd5c40bde3
+ ---> daa30f6e49d6
+Step 10/12 : ENTRYPOINT ["sh", "./docker-entrypoint.sh"]
+ ---> Running in a97032a7b0dc
+ ---> Removed intermediate container a97032a7b0dc
+ ---> ad190917a3bf
+Step 11/12 : CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+ ---> Running in 6357b605dba6
+ ---> Removed intermediate container 6357b605dba6
+ ---> 6759b360323b
+Step 12/12 : LABEL com.docker.compose.image.builder=classic
+ ---> Running in 29b867086c94
+ ---> Removed intermediate container 29b867086c94
+ ---> 26da9268cec9
+Successfully built 26da9268cec9
+Successfully tagged launchops-review-20260927-backend:latest
+ Image launchops-review-20260927-backend Built 
+ Image launchops-review-20260927-backend Built 
+ Image launchops-review-20260927-go-live-a Building 
+ Image launchops-review-20260927-go-live-a Building 
+Sending build context to Docker daemon  10.24kB
+Step 1/13 : FROM golang:1.22-alpine AS build
+ ---> 4129f51f28c9
+Step 2/13 : WORKDIR /src
+ ---> Running in 34fec9644334
+ ---> Removed intermediate container 34fec9644334
+ ---> bc29f1603775
+Step 3/13 : COPY go.mod go.sum ./
+ ---> 2699a001cdfd
+Step 4/13 : RUN go mod download
+ ---> Running in 0cb6af9e876a
+ ---> Removed intermediate container 0cb6af9e876a
+ ---> 6bb2e2023914
+Step 5/13 : COPY . .
+ ---> 707c49b9f2b5
+Step 6/13 : RUN go test ./... && CGO_ENABLED=0 go build -mod=readonly -trimpath -ldflags='-s -w' -o /live .
+ ---> Running in e6bc3cc193a8
+ok  	launchops/go-live	0.006s
+ ---> Removed intermediate container e6bc3cc193a8
+ ---> a4718631e38e
+Step 7/13 : FROM alpine:3.20
+ ---> bf8527eb54c3
+Step 8/13 : RUN adduser -D -H live
+ ---> Using cache
+ ---> c8e48b7cd4ca
+Step 9/13 : USER live
+ ---> Using cache
+ ---> 8c2b01c229df
+Step 10/13 : COPY --from=build /live /live
+ ---> Using cache
+ ---> e78b92b5aeaa
+Step 11/13 : EXPOSE 8080
+ ---> Using cache
+ ---> 25bf94a41942
+Step 12/13 : ENTRYPOINT ["/live"]
+ ---> Using cache
+ ---> 28d638aefad3
+Step 13/13 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> a32086cbf107
+Successfully built a32086cbf107
+Successfully tagged launchops-review-20260927-go-live-a:latest
+ Image launchops-review-20260927-go-live-a Built 
+ Image launchops-review-20260927-go-live-a Built 
+ Image launchops-review-20260927-go-live-b Building 
+ Image launchops-review-20260927-go-live-b Building 
+Sending build context to Docker daemon  10.24kB
+Step 1/13 : FROM golang:1.22-alpine AS build
+ ---> 4129f51f28c9
+Step 2/13 : WORKDIR /src
+ ---> Using cache
+ ---> bc29f1603775
+Step 3/13 : COPY go.mod go.sum ./
+ ---> Using cache
+ ---> 2699a001cdfd
+Step 4/13 : RUN go mod download
+ ---> Using cache
+ ---> 6bb2e2023914
+Step 5/13 : COPY . .
+ ---> Using cache
+ ---> 707c49b9f2b5
+Step 6/13 : RUN go test ./... && CGO_ENABLED=0 go build -mod=readonly -trimpath -ldflags='-s -w' -o /live .
+ ---> Using cache
+ ---> a4718631e38e
+Step 7/13 : FROM alpine:3.20
+ ---> bf8527eb54c3
+Step 8/13 : RUN adduser -D -H live
+ ---> Using cache
+ ---> c8e48b7cd4ca
+Step 9/13 : USER live
+ ---> Using cache
+ ---> 8c2b01c229df
+Step 10/13 : COPY --from=build /live /live
+ ---> Using cache
+ ---> e78b92b5aeaa
+Step 11/13 : EXPOSE 8080
+ ---> Using cache
+ ---> 25bf94a41942
+Step 12/13 : ENTRYPOINT ["/live"]
+ ---> Using cache
+ ---> 28d638aefad3
+Step 13/13 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> a32086cbf107
+Successfully built a32086cbf107
+Successfully tagged launchops-review-20260927-go-live-b:latest
+ Image launchops-review-20260927-go-live-b Built 
+ Image launchops-review-20260927-go-live-b Built 
+ Image launchops-review-20260927-frontend Building 
+ Image launchops-review-20260927-frontend Building 
+Sending build context to Docker daemon  212.4kB
+Step 1/9 : FROM node:20-alpine
+ ---> 11cedc39e663
+Step 2/9 : WORKDIR /app
+ ---> Using cache
+ ---> d9aab26ce03c
+Step 3/9 : ENV CHOKIDAR_USEPOLLING=true     WATCHPACK_POLLING=true     BROWSER=none
+ ---> Using cache
+ ---> 0d610fbd9f2a
+Step 4/9 : COPY package.json package-lock.json ./
+ ---> Using cache
+ ---> 4e79ad3512c5
+Step 5/9 : RUN npm ci
+ ---> Using cache
+ ---> eb9b16e822df
+Step 6/9 : COPY . .
+ ---> Using cache
+ ---> a03268ead2b3
+Step 7/9 : EXPOSE 3000
+ ---> Using cache
+ ---> ce6640956d20
+Step 8/9 : CMD ["npm", "start"]
+ ---> Using cache
+ ---> 86db9837832e
+Step 9/9 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 9057da65ae89
+Successfully built 9057da65ae89
+Successfully tagged launchops-review-20260927-frontend:latest
+ Image launchops-review-20260927-frontend Built 
+ Image launchops-review-20260927-frontend Built 
+ Image launchops-review-20260927-worker Building 
+ Image launchops-review-20260927-worker Building 
+Sending build context to Docker daemon  93.56kB
+Step 1/12 : FROM python:3.12-slim
+ ---> 9e87977b8678
+Step 2/12 : ENV PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1
+ ---> Using cache
+ ---> 5af472151032
+Step 3/12 : WORKDIR /app
+ ---> Using cache
+ ---> a62ee676b818
+Step 4/12 : RUN apt-get update     && apt-get install -y --no-install-recommends libpq5     && rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> 0ba87ac7e1c0
+Step 5/12 : COPY requirements.txt .
+ ---> Using cache
+ ---> 89d8318817dc
+Step 6/12 : RUN pip install --no-cache-dir -r requirements.txt
+ ---> Using cache
+ ---> 6f72d8a6a5aa
+Step 7/12 : COPY . .
+ ---> Using cache
+ ---> db785acb10b4
+Step 8/12 : RUN chmod +x docker-entrypoint.sh
+ ---> Using cache
+ ---> 066dc428c9d6
+Step 9/12 : EXPOSE 8000
+ ---> Using cache
+ ---> daa30f6e49d6
+Step 10/12 : ENTRYPOINT ["sh", "./docker-entrypoint.sh"]
+ ---> Using cache
+ ---> ad190917a3bf
+Step 11/12 : CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+ ---> Using cache
+ ---> 6759b360323b
+Step 12/12 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 26da9268cec9
+Successfully built 26da9268cec9
+Successfully tagged launchops-review-20260927-worker:latest
+ Image launchops-review-20260927-worker Built 
+ Image launchops-review-20260927-worker Built 
+ Image launchops-review-20260927-beat Building 
+ Image launchops-review-20260927-beat Building 
+Sending build context to Docker daemon  93.56kB
+Step 1/12 : FROM python:3.12-slim
+ ---> 9e87977b8678
+Step 2/12 : ENV PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1
+ ---> Using cache
+ ---> 5af472151032
+Step 3/12 : WORKDIR /app
+ ---> Using cache
+ ---> a62ee676b818
+Step 4/12 : RUN apt-get update     && apt-get install -y --no-install-recommends libpq5     && rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> 0ba87ac7e1c0
+Step 5/12 : COPY requirements.txt .
+ ---> Using cache
+ ---> 89d8318817dc
+Step 6/12 : RUN pip install --no-cache-dir -r requirements.txt
+ ---> Using cache
+ ---> 6f72d8a6a5aa
+Step 7/12 : COPY . .
+ ---> Using cache
+ ---> db785acb10b4
+Step 8/12 : RUN chmod +x docker-entrypoint.sh
+ ---> Using cache
+ ---> 066dc428c9d6
+Step 9/12 : EXPOSE 8000
+ ---> Using cache
+ ---> daa30f6e49d6
+Step 10/12 : ENTRYPOINT ["sh", "./docker-entrypoint.sh"]
+ ---> Using cache
+ ---> ad190917a3bf
+Step 11/12 : CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+ ---> Using cache
+ ---> 6759b360323b
+Step 12/12 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> 26da9268cec9
+Successfully built 26da9268cec9
+Successfully tagged launchops-review-20260927-beat:latest
+ Image launchops-review-20260927-beat Built 
+ Image launchops-review-20260927-beat Built 

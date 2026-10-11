@@ -1,0 +1,8 @@
+{
+  "short_name": "LaunchOps",
+  "name": "LaunchOps",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#153d43",
+  "background_color": "#ffffff"
+}

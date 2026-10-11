@@ -1,0 +1,15 @@
+{
+  "onboarding_onboarding": {
+    "original_rows_preserved": 1
+  },
+  "onboarding_step": {
+    "original_rows_preserved": 20
+  },
+  "onboarding_event": {
+    "original_rows_preserved": 8
+  },
+  "onboarding_step_prerequisites": {
+    "original_rows_preserved": 29
+  },
+  "backup_sha256": "c1fa080f957533280c80f8ac485edcdb01fd235e95cce54b9145ea8fb39d5456"
+}

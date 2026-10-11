@@ -1,0 +1,11 @@
+# Python / Django
+.venv/
+__pycache__/
+.env
+
+# Node
+frontend/node_modules/
+
+# Large benchmark artifacts
+docs/review/benchmark-resources.jsonl
+docs/review/benchmark-resources.raw.log

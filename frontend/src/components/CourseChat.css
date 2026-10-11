@@ -1,0 +1,76 @@
+.course-chat {
+  margin-top: 28px;
+}
+
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 320px;
+  overflow-y: auto;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.chat-load-older {
+  align-self: center;
+  margin-bottom: 8px;
+}
+
+.chat-message {
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.chat-message-sender {
+  font-weight: 600;
+  color: #4f46e5;
+  flex-shrink: 0;
+}
+
+.chat-message-body {
+  word-break: break-word;
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input-row input {
+  flex: 1;
+  padding: 9px 12px;
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.chat-input-row input:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.chat-closed-banner {
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #92400e;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+}
+
+.chat-error {
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+}

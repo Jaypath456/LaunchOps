@@ -1,0 +1,91 @@
+ Image launchops-review-20260927-go-live-b Building 
+ Image launchops-review-20260927-go-live-b Building 
+Sending build context to Docker daemon  10.15kB
+Step 1/13 : FROM golang:1.22-alpine AS build
+ ---> 4129f51f28c9
+Step 2/13 : WORKDIR /src
+ ---> Using cache
+ ---> 5de56a40531d
+Step 3/13 : COPY go.mod go.sum ./
+ ---> Using cache
+ ---> 3e946a136333
+Step 4/13 : RUN go mod download
+ ---> Using cache
+ ---> a1cc13d3d704
+Step 5/13 : COPY . .
+ ---> d2f6fd1b6a9a
+Step 6/13 : RUN go test ./... && CGO_ENABLED=0 go build -mod=readonly -trimpath -ldflags='-s -w' -o /live .
+ ---> Running in 714d7491c231
+ok  	launchops/go-live	0.004s
+ ---> Removed intermediate container 714d7491c231
+ ---> b32d54fa4891
+Step 7/13 : FROM alpine:3.20
+ ---> bf8527eb54c3
+Step 8/13 : RUN adduser -D -H live
+ ---> Using cache
+ ---> c8e48b7cd4ca
+Step 9/13 : USER live
+ ---> Using cache
+ ---> 8c2b01c229df
+Step 10/13 : COPY --from=build /live /live
+ ---> e78b92b5aeaa
+Step 11/13 : EXPOSE 8080
+ ---> Running in c28a03fc022a
+ ---> Removed intermediate container c28a03fc022a
+ ---> 25bf94a41942
+Step 12/13 : ENTRYPOINT ["/live"]
+ ---> Running in ec4ec248649a
+ ---> Removed intermediate container ec4ec248649a
+ ---> 28d638aefad3
+Step 13/13 : LABEL com.docker.compose.image.builder=classic
+ ---> Running in 8a935e3ac79d
+ ---> Removed intermediate container 8a935e3ac79d
+ ---> a32086cbf107
+Successfully built a32086cbf107
+Successfully tagged launchops-review-20260927-go-live-b:latest
+ Image launchops-review-20260927-go-live-b Built 
+ Image launchops-review-20260927-go-live-b Built 
+ Image launchops-review-20260927-go-live-a Building 
+ Image launchops-review-20260927-go-live-a Building 
+Sending build context to Docker daemon  10.15kB
+Step 1/13 : FROM golang:1.22-alpine AS build
+ ---> 4129f51f28c9
+Step 2/13 : WORKDIR /src
+ ---> Using cache
+ ---> 5de56a40531d
+Step 3/13 : COPY go.mod go.sum ./
+ ---> Using cache
+ ---> 3e946a136333
+Step 4/13 : RUN go mod download
+ ---> Using cache
+ ---> a1cc13d3d704
+Step 5/13 : COPY . .
+ ---> Using cache
+ ---> d2f6fd1b6a9a
+Step 6/13 : RUN go test ./... && CGO_ENABLED=0 go build -mod=readonly -trimpath -ldflags='-s -w' -o /live .
+ ---> Using cache
+ ---> b32d54fa4891
+Step 7/13 : FROM alpine:3.20
+ ---> bf8527eb54c3
+Step 8/13 : RUN adduser -D -H live
+ ---> Using cache
+ ---> c8e48b7cd4ca
+Step 9/13 : USER live
+ ---> Using cache
+ ---> 8c2b01c229df
+Step 10/13 : COPY --from=build /live /live
+ ---> Using cache
+ ---> e78b92b5aeaa
+Step 11/13 : EXPOSE 8080
+ ---> Using cache
+ ---> 25bf94a41942
+Step 12/13 : ENTRYPOINT ["/live"]
+ ---> Using cache
+ ---> 28d638aefad3
+Step 13/13 : LABEL com.docker.compose.image.builder=classic
+ ---> Using cache
+ ---> a32086cbf107
+Successfully built a32086cbf107
+Successfully tagged launchops-review-20260927-go-live-a:latest
+ Image launchops-review-20260927-go-live-a Built 
+ Image launchops-review-20260927-go-live-a Built 

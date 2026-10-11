@@ -1,0 +1,10 @@
+# Used only by scripts/review-compose.sh; all storage is project-scoped.
+services:
+  backend:
+    command: ["daphne", "-b", "0.0.0.0", "-p", "8000", "lms_project.asgi:application"]
+  go-live-a:
+    ports:
+      - "127.0.0.1:39091:8080"
+  go-live-b:
+    ports:
+      - "127.0.0.1:39092:8080"

@@ -1,0 +1,10 @@
+launchops-review-20260927-worker-1 8000/tcp
+launchops-review-20260927-beat-1 8000/tcp
+launchops-review-20260927-backend-1 0.0.0.0:38000->8000/tcp, [::]:38000->8000/tcp
+launchops-review-20260927-frontend-1 0.0.0.0:33000->3000/tcp, [::]:33000->3000/tcp
+launchops-review-20260927-go-live-b-1 127.0.0.1:39092->8080/tcp
+launchops-review-20260927-go-live-a-1 127.0.0.1:39091->8080/tcp
+launchops-review-20260927-live-gateway-1 80/tcp, 0.0.0.0:39090->8080/tcp, [::]:39090->8080/tcp
+launchops-review-20260927-postgres-1 5432/tcp
+launchops-review-20260927-redis-1 6379/tcp
+launchops-review-20260927-mongo-1 27017/tcp

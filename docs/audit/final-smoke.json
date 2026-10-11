@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-09-27T21:35:13.814Z",
+  "roles": [
+    {
+      "role": "hr",
+      "demoCompleted": 20,
+      "simulationLabel": true
+    },
+    {
+      "role": "it",
+      "demoCompleted": 20,
+      "simulationLabel": true
+    },
+    {
+      "role": "manager",
+      "demoCompleted": 20,
+      "simulationLabel": true
+    },
+    {
+      "role": "employee",
+      "demoCompleted": 20,
+      "simulationLabel": true
+    }
+  ],
+  "errors": [],
+  "result": "PASS"
+}

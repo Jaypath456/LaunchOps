@@ -1,0 +1,50 @@
+PASS ws://localhost:39091 rejects unauthenticated connection
+PASS ws://localhost:39091 rejects non-enrolled user
+PASS ws://localhost:39091 rejects foreign Origin
+PASS ws://localhost:39092 rejects unauthenticated connection
+PASS ws://localhost:39092 rejects non-enrolled user
+PASS ws://localhost:39092 rejects foreign Origin
+PASS REST result, service bootstrap and host lifecycle permission gates
+PASS student denied question.advance
+PASS student denied session.end
+PASS host receives private answer key
+PASS cross-worker reveal without student answer key
+PASS separate room receives no reveal
+PASS host cannot answer
+PASS malformed answer rejected ['b', 'b']
+PASS malformed answer rejected ['forged']
+PASS malformed answer rejected {'answer': 'b'}
+PASS malformed answer rejected None
+PASS cross-worker reconnect gets sanitized current question
+PASS concurrent duplicate has accepted answer
+PASS duplicate retry preserves first saved correctness
+PASS incorrect answer saved privately
+PASS reconnect across workers preserves question
+PASS multiple-choice correct and partial answers accepted
+ Container launchops-review-20260927-go-live-a-1 Stopping 
+ Container launchops-review-20260927-go-live-a-1 Stopped 
+PASS gateway reconnect after worker A stop preserves room
+PASS surviving worker grades short answers after failover
+PASS late answer rejected
+ Container launchops-review-20260927-postgres-1 Waiting 
+ Container launchops-review-20260927-redis-1 Waiting 
+ Container launchops-review-20260927-redis-1 Healthy 
+ Container launchops-review-20260927-postgres-1 Healthy 
+ Container launchops-review-20260927-mongo-1 Waiting 
+ Container launchops-review-20260927-redis-1 Waiting 
+ Container launchops-review-20260927-backend-1 Waiting 
+ Container launchops-review-20260927-redis-1 Healthy 
+ Container launchops-review-20260927-backend-1 Healthy 
+ Container launchops-review-20260927-mongo-1 Healthy 
+ Container launchops-review-20260927-go-live-a-1 Starting 
+ Container launchops-review-20260927-go-live-a-1 Started 
+PASS Mongo saved scores match 6 unique answers and point totals
+PASS student results contain only own score
+PASS reconnect after end restores ended status
+ Container launchops-review-20260927-redis-1 Stopping 
+ Container launchops-review-20260927-redis-1 Stopped 
+PASS Redis outage rejects new connections safely
+PASS Mongo results remain readable during Redis outage
+ Container launchops-review-20260927-redis-1 Starting 
+ Container launchops-review-20260927-redis-1 Started 
+Completed live acceptance checks.

@@ -1,0 +1,47 @@
+{
+  "scope": "Whole final ladder including authentication/setup and short verification tail. Docker CLI repeats unchanged values and lacks per-row timestamps; observation counts are not independent samples. CPU percent sums cores. Missing -- measurements skipped for peaks, retained in raw. Earlier collectors remained active until forcibly stopped; earlier traces include extended overnight sampling.",
+  "services": [
+    {
+      "service": "launchops-review-20260927-backend-1",
+      "observations": 2224,
+      "numeric_cpu_observations": 1918,
+      "peak_cpu_percent_including_setup": 1069.85,
+      "peak_memory_MiB": 192.4
+    },
+    {
+      "service": "launchops-review-20260927-go-live-a-1",
+      "observations": 2224,
+      "numeric_cpu_observations": 1918,
+      "peak_cpu_percent_including_setup": 37.62,
+      "peak_memory_MiB": 18.86
+    },
+    {
+      "service": "launchops-review-20260927-go-live-b-1",
+      "observations": 2224,
+      "numeric_cpu_observations": 1918,
+      "peak_cpu_percent_including_setup": 15.46,
+      "peak_memory_MiB": 21.27
+    },
+    {
+      "service": "launchops-review-20260927-redis-1",
+      "observations": 2224,
+      "numeric_cpu_observations": 1918,
+      "peak_cpu_percent_including_setup": 12.92,
+      "peak_memory_MiB": 8.602
+    },
+    {
+      "service": "launchops-review-20260927-mongo-1",
+      "observations": 2224,
+      "numeric_cpu_observations": 1918,
+      "peak_cpu_percent_including_setup": 112.24,
+      "peak_memory_MiB": 279.0
+    },
+    {
+      "service": "launchops-review-20260927-postgres-1",
+      "observations": 2224,
+      "numeric_cpu_observations": 1918,
+      "peak_cpu_percent_including_setup": 210.27,
+      "peak_memory_MiB": 221.0
+    }
+  ]
+}

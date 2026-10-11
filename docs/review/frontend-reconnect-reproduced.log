@@ -1,0 +1,87 @@
+
+> launchops-frontend@0.1.0 test
+> react-scripts test --watchAll=false --runInBand LiveQuizHost.test.js
+
+FAIL src/pages/instructor/LiveQuizHost.test.js (9.136 s)
+  ✕ restores ended state and saved scores when reconnect misses session.ended (1716 ms)
+
+  ● restores ended state and saved scores when reconnect misses session.ended
+
+    Unable to find an element with the text: Session ABC123 has ended.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"page-container"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"live-quiz-room-badge"[39m
+          [36m>[39m
+            [0mRoom [0m
+            [0mABC123[0m
+            [0m · Live[0m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"form-card"[39m
+          [36m>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-muted"[39m
+            [36m>[39m
+              [0mNo question revealed yet.[0m
+            [36m</p>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn-primary"[39m
+            [36m>[39m
+              [0mReveal First Question[0m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"form-card"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"leaderboard"[39m
+            [36m>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"leaderboard-title"[39m
+              [36m>[39m
+                [0mLeaderboard[0m
+              [36m</h3>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-muted"[39m
+              [36m>[39m
+                [0mNo scores yet.[0m
+              [36m</p>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"form-actions"[39m
+            [33mstyle[39m=[32m"margin-top: 20px;"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn-secondary btn-danger"[39m
+            [36m>[39m
+              [0mEnd Session[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+    [0m [90m 21 |[39m   [36mconst[39m handler [33m=[39m [33mReconnectingSocket[39m[33m.[39mmock[33m.[39mcalls[[35m0[39m][[35m1[39m][33m.[39monMessage[33m;[39m
+     [90m 22 |[39m   [36mawait[39m act([36masync[39m () [33m=>[39m handler({ data[33m:[39m [33mJSON[39m[33m.[39mstringify({ type[33m:[39m [32m'session.state'[39m[33m,[39m status[33m:[39m [32m'ended'[39m[33m,[39m question_index[33m:[39m [35m0[39m }) }))[33m;[39m
+    [31m[1m>[22m[39m[90m 23 |[39m   expect([36mawait[39m screen[33m.[39mfindByText([32m'Session ABC123 has ended.'[39m))[33m.[39mtoBeInTheDocument()[33m;[39m
+     [90m    |[39m                       [31m[1m^[22m[39m
+     [90m 24 |[39m   expect([36mawait[39m screen[33m.[39mfindByText([32m'learner: 2 points (1 answers)'[39m))[33m.[39mtoBeInTheDocument()[33m;[39m
+     [90m 25 |[39m })[33m;[39m
+     [90m 26 |[39m[0m
+
+      at waitForWrapper (node_modules/@testing-library/dom/dist/wait-for.js:163:27)
+      at findByText (node_modules/@testing-library/dom/dist/query-helpers.js:86:33)
+      at Object.<anonymous> (src/pages/instructor/LiveQuizHost.test.js:23:23)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 1 total
+Snapshots:   0 total
+Time:        13.303 s
+Ran all test suites matching /LiveQuizHost.test.js/i.

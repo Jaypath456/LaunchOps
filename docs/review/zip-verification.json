@@ -1,0 +1,32 @@
+{
+  "base_roundtrip_verified": true,
+  "expected_final_file_count": 323,
+  "required_files": [
+    "docker-compose.yml",
+    "docker-compose.review.yml",
+    "backend/manage.py",
+    "backend/quizzes/consumers.py",
+    "frontend/package.json",
+    "frontend/src/App.js",
+    "go-live/main.go",
+    "go-live/Dockerfile",
+    "go-live/go.mod",
+    "go-live/go.sum",
+    "go-live/nginx.conf",
+    "loadtests/compare_live.py",
+    "loadtests/ws_load_test.py",
+    "docs/REVIEW_UPDATED_ZIP.md",
+    "docs/review/live_comparison_verified.json",
+    "docs/review/live_comparison_verified.csv"
+  ],
+  "excluded_categories": [
+    "all .env* files including examples",
+    "installed dependencies",
+    "production builds",
+    "caches",
+    "database files/dumps/volumes/backups",
+    "other ZIP archives"
+  ],
+  "credential_scan": "No JWT-shaped bearer tokens, private keys, or recognized API tokens found in included text. Actual environment files/dumps excluded. Public local-demo placeholders remain in source.",
+  "final_certificate": "/home/jay/Documents/LaunchOps-reviewed-verification.json; final archive source comparison and SHA-256 also verified after adding this report."
+}

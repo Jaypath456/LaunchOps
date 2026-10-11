@@ -1,0 +1,67 @@
+.leaderboard {
+  margin-top: 16px;
+}
+
+.leaderboard-title {
+  margin: 0 0 14px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.leaderboard-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.leaderboard-points {
+  width: 64px;
+  flex-shrink: 0;
+  text-align: right;
+  font-weight: 700;
+  font-size: 15px;
+  color: #111827;
+}
+
+.leaderboard-bar-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.leaderboard-bar-fill {
+  height: 36px;
+  min-width: 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: width 0.4s ease, background 0.4s ease;
+}
+
+.leaderboard-name {
+  margin-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  font-size: 14px;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.leaderboard-emoji {
+  font-size: 18px;
+  line-height: 1;
+}

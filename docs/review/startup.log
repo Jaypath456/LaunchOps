@@ -1,0 +1,19 @@
+ Image launchops-review-20260927-frontend Building 
+ Image launchops-review-20260927-frontend Building 
+Sending build context to Docker daemon  211.6kB
+Step 1/9 : FROM node:20-alpine
+ ---> 11cedc39e663
+Step 2/9 : WORKDIR /app
+ ---> Using cache
+ ---> d9aab26ce03c
+Step 3/9 : ENV CHOKIDAR_USEPOLLING=true     WATCHPACK_POLLING=true     BROWSER=none
+ ---> Using cache
+ ---> 0d610fbd9f2a
+Step 4/9 : COPY package.json package-lock.json ./
+ ---> Using cache
+ ---> 4e79ad3512c5
+Step 5/9 : RUN npm ci
+ ---> Running in a2f6ff7cc127
+[91mnpm warn deprecated whatwg-encoding@1.0.5: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+[0m[91mnpm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+[0mThe command '/bin/sh -c npm ci' returned a non-zero code: 137

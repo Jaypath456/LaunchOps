@@ -1,0 +1,5 @@
+{
+  "config_unchanged": true,
+  "environment_file": "/dev/null",
+  "reason": "Deliverable excludes all .env* files, including example templates; Compose defaults and explicit review exports supply the same configuration."
+}

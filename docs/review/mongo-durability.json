@@ -1,0 +1,22 @@
+{
+  "check": "Mongo scores survive database container restart",
+  "passed": true,
+  "result": {
+    "room_code": "NAGCZF",
+    "status": "ended",
+    "scores": [
+      {
+        "user_id": 5,
+        "username": "loadtest_student_0000",
+        "score": 9,
+        "answered": 3
+      },
+      {
+        "user_id": 6,
+        "username": "loadtest_student_0001",
+        "score": 0,
+        "answered": 3
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "/home/jay/Documents/LaunchOps/LaunchOps/scripts/live_review.py", line 185, in <module>
+    asyncio.run(main())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/jay/Documents/LaunchOps/LaunchOps/scripts/live_review.py", line 70, in main
+    host = login('demo_instructor')
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jay/Documents/LaunchOps/LaunchOps/scripts/live_review.py", line 37, in login
+    return api('POST', '/auth/login/', data={'username': username, 'password': 'password123'})['access']
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jay/Documents/LaunchOps/LaunchOps/scripts/live_review.py", line 32, in api
+    assert res.status_code == status, (path, res.status_code, res.text[:400])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('/auth/login/', 401, '{"error":"Invalid username or password"}')

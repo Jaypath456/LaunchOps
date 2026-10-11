@@ -1,0 +1,10 @@
+{
+  "room_code": "GVA17R",
+  "engine": "django",
+  "requested_students": 100,
+  "connected": 0,
+  "saved_answers": 0,
+  "prior_status": "active",
+  "final_status": "ended",
+  "action": "Ended only the synthetic review session left active by the original abort; saved answer count remained zero."
+}

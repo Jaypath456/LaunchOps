@@ -1,0 +1,11 @@
+{
+  "original_onboarding_data_unchanged": true,
+  "normalized_sha256": [
+    "f8b9784dc886ea803b3a426de32719881cedcb2a521eba75145405904d4c4a80",
+    "f8b9784dc886ea803b3a426de32719881cedcb2a521eba75145405904d4c4a80"
+  ],
+  "read_only_snapshot_paths": [
+    "/tmp/launchops-review-original-workflows-before.sql",
+    "/tmp/launchops-review-original-workflows-after.sql"
+  ]
+}

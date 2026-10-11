@@ -1,0 +1,1023 @@
+{
+  "started": "2026-09-27T04:21:11.892Z",
+  "pages": [
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "profile",
+      "heading": "Verify employee profile.",
+      "status": "COMPLETED"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "equipment",
+      "heading": "Prepare equipment.",
+      "status": "WAITING FOR IT"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "access",
+      "heading": "Provision work access.",
+      "status": "WAITING FOR IT"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "mentor",
+      "heading": "Assign a mentor.",
+      "status": "WAITING FOR YOUR MANAGER"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "training",
+      "heading": "Complete security training.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "welcome",
+      "heading": "Attend team orientation.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "ready",
+      "heading": "Confirm onboarding readiness.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "contract",
+      "heading": "Confirm paperwork.",
+      "status": "READY FOR YOU"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "payroll",
+      "heading": "Confirm payroll setup.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "policy",
+      "heading": "Assign required policies.",
+      "status": "READY FOR YOU"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "mfa",
+      "heading": "Verify multi-factor authentication.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "endpoint",
+      "heading": "Verify device security.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "it_handoff",
+      "heading": "Complete IT handoff.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "goals",
+      "heading": "Set first-week goals.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "calendar",
+      "heading": "Schedule check-ins.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "manager_signoff",
+      "heading": "Manager check-in.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "contact",
+      "heading": "Confirm contact preferences.",
+      "status": "WAITING FOR THE EMPLOYEE"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "handbook",
+      "heading": "Review team handbook.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "receipt",
+      "heading": "Acknowledge equipment receipt.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 2,
+      "task": "feedback",
+      "heading": "Share first-week feedback.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "profile",
+      "heading": "Verify employee profile.",
+      "status": "READY FOR YOU"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "equipment",
+      "heading": "Prepare equipment.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "access",
+      "heading": "Provision work access.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "mentor",
+      "heading": "Assign a mentor.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "training",
+      "heading": "Complete security training.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "welcome",
+      "heading": "Attend team orientation.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "ready",
+      "heading": "Confirm onboarding readiness.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "contract",
+      "heading": "Confirm paperwork.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "payroll",
+      "heading": "Confirm payroll setup.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "policy",
+      "heading": "Assign required policies.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "mfa",
+      "heading": "Verify multi-factor authentication.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "endpoint",
+      "heading": "Verify device security.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "it_handoff",
+      "heading": "Complete IT handoff.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "goals",
+      "heading": "Set first-week goals.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "calendar",
+      "heading": "Schedule check-ins.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "manager_signoff",
+      "heading": "Manager check-in.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "contact",
+      "heading": "Confirm contact preferences.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "handbook",
+      "heading": "Review team handbook.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "receipt",
+      "heading": "Acknowledge equipment receipt.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "hr",
+      "workflow": 1,
+      "task": "feedback",
+      "heading": "Share first-week feedback.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "profile",
+      "heading": "Verify employee profile.",
+      "status": "COMPLETED"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "equipment",
+      "heading": "Prepare equipment.",
+      "status": "READY FOR YOU"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "access",
+      "heading": "Provision work access.",
+      "status": "READY FOR YOU"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "mentor",
+      "heading": "Assign a mentor.",
+      "status": "WAITING FOR YOUR MANAGER"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "training",
+      "heading": "Complete security training.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "welcome",
+      "heading": "Attend team orientation.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "ready",
+      "heading": "Confirm onboarding readiness.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "contract",
+      "heading": "Confirm paperwork.",
+      "status": "WAITING FOR HR"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "payroll",
+      "heading": "Confirm payroll setup.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "policy",
+      "heading": "Assign required policies.",
+      "status": "WAITING FOR HR"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "mfa",
+      "heading": "Verify multi-factor authentication.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "endpoint",
+      "heading": "Verify device security.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "it_handoff",
+      "heading": "Complete IT handoff.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "goals",
+      "heading": "Set first-week goals.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "calendar",
+      "heading": "Schedule check-ins.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "manager_signoff",
+      "heading": "Manager check-in.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "contact",
+      "heading": "Confirm contact preferences.",
+      "status": "WAITING FOR THE EMPLOYEE"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "handbook",
+      "heading": "Review team handbook.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "receipt",
+      "heading": "Acknowledge equipment receipt.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 2,
+      "task": "feedback",
+      "heading": "Share first-week feedback.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "profile",
+      "heading": "Verify employee profile.",
+      "status": "WAITING FOR HR"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "equipment",
+      "heading": "Prepare equipment.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "access",
+      "heading": "Provision work access.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "mentor",
+      "heading": "Assign a mentor.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "training",
+      "heading": "Complete security training.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "welcome",
+      "heading": "Attend team orientation.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "ready",
+      "heading": "Confirm onboarding readiness.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "contract",
+      "heading": "Confirm paperwork.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "payroll",
+      "heading": "Confirm payroll setup.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "policy",
+      "heading": "Assign required policies.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "mfa",
+      "heading": "Verify multi-factor authentication.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "endpoint",
+      "heading": "Verify device security.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "it_handoff",
+      "heading": "Complete IT handoff.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "goals",
+      "heading": "Set first-week goals.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "calendar",
+      "heading": "Schedule check-ins.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "manager_signoff",
+      "heading": "Manager check-in.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "contact",
+      "heading": "Confirm contact preferences.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "handbook",
+      "heading": "Review team handbook.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "receipt",
+      "heading": "Acknowledge equipment receipt.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "it",
+      "workflow": 1,
+      "task": "feedback",
+      "heading": "Share first-week feedback.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "profile",
+      "heading": "Verify employee profile.",
+      "status": "COMPLETED"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "equipment",
+      "heading": "Prepare equipment.",
+      "status": "WAITING FOR IT"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "access",
+      "heading": "Provision work access.",
+      "status": "WAITING FOR IT"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "mentor",
+      "heading": "Assign a mentor.",
+      "status": "READY FOR YOU"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "training",
+      "heading": "Complete security training.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "welcome",
+      "heading": "Attend team orientation.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "ready",
+      "heading": "Confirm onboarding readiness.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "contract",
+      "heading": "Confirm paperwork.",
+      "status": "WAITING FOR HR"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "payroll",
+      "heading": "Confirm payroll setup.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "policy",
+      "heading": "Assign required policies.",
+      "status": "WAITING FOR HR"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "mfa",
+      "heading": "Verify multi-factor authentication.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "endpoint",
+      "heading": "Verify device security.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "it_handoff",
+      "heading": "Complete IT handoff.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "goals",
+      "heading": "Set first-week goals.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "calendar",
+      "heading": "Schedule check-ins.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "manager_signoff",
+      "heading": "Manager check-in.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "contact",
+      "heading": "Confirm contact preferences.",
+      "status": "WAITING FOR THE EMPLOYEE"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "handbook",
+      "heading": "Review team handbook.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "receipt",
+      "heading": "Acknowledge equipment receipt.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 2,
+      "task": "feedback",
+      "heading": "Share first-week feedback.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "profile",
+      "heading": "Verify employee profile.",
+      "status": "WAITING FOR HR"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "equipment",
+      "heading": "Prepare equipment.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "access",
+      "heading": "Provision work access.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "mentor",
+      "heading": "Assign a mentor.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "training",
+      "heading": "Complete security training.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "welcome",
+      "heading": "Attend team orientation.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "ready",
+      "heading": "Confirm onboarding readiness.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "contract",
+      "heading": "Confirm paperwork.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "payroll",
+      "heading": "Confirm payroll setup.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "policy",
+      "heading": "Assign required policies.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "mfa",
+      "heading": "Verify multi-factor authentication.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "endpoint",
+      "heading": "Verify device security.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "it_handoff",
+      "heading": "Complete IT handoff.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "goals",
+      "heading": "Set first-week goals.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "calendar",
+      "heading": "Schedule check-ins.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "manager_signoff",
+      "heading": "Manager check-in.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "contact",
+      "heading": "Confirm contact preferences.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "handbook",
+      "heading": "Review team handbook.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "receipt",
+      "heading": "Acknowledge equipment receipt.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "manager",
+      "workflow": 1,
+      "task": "feedback",
+      "heading": "Share first-week feedback.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "profile",
+      "heading": "Verify employee profile.",
+      "status": "WAITING FOR HR"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "equipment",
+      "heading": "Prepare equipment.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "access",
+      "heading": "Provision work access.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "mentor",
+      "heading": "Assign a mentor.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "training",
+      "heading": "Complete security training.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "welcome",
+      "heading": "Attend team orientation.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "ready",
+      "heading": "Confirm onboarding readiness.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "contract",
+      "heading": "Confirm paperwork.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "payroll",
+      "heading": "Confirm payroll setup.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "policy",
+      "heading": "Assign required policies.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "mfa",
+      "heading": "Verify multi-factor authentication.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "endpoint",
+      "heading": "Verify device security.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "it_handoff",
+      "heading": "Complete IT handoff.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "goals",
+      "heading": "Set first-week goals.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "calendar",
+      "heading": "Schedule check-ins.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "manager_signoff",
+      "heading": "Manager check-in.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "contact",
+      "heading": "Confirm contact preferences.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "handbook",
+      "heading": "Review team handbook.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "receipt",
+      "heading": "Acknowledge equipment receipt.",
+      "status": "PREREQUISITES NEEDED"
+    },
+    {
+      "role": "employee",
+      "workflow": 1,
+      "task": "feedback",
+      "heading": "Share first-week feedback.",
+      "status": "PREREQUISITES NEEDED"
+    }
+  ],
+  "actions": [],
+  "attacks": [],
+  "errors": [],
+  "timings": [
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/",
+      "ms": 114,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/",
+      "ms": 68,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/",
+      "ms": 65,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/",
+      "ms": 57,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/",
+      "ms": 64,
+      "status": 200
+    }
+  ],
+  "result": "FAIL",
+  "failure": "locator.selectOption: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('New hire', { exact: true })\u001b[22m\n\n    at /home/jay/Documents/LaunchOps/scripts/walkthrough.cjs:49:59",
+  "finished": "2026-09-27T04:23:22.526Z"
+}
