@@ -31,6 +31,7 @@ services:
 
   mongo:
     image: mongo:7
+    profiles: ["live"]
     restart: unless-stopped
     volumes:
       - mongo_data:/data/db
@@ -42,6 +43,7 @@ services:
 
   go-live-a: &go_live
     build: ./go-live
+    profiles: ["live"]
     restart: unless-stopped
     depends_on:
       mongo:
@@ -63,6 +65,7 @@ services:
 
   live-gateway:
     image: nginx:1.27-alpine
+    profiles: ["live"]
     restart: unless-stopped
     depends_on:
       - go-live-a
@@ -98,7 +101,7 @@ services:
       LOAD_TEST_DISABLE_REDIS_OPTIMIZATIONS: ${LOAD_TEST_DISABLE_REDIS_OPTIMIZATIONS:-False}
       LIVE_SERVICE_SECRET: ${LIVE_SERVICE_SECRET:-replace-this-local-demo-service-secret-before-deployment}
       MONGO_URI: mongodb://mongo:27017
-      LIVE_QUIZ_ENGINE: ${LIVE_QUIZ_ENGINE:-go}
+      LIVE_QUIZ_ENGINE: ${LIVE_QUIZ_ENGINE:-django}
     ports:
       - "${BACKEND_PORT:-18000}:8000"
     volumes:
