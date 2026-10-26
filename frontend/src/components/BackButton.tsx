@@ -4,7 +4,7 @@ export default function BackButton() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleBack = () => {
+  const handleBack = (): void => {
     if (location.pathname.includes('/create') || location.pathname.includes('/edit')) {
       if (window.confirm("You have unsaved changes. Leave anyway?")) {
         sessionStorage.removeItem('chapter_draft');

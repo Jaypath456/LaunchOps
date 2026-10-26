@@ -3,17 +3,17 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
-export default function Navbar() {
+export default function Navbar(): React.JSX.Element | null {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     logout();
     navigate('/login');
   };
 
-  const isActive = (path) => location.pathname.startsWith(path);
+  const isActive = (path: string): boolean => location.pathname.startsWith(path);
 
   if (!user) return null;
 

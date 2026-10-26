@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { errorResponse, errorField } from '../../types/api';
 import './auth.css';
 
-export default function Login() {
-  const [form, setForm] = useState({ username: '', password: '' });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+interface LoginForm {
+  username: string;
+  password: string;
+}
+
+export default function Login(): React.JSX.Element {
+  const [form, setForm] = useState<LoginForm>({ username: '', password: '' });
+  const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value.trim() });
   };
-const handleSubmit = async (e) => {
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -31,7 +37,7 @@ const handleSubmit = async (e) => {
       
     } catch (err) {
       setLoading(false);
-      setError(err.response?.data?.error || 'Login failed');
+      setError(errorField(errorResponse(err)?.data, 'error') || 'Login failed');
       
       setForm((prev) => ({
         ...prev,

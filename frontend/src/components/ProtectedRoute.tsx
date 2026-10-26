@@ -1,10 +1,16 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import type { UserRole } from '../types/auth';
+
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  role?: UserRole | UserRole[];
+}
 
 // Redirects to login if not authenticated
 // Optionally checks role (role='instructor' or 'student')
-export default function ProtectedRoute({ children, role }) {
+export default function ProtectedRoute({ children, role }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
 
   if (loading) {
