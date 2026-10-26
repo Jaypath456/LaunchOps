@@ -155,9 +155,7 @@ CACHES = {
 }
 
 # ─── Celery ─────────────────────────────────────────────────────
-# No real jobs yet beyond a heartbeat (see lms_project/tasks.py) - this
-# is the scaffolding a later milestone (course chat's tenure-reset purge
-# job) will build on.
+# Beat runs the onboarding overdue scan. The legacy chat purge is opt-in (CHAT_PURGE_ENABLED).
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_ACCEPT_CONTENT = ['json']
@@ -170,15 +168,15 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'onboarding.tasks.scan_overdue',
         'schedule': crontab(minute='*/15'),
     },
-    'heartbeat-every-minute': {
-        'task': 'lms_project.tasks.heartbeat',
-        'schedule': 60.0,
-    },
-    'purge-ended-term-chats-daily': {
+}
+
+# Legacy learning chat: hard-deletes messages of courses whose term has ended.
+# Off by default so a normal start never deletes data; set CHAT_PURGE_ENABLED=true to schedule it.
+if _get_bool_env('CHAT_PURGE_ENABLED'):
+    CELERY_BEAT_SCHEDULE['purge-ended-term-chats-daily'] = {
         'task': 'messaging.tasks.purge_ended_term_chats',
         'schedule': crontab(hour=3, minute=0),
-    },
-}
+    }
 
 # ─── Channels (WebSockets) ──────────────────────────────────────
 # Same Redis instance as the cache/Celery broker - separate logical use,
