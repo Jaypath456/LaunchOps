@@ -85,7 +85,7 @@ Migrations preserve completed steps, evidence and activity. Seven-step workflows
 
 ## Origins
 
-LaunchOps grew out of a learning-management system I built earlier as a separate project (courses, chapters, quizzes, scheduling, course chat and live quizzes). The onboarding workflow engine is the later work in this repository: the 20-task blueprint, the role and prerequisite rules, the evidence forms and checks, transactional completion with row locks, the overdue scan, the onboarding pages, and the tests, CI and frontend tooling described above. The learning modules remain for the training step and are not part of the onboarding walkthrough. This repository's history starts from a snapshot of the combined code, so it does not show that split.
+LaunchOps started as a learning-management system I built (courses, chapters, quizzes, scheduling, course chat and live quizzes) and that I converted into this onboarding platform. The onboarding workflow engine is the later work in this repository: the 20-task blueprint, the role and prerequisite rules, the evidence forms and checks, transactional completion with row locks, the overdue scan, the onboarding pages, and the tests, CI and frontend tooling described above. The learning modules remain for the training step and are not part of the onboarding walkthrough. This repository's history starts from a snapshot of the combined code, so it does not show that split.
 
 ## Limits
 
