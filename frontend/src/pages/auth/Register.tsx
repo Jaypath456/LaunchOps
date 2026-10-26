@@ -1,25 +1,27 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { errorResponse } from '../../types/api';
+import type { RegisterRequest } from '../../types/auth';
 import './auth.css';
 
-export default function Register() {
-  const [form, setForm] = useState({
+export default function Register(): React.JSX.Element {
+  const [form, setForm] = useState<RegisterRequest>({
     username: '',
     email: '',
     password: '',
     bio: '',
   });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value.trim() });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -27,8 +29,8 @@ export default function Register() {
       await register(form);
       navigate('/workspace');
     } catch (err) {
-      const errors = err.response?.data;
-      if (typeof errors === 'object') {
+      const errors = errorResponse(err)?.data;
+      if (typeof errors === 'object' && errors !== null) {
         const msg = Object.values(errors).flat().join(', ');
         setError(msg);
       } else {

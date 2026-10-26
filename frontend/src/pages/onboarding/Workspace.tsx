@@ -2,40 +2,45 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
+import type { User } from '../../types/auth';
+import type { Directory, Workflow, WorkflowForm } from '../../types/onboarding';
+import { errorResponse, errorField } from '../../types/api';
 import './workspace.css';
 import { isMine, stateLabel, formatDate } from './taskState';
 
-const LABELS = { hr: 'People operations', it: 'IT operations', manager: 'Team manager', employee: 'New hire' };
+const LABELS: Partial<Record<User['role'], string>> = { hr: 'People operations', it: 'IT operations', manager: 'Team manager', employee: 'New hire' };
 const fmt = formatDate;
 
-export default function Workspace() {
-  const { user } = useAuth();
-  const [workflows, setWorkflows] = useState([]);
-  const [directory, setDirectory] = useState({ users: [], tracks: [] });
-  const [selectedId, setSelectedId] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState(null);
-  const [error, setError] = useState('');
-  const [notice, setNotice] = useState('');
-  const [showForm, setShowForm] = useState(false);
-  const [editingDate, setEditingDate] = useState(false);
-  const [revisedDate, setRevisedDate] = useState('');
-  const [form, setForm] = useState({ employee_id: '', manager_id: '', training_course_id: '', job_title: '', department: '', start_date: '' });
+export default function Workspace(): React.JSX.Element {
+  const auth = useAuth();
+  // ProtectedRoute renders this page only for an authenticated user.
+  const user = auth.user!;
+  const [workflows, setWorkflows] = useState<Workflow[]>([]);
+  const [directory, setDirectory] = useState<Directory>({ users: [], tracks: [] });
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [busy, setBusy] = useState<'date' | 'track' | 'launch' | null>(null);
+  const [error, setError] = useState<string>('');
+  const [notice, setNotice] = useState<string>('');
+  const [showForm, setShowForm] = useState<boolean>(false);
+  const [editingDate, setEditingDate] = useState<boolean>(false);
+  const [revisedDate, setRevisedDate] = useState<string>('');
+  const [form, setForm] = useState<WorkflowForm>({ employee_id: '', manager_id: '', training_course_id: '', job_title: '', department: '', start_date: '' });
 
   const refresh = useCallback(async () => {
     try {
-      const result = await api.get('/onboarding/workflows/');
+      const result = await api.get<Workflow[]>('/onboarding/workflows/');
       setWorkflows(result.data);
       setSelectedId(current => result.data.some(w => w.id === current) ? current : result.data[0]?.id || null);
       setError('');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Could not load workflows. Check the backend connection.');
+      setError(errorField(errorResponse(err)?.data, 'detail') || 'Could not load workflows. Check the backend connection.');
     } finally { setLoading(false); }
   }, []);
 
   useEffect(() => {
     refresh();
-    if (user.role === 'hr') api.get('/onboarding/directory/').then(res => setDirectory(res.data)).catch(() => {});
+    if (user.role === 'hr') api.get<Directory>('/onboarding/directory/').then(res => setDirectory(res.data)).catch(() => {});
     const interval = window.setInterval(refresh, 15000);
     window.addEventListener('focus', refresh);
     return () => { window.clearInterval(interval); window.removeEventListener('focus', refresh); };
@@ -47,34 +52,36 @@ export default function Workspace() {
   const overdue = allSteps.filter(s => s.state === 'ready' && new Date(s.due_at) < new Date());
   const done = allSteps.filter(s => s.state === 'completed').length;
 
-  async function saveDate(event) {
+  async function saveDate(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy('date'); setError(''); setNotice('');
     try {
-      await api.patch(`/onboarding/workflows/${selected.id}/`, { start_date: revisedDate });
+      // These handlers are only exposed in the selected workflow panel.
+      await api.patch<Workflow>(`/onboarding/workflows/${selected!.id}/`, { start_date: revisedDate });
       await refresh(); setEditingDate(false); setNotice('Start date and task due dates updated.');
     } catch (err) {
-      setError(Object.values(err.response?.data || {}).flat().join(' ') || 'Could not change the date.');
+      setError(Object.values(errorResponse(err)?.data || {}).flat().join(' ') || 'Could not change the date.');
     } finally { setBusy(null); }
   }
 
-  async function changeTrack(value) {
+  async function changeTrack(value: string) {
     if (!value) return;
     setBusy('track'); setError('');
-    try { await api.patch(`/onboarding/workflows/${selected.id}/`, { training_course_id: Number(value) }); await refresh(); setNotice('Learning track assigned.'); }
-    catch (err) { setError(Object.values(err.response?.data || {}).flat().join(' ') || 'Could not assign track.'); }
+    // This handler is only exposed in the selected workflow panel.
+    try { await api.patch<Workflow>(`/onboarding/workflows/${selected!.id}/`, { training_course_id: Number(value) }); await refresh(); setNotice('Learning track assigned.'); }
+    catch (err) { setError(Object.values(errorResponse(err)?.data || {}).flat().join(' ') || 'Could not assign track.'); }
     finally { setBusy(null); }
   }
 
-  async function launch(event) {
+  async function launch(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy('launch'); setError(''); setNotice('');
     try {
       const payload = { ...form, training_course_id: form.training_course_id || null };
-      const result = await api.post('/onboarding/workflows/', payload);
+      const result = await api.post<Workflow>('/onboarding/workflows/', payload);
       await refresh(); setSelectedId(result.data.id); setShowForm(false);
       setNotice(`Onboarding started for ${result.data.employee}.`);
     } catch (err) {
-      const detail = err.response?.data;
-      setError(typeof detail === 'object' ? Object.values(detail).flat().join(' ') : 'Could not launch onboarding.');
+      const detail = errorResponse(err)?.data;
+      setError(typeof detail === 'object' && detail !== null ? Object.values(detail).flat().join(' ') : 'Could not launch onboarding.');
     } finally { setBusy(null); }
   }
 
@@ -95,8 +102,8 @@ export default function Workspace() {
       <div className="form-grid">
         <label>New hire<select aria-label="New hire" required value={form.employee_id} onChange={e => setForm({ ...form, employee_id: e.target.value })}><option value="">Select an employee</option>{directory.users.filter(u => u.role === 'employee').map(u => <option key={u.id} value={u.id}>{u.username}</option>)}</select></label>
         <label>Manager<select aria-label="Manager" required value={form.manager_id} onChange={e => setForm({ ...form, manager_id: e.target.value })}><option value="">Select a manager</option>{directory.users.filter(u => u.role === 'manager').map(u => <option key={u.id} value={u.id}>{u.username}</option>)}</select></label>
-        <label>Job title<input required maxLength="160" value={form.job_title} onChange={e => setForm({ ...form, job_title: e.target.value })} placeholder="Software Engineer" /></label>
-        <label>Department<input required maxLength="100" value={form.department} onChange={e => setForm({ ...form, department: e.target.value })} placeholder="Engineering" /></label>
+        <label>Job title<input required maxLength={160} value={form.job_title} onChange={e => setForm({ ...form, job_title: e.target.value })} placeholder="Software Engineer" /></label>
+        <label>Department<input required maxLength={100} value={form.department} onChange={e => setForm({ ...form, department: e.target.value })} placeholder="Engineering" /></label>
         <label>Start date<input required type="date" value={form.start_date} onChange={e => setForm({ ...form, start_date: e.target.value })} /></label>
         <label>Learning track<select aria-label="Learning track" required value={form.training_course_id} onChange={e => setForm({ ...form, training_course_id: e.target.value })}><option value="">Select a published track</option>{directory.tracks.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}</select></label>
       </div><button className="ops-primary" disabled={busy === 'launch'}>{busy === 'launch' ? 'Launching…' : 'Launch workflow →'}</button>
