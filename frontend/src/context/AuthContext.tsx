@@ -1,7 +1,20 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api/axios';
+import type { AuthResponse, RegisterRequest, User } from '../types/auth';
 
-const AuthContext = createContext(null);
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+interface AuthContextValue {
+  user: User | null;
+  loading: boolean;
+  login: (username: string, password: string) => Promise<User>;
+  register: (data: RegisterRequest) => Promise<User>;
+  logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextValue | null>(null);
 const AUTH_STORAGE_KEYS = ['access_token', 'refresh_token', 'user'];
 
 const clearStoredAuth = () => {
@@ -10,9 +23,9 @@ const clearStoredAuth = () => {
   });
 };
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -22,7 +35,7 @@ export function AuthProvider({ children }) {
       }
 
       try {
-        const res = await api.get('/auth/me/');
+        const res = await api.get<User>('/auth/me/');
         sessionStorage.setItem('user', JSON.stringify(res.data));
         setUser(res.data);
       } catch (err) {
@@ -36,8 +49,8 @@ export function AuthProvider({ children }) {
     loadUser();
   }, []);
 
-  const login = async (username, password) => {
-    const res = await api.post('/auth/login/', { username, password });
+  const login = async (username: string, password: string): Promise<User> => {
+    const res = await api.post<AuthResponse>('/auth/login/', { username, password });
     sessionStorage.setItem('access_token', res.data.access);
     sessionStorage.setItem('refresh_token', res.data.refresh);
     sessionStorage.setItem('user', JSON.stringify(res.data.user));
@@ -45,8 +58,8 @@ export function AuthProvider({ children }) {
     return res.data.user;
   };
 
-  const register = async (data) => {
-    const res = await api.post('/auth/register/', data);
+  const register = async (data: RegisterRequest): Promise<User> => {
+    const res = await api.post<AuthResponse>('/auth/register/', data);
     sessionStorage.setItem('access_token', res.data.access);
     sessionStorage.setItem('refresh_token', res.data.refresh);
     sessionStorage.setItem('user', JSON.stringify(res.data.user));
@@ -66,6 +79,7 @@ export function AuthProvider({ children }) {
   );
 }
 
-export function useAuth() {
-  return useContext(AuthContext);
+export function useAuth(): AuthContextValue {
+  // All consumers are rendered inside AuthProvider in App.
+  return useContext(AuthContext)!;
 }

@@ -3,24 +3,33 @@
 // this rather than constructing its own WebSocket, so auth, base-URL
 // derivation, and reconnect behavior stay in one place.
 
-function getWsBaseUrl() {
-  if (import.meta.env.REACT_APP_WS_URL) return import.meta.env.REACT_APP_WS_URL;
+function getWsBaseUrl(): string {
+  if (import.meta.env.REACT_APP_WS_URL) return import.meta.env.REACT_APP_WS_URL as string;
 
   // Derive from REACT_APP_API_URL (http(s)://host:port/api) the same
   // way axios.js falls back to a default when unset.
-  const apiUrl = import.meta.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api';
+  const apiUrl = (import.meta.env.REACT_APP_API_URL as string | undefined) || 'http://127.0.0.1:8000/api';
   return apiUrl.replace(/^http/, 'ws').replace(/\/api\/?$/, '');
 }
 
-function getRoomWsBaseUrl(path, engine) {
+function getRoomWsBaseUrl(path: string, engine: string | undefined): string {
   if (path.startsWith('/ws/live/') && engine === 'go' && import.meta.env.REACT_APP_LIVE_WS_URL) {
-    return import.meta.env.REACT_APP_LIVE_WS_URL;
+    return import.meta.env.REACT_APP_LIVE_WS_URL as string;
   }
   return getWsBaseUrl();
 }
 
 const MAX_RECONNECT_DELAY_MS = 30000;
 const BASE_RECONNECT_DELAY_MS = 1000;
+
+interface ReconnectingSocketOptions {
+  onOpen?: (event: Event) => void;
+  onMessage?: (event: MessageEvent<unknown>) => void;
+  onClose?: (event: CloseEvent) => void;
+  onError?: (event: Event) => void;
+  engine?: string;
+  maxRetries?: number;
+}
 
 /**
  * A WebSocket wrapper that:
@@ -41,7 +50,19 @@ const BASE_RECONNECT_DELAY_MS = 1000;
  *   socket.close(); // stops reconnect attempts too
  */
 export class ReconnectingSocket {
-  constructor(path, { onOpen, onMessage, onClose, onError, engine, maxRetries = Infinity } = {}) {
+  path: string;
+  engine: string | undefined;
+  onOpen: ReconnectingSocketOptions['onOpen'];
+  onMessage: ReconnectingSocketOptions['onMessage'];
+  onClose: ReconnectingSocketOptions['onClose'];
+  onError: ReconnectingSocketOptions['onError'];
+  maxRetries: number;
+  retryCount: number;
+  manuallyClosed: boolean;
+  socket: WebSocket | null;
+  reconnectTimer: ReturnType<typeof setTimeout> | null;
+
+  constructor(path: string, { onOpen, onMessage, onClose, onError, engine, maxRetries = Infinity }: ReconnectingSocketOptions = {}) {
     this.path = path;
     this.engine = engine;
     this.onOpen = onOpen;
@@ -58,7 +79,7 @@ export class ReconnectingSocket {
     this._connect();
   }
 
-  _connect() {
+  _connect(): void {
     const token = sessionStorage.getItem('access_token');
     const url = `${getRoomWsBaseUrl(this.path, this.engine)}${this.path}`;
     const protocols = token ? [token] : [];
@@ -94,13 +115,13 @@ export class ReconnectingSocket {
     };
   }
 
-  send(data) {
+  send(data: unknown): void {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.socket.send(typeof data === 'string' ? data : JSON.stringify(data));
     }
   }
 
-  close() {
+  close(): void {
     this.manuallyClosed = true;
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
     if (this.socket) this.socket.close();
