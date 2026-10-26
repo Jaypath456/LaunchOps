@@ -48,7 +48,7 @@ docker compose exec backend python manage.py makemigrations --check --dry-run
 cd frontend && npm ci && npm run typecheck && npm test && npm run build
 ```
 
-Measured in October 2026 on a MacBook Air with Docker Desktop: the backend suite ran **266 tests, all passing, none skipped, on PostgreSQL 16** in 107 to 207 seconds depending on machine load, and the frontend ran 4 Vitest tests. Most of the backend tests cover the legacy learning modules. The onboarding-specific tests include:
+Measured in October 2026 on a MacBook Air with Docker Desktop: the backend suite ran **266 tests, all passing, none skipped, on PostgreSQL 16** in 106 to 207 seconds depending on machine load, and the frontend ran 4 Vitest tests. Most of the backend tests cover the legacy learning modules. The onboarding-specific tests include:
 
 - **Workflow tests** (`onboarding/tests.py`): all 20 tasks end to end with owner boundaries, invalid and forged evidence, the dependency gate, final signoff rules, idempotent overdue scan and a query budget.
 - **Matrix tests** (`onboarding/test_matrix.py`, table-driven with `subTest`): blueprint integrity (20 steps, 5 per role, unique keys, existing dependencies, acyclic graph), every step against every non-owner role, every step's prerequisites, and missing, unknown and empty evidence fields for every step.
