@@ -80,6 +80,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 }
 
 export function useAuth(): AuthContextValue {
-  // All consumers are rendered inside AuthProvider in App.
-  return useContext(AuthContext)!;
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }
