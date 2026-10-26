@@ -4,17 +4,17 @@
 // derivation, and reconnect behavior stay in one place.
 
 function getWsBaseUrl() {
-  if (process.env.REACT_APP_WS_URL) return process.env.REACT_APP_WS_URL;
+  if (import.meta.env.REACT_APP_WS_URL) return import.meta.env.REACT_APP_WS_URL;
 
   // Derive from REACT_APP_API_URL (http(s)://host:port/api) the same
   // way axios.js falls back to a default when unset.
-  const apiUrl = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api';
+  const apiUrl = import.meta.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api';
   return apiUrl.replace(/^http/, 'ws').replace(/\/api\/?$/, '');
 }
 
 function getRoomWsBaseUrl(path, engine) {
-  if (path.startsWith('/ws/live/') && engine === 'go' && process.env.REACT_APP_LIVE_WS_URL) {
-    return process.env.REACT_APP_LIVE_WS_URL;
+  if (path.startsWith('/ws/live/') && engine === 'go' && import.meta.env.REACT_APP_LIVE_WS_URL) {
+    return import.meta.env.REACT_APP_LIVE_WS_URL;
   }
   return getWsBaseUrl();
 }

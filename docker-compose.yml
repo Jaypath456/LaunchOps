@@ -124,9 +124,6 @@ services:
       REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:18000/api}
       REACT_APP_WS_URL: ${REACT_APP_WS_URL:-}
       REACT_APP_LIVE_WS_URL: ${REACT_APP_LIVE_WS_URL:-ws://localhost:19090}
-      # Bind the CRA development server beyond localhost so trusted LAN
-      # devices can reach it through the published Docker port.
-      HOST: ${FRONTEND_HOST:-0.0.0.0}
     ports:
       - "${FRONTEND_PORT:-13000}:3000"
     volumes:
