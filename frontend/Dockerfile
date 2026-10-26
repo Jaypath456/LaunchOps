@@ -1,14 +1,8 @@
-FROM node:20-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
-# Run the CRA dev server with hot reload for local development/testing.
-# There is no production build/serving story yet (see README technical
-# debt notes), so this intentionally mirrors `npm start`, not a static
-# nginx build.
-ENV CHOKIDAR_USEPOLLING=true \
-    WATCHPACK_POLLING=true \
-    BROWSER=none
+# Run the Vite dev server with hot reload for local development (polling is set in vite.config.ts).
 
 COPY package.json package-lock.json ./
 RUN npm ci
