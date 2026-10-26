@@ -1,6 +1,6 @@
 # LaunchOps
 
-A local onboarding demo built with Django REST Framework, PostgreSQL, Redis/Celery and a React frontend (Vite, with TypeScript for the API layer and onboarding pages). HR launches a 20-task workflow shared by HR, IT, a manager and an employee. Every task has an owner, prerequisites, a detail page, stored evidence and a completion event. I built this project with help from AI tools, including Claude Code and Codex.
+A local onboarding demo built with Django REST Framework, PostgreSQL, Redis/Celery and a React frontend (Vite, with TypeScript for the API layer and onboarding pages). HR launches a 20-task workflow shared by HR, IT, a manager and an employee. Every task has an owner, prerequisites, a detail page, stored evidence and a completion event. I built this project with help from AI tools, including GitHub Copilot, Cursor, Claude Code and Codex.
 
 **This app does not provision or verify real accounts, identities, payroll, devices, signatures or deliveries.** Those actions are explicitly labeled simulations. The server generates demo references and links the simulated device across IT and employee tasks. Planning, feedback and acknowledgments are local records; external attendance and discussions are self-reported. Do not enter passwords, recovery codes, identity numbers or financial details into task forms.
 
@@ -32,7 +32,7 @@ All demo accounts use the local-only password **LaunchOpsDemo2026!**:
 - **Duplicate requests.** A repeated completion request returns the original result. It keeps the original evidence and adds no second completion event.
 - **Final signoff.** It requires all other 19 tasks, a realistic start date and no unresolved blockers, and it displays the saved evidence for review.
 - **Training.** The employee's Learning page has five lessons with acknowledgment buttons and five three-question assessments graded on the server. A pass needs all three answers correct. Acknowledgments record a declaration, not proof of reading. A failed assessment can be retried; the failed attempt is archived.
-- **Overdue scan.** A Celery scan records at most one overdue event per ready task and sends no notifications.
+- **Overdue scan.** A Celery scan records at most one overdue event per ready task and sends no notifications. The legacy chat purge, which hard-deletes chat messages of courses whose term has ended, is off by default; `CHAT_PURGE_ENABLED=true` schedules it.
 - **Refresh and limits.** The dashboard refreshes every 15 seconds and on window focus. There is one workflow per employee, and lists show at most 100 workflows.
 
 ## Concurrency design
@@ -48,7 +48,7 @@ docker compose exec backend python manage.py makemigrations --check --dry-run
 cd frontend && npm ci && npm run typecheck && npm test && npm run build
 ```
 
-Measured on 2026-10-25 on a MacBook Air with Docker Desktop: the backend suite ran **267 tests, all passing, none skipped, on PostgreSQL 16** in about 113 seconds, and the frontend ran 4 Vitest tests. Most of the backend tests cover the legacy learning modules. The onboarding-specific tests include:
+Measured in October 2026 on a MacBook Air with Docker Desktop: the backend suite ran **266 tests, all passing, none skipped, on PostgreSQL 16** in 107 to 207 seconds depending on machine load, and the frontend ran 4 Vitest tests. Most of the backend tests cover the legacy learning modules. The onboarding-specific tests include:
 
 - **Workflow tests** (`onboarding/tests.py`): all 20 tasks end to end with owner boundaries, invalid and forged evidence, the dependency gate, final signoff rules, idempotent overdue scan and a query budget.
 - **Matrix tests** (`onboarding/test_matrix.py`, table-driven with `subTest`): blueprint integrity (20 steps, 5 per role, unique keys, existing dependencies, acyclic graph), every step against every non-owner role, every step's prerequisites, and missing, unknown and empty evidence fields for every step.
@@ -82,6 +82,10 @@ By default `LIVE_QUIZ_ENGINE` is `django` and live rooms use Django channels ove
 ## Existing data and dates
 
 Migrations preserve completed steps, evidence and activity. Seven-step workflows expand to 20 steps, and a historical final signoff stays signed off even if later-added tasks remain unfinished. Historical evidence is labeled unverified rather than upgraded into new simulation proof. Out-of-range start dates (for example the year 1111) are flagged for HR; use **Correct start date** with the intended date, which updates due dates and records the old and new values. New or corrected dates must fall within the past year or next three years. `seed_launchops` adds missing demo users, lessons and assessments without resetting passwords, publication settings or workflows; run it after updating.
+
+## Origins
+
+LaunchOps grew out of a learning-management system I built earlier as a separate project (courses, chapters, quizzes, scheduling, course chat and live quizzes). The onboarding workflow engine is the later work in this repository: the 20-task blueprint, the role and prerequisite rules, the evidence forms and checks, transactional completion with row locks, the overdue scan, the onboarding pages, and the tests, CI and frontend tooling described above. The learning modules remain for the training step and are not part of the onboarding walkthrough. This repository's history starts from a snapshot of the combined code, so it does not show that split.
 
 ## Limits
 
