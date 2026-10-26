@@ -37,7 +37,7 @@ import './App.css';
 import Workspace from './pages/onboarding/Workspace';
 import TaskDetail from './pages/onboarding/TaskDetail';
 
-function AppRoutes() {
+function AppRoutes(): React.JSX.Element {
   const { user } = useAuth();
 
   return (
@@ -148,7 +148,7 @@ function AppRoutes() {
   );
 }
 
-export default function App() {
+export default function App(): React.JSX.Element {
   return (
     <BrowserRouter>
       <AuthProvider>
