@@ -29,3 +29,7 @@
 .task-page details { padding: 12px 0; border-bottom: 1px solid #dce4df; }
 .task-page summary { cursor: pointer; }
 .ready-list { display: flex; flex-wrap: wrap; gap: 12px; padding: 20px; margin-bottom: 24px; }
+.workflow-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 16px; margin: 16px 0; font-size: 14px; }
+.workflow-pagination button { border: 1px solid #bccfc4; border-radius: 7px; background: white; color: #153d43; padding: 8px 14px; cursor: pointer; }
+.workflow-pagination button:disabled { opacity: .45; cursor: default; }
+.page-context { margin-top: 24px; }

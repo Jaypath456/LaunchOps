@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import type { User } from '../../types/auth';
-import type { Directory, Workflow, WorkflowForm } from '../../types/onboarding';
+import type { Directory, Workflow, WorkflowForm, WorkflowPage } from '../../types/onboarding';
 import { errorResponse, errorField } from '../../types/api';
 import './workspace.css';
 import { isMine, stateLabel, formatDate } from './taskState';
@@ -16,6 +16,11 @@ export default function Workspace(): React.JSX.Element {
   // ProtectedRoute renders this page only for an authenticated user.
   const user = auth.user!;
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
+  const [params, setParams] = useSearchParams();
+  const requestedPage = Number(params.get('page') || 1);
+  const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+  const [pagination, setPagination] = useState({ count: 0, total_pages: 1 });
+  const requestId = useRef(0);
   const [directory, setDirectory] = useState<Directory>({ users: [], tracks: [] });
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -28,22 +33,28 @@ export default function Workspace(): React.JSX.Element {
   const [form, setForm] = useState<WorkflowForm>({ employee_id: '', manager_id: '', training_course_id: '', job_title: '', department: '', start_date: '' });
 
   const refresh = useCallback(async () => {
+    const id = ++requestId.current;
     try {
-      const result = await api.get<Workflow[]>('/onboarding/workflows/');
-      setWorkflows(result.data);
-      setSelectedId(current => result.data.some(w => w.id === current) ? current : result.data[0]?.id || null);
+      const result = await api.get<WorkflowPage>(`/onboarding/workflows/?page=${page}`);
+      if (id !== requestId.current) return;
+      setWorkflows(result.data.results);
+      setPagination(result.data);
+      setSelectedId(current => result.data.results.some(w => w.id === current) ? current : result.data.results[0]?.id || null);
       setError('');
     } catch (err) {
+      if (id !== requestId.current) return;
+      setWorkflows([]);
       setError(errorField(errorResponse(err)?.data, 'detail') || 'Could not load workflows. Check the backend connection.');
-    } finally { setLoading(false); }
-  }, []);
+    } finally { if (id === requestId.current) setLoading(false); }
+  }, [page]);
 
   useEffect(() => {
+    setLoading(true);
     refresh();
     if (user.role === 'hr') api.get<Directory>('/onboarding/directory/').then(res => setDirectory(res.data)).catch(() => {});
     const interval = window.setInterval(refresh, 15000);
     window.addEventListener('focus', refresh);
-    return () => { window.clearInterval(interval); window.removeEventListener('focus', refresh); };
+    return () => { requestId.current += 1; window.clearInterval(interval); window.removeEventListener('focus', refresh); };
   }, [refresh, user.role]);
 
   const selected = useMemo(() => workflows.find(w => w.id === selectedId), [workflows, selectedId]);
@@ -77,7 +88,9 @@ export default function Workspace(): React.JSX.Element {
     try {
       const payload = { ...form, training_course_id: form.training_course_id || null };
       const result = await api.post<Workflow>('/onboarding/workflows/', payload);
-      await refresh(); setSelectedId(result.data.id); setShowForm(false);
+      if (page === 1) { await refresh(); setSelectedId(result.data.id); }
+      else setParams({ page: '1' });
+      setShowForm(false);
       setNotice(`Onboarding started for ${result.data.employee}.`);
     } catch (err) {
       const detail = errorResponse(err)?.data;
@@ -109,8 +122,15 @@ export default function Workspace(): React.JSX.Element {
       </div><button className="ops-primary" disabled={busy === 'launch'}>{busy === 'launch' ? 'Launching…' : 'Launch workflow →'}</button>
     </form>}
 
+    <p className="muted page-context">{pagination.count} workflows visible to you · Metrics and ready tasks on this page</p>
+    <nav className="workflow-pagination" aria-label="Workflow pages">
+      <button disabled={loading || page <= 1} onClick={() => setParams({ page: String(page - 1) })}>Previous</button>
+      <span role="status">Page {page} of {pagination.total_pages}</span>
+      <button disabled={loading || page >= pagination.total_pages} onClick={() => setParams({ page: String(page + 1) })}>Next</button>
+      {error && page > 1 && <button onClick={() => setParams({ page: '1' })}>Back to first page</button>}
+    </nav>
     <div className="ops-metrics">
-      <div><span>ACTIVE WORKFLOWS</span><strong>{workflows.filter(w => !w.steps.some(s => s.key === 'ready' && s.state === 'completed')).length}</strong><small>Across your view</small></div>
+      <div><span>ACTIVE WORKFLOWS</span><strong>{workflows.filter(w => !w.steps.some(s => s.key === 'ready' && s.state === 'completed')).length}</strong><small>On this page</small></div>
       <div><span>READY FOR YOU</span><strong>{actionable.length}</strong><small>Steps you can take now</small></div>
       <div><span>COMPLETED STEPS</span><strong>{done}</strong><small>Progress made so far</small></div>
       <div><span>PAST DUE</span><strong>{overdue.length}</strong><small>Ready steps requiring attention</small></div>

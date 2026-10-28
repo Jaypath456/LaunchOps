@@ -60,6 +60,15 @@ export interface Directory {
   tracks: { id: number; title: string }[];
 }
 
+export interface WorkflowPage {
+  count: number;
+  page: number;
+  total_pages: number;
+  next: string | null;
+  previous: string | null;
+  results: Workflow[];
+}
+
 export interface WorkflowForm {
   employee_id: string;
   manager_id: string;

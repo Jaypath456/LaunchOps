@@ -49,7 +49,7 @@ class OnboardingFlowTests(TestCase):
         self.assertEqual(self.client.get(f'/api/onboarding/steps/{self.step("profile").pk}/').status_code, 404)
         self.assertEqual(self.complete('profile').status_code, 403)
         self.as_role('employee')
-        self.assertEqual(len(self.client.get('/api/onboarding/workflows/').data), 1)
+        self.assertEqual(self.client.get('/api/onboarding/workflows/').data['count'], 1)
         self.assertEqual(self.client.post('/api/onboarding/workflows/', {}).status_code, 403)
         self.assertEqual(self.complete('profile').status_code, 403)
 
@@ -210,7 +210,7 @@ class OnboardingFlowTests(TestCase):
         with CaptureQueriesContext(connection) as queries:
             response = self.client.get('/api/onboarding/workflows/')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 3)
+        self.assertEqual(len(response.data['results']), 3)
         self.assertLessEqual(len(queries), 15)
 
     def test_simulation_proof_is_server_owned_and_legacy_evidence_preserved(self):

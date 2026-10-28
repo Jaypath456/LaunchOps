@@ -16,6 +16,7 @@ from .services import create_onboarding, complete_step, can_view, reschedule, va
 from .blueprint import HANDBOOK, HANDBOOK_VERSION
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
+from .pagination import WorkflowPagination
 
 
 def visible(user):
@@ -32,7 +33,9 @@ def visible(user):
 @permission_classes([IsAuthenticated])
 def onboardings(request):
     if request.method == 'GET':
-        return Response(OnboardingSerializer(visible(request.user)[:100], many=True).data)
+        paginator = WorkflowPagination()
+        page = paginator.paginate_queryset(visible(request.user).order_by('-created_at', '-id'), request)
+        return paginator.get_paginated_response(OnboardingSerializer(page, many=True).data)
     if request.user.role != 'hr':
         raise PermissionDenied('Only HR can start onboarding.')
     serializer = CreateOnboardingSerializer(data=request.data)
