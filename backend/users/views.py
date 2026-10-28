@@ -5,7 +5,12 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 
-from .serializers import RegisterSerializer, UserSerializer
+from .serializers import RegisterSerializer, UserSerializer, SessionRefreshSerializer
+from rest_framework_simplejwt.views import TokenRefreshView
+
+
+class SessionRefreshView(TokenRefreshView):
+    serializer_class = SessionRefreshSerializer
 
 
 @api_view(['POST'])

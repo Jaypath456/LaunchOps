@@ -49,6 +49,44 @@ class RoleLoginTests(TestCase):
         self.assertEqual(self.client.post('/api/auth/login/', {'username': 'hire', 'password': password.strip()}).status_code, 401)
 
 
+class TokenRefreshTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username='refresh_user', password='test password', role='employee')
+        self.refresh = RefreshToken.for_user(self.user)
+
+    def test_expired_access_refreshes_and_new_access_uses_current_server_role(self):
+        from datetime import timedelta
+        access = self.refresh.access_token
+        access.set_exp(lifetime=timedelta(seconds=-1))
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access}')
+        self.assertEqual(self.client.get('/api/auth/me/').status_code, 401)
+        self.user.role = 'manager'
+        self.user.save()
+        response = self.client.post('/api/auth/refresh/', {'refresh': str(self.refresh)})
+        self.assertEqual(response.status_code, 200)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + response.data['access'])
+        self.assertEqual(self.client.get('/api/auth/me/').data['role'], 'manager')
+
+    def test_invalid_expired_and_wrong_token_types_are_rejected(self):
+        from datetime import timedelta
+        expired = RefreshToken.for_user(self.user)
+        expired.set_exp(lifetime=timedelta(seconds=-1))
+        for token in ('invalid', str(expired), str(self.refresh.access_token)):
+            with self.subTest(token_type=token[:8]):
+                response = self.client.post('/api/auth/refresh/', {'refresh': token})
+                self.assertEqual(response.status_code, 401)
+                self.assertNotIn('access', response.data)
+        self.assertEqual(self.client.post('/api/auth/refresh/', {}).status_code, 400)
+
+    def test_inactive_or_deleted_account_cannot_refresh(self):
+        self.user.is_active = False
+        self.user.save()
+        self.assertEqual(self.client.post('/api/auth/refresh/', {'refresh': str(self.refresh)}).status_code, 401)
+        self.user.delete()
+        self.assertEqual(self.client.post('/api/auth/refresh/', {'refresh': str(self.refresh)}).status_code, 401)
+
+
 class CeleryScaffoldTests(TestCase):
     """Celery wiring checks. lms_project is not a Django app, so they live here."""
 

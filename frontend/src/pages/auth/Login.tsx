@@ -14,7 +14,7 @@ export default function Login(): React.JSX.Element {
   const [form, setForm] = useState<LoginForm>({ username: '', password: '' });
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const { login } = useAuth();
+  const { login, sessionError } = useAuth();
   const navigate = useNavigate();
   const { role } = useParams();
   const entry = ROLE_ENTRIES.find(entry => entry.role === role);
@@ -57,6 +57,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         <Link className="auth-back" to="/">← Choose your role</Link>
 
         {error && <div role="alert" className="auth-error">{error}</div>}
+        {sessionError && !error && <div role="alert" className="auth-error">{sessionError}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
