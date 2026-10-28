@@ -1,37 +1,49 @@
 /* Run against the local Docker demo: NODE_PATH=/tmp/launchops-browser/node_modules node scripts/walkthrough.cjs
- * Creates an explicitly named audit employee and completes demo/audit workflows; never deletes data.
+ * Creates a fresh audit employee and completes only its workflow; never modifies existing workflows or deletes data.
  */
 const { chromium } = require('playwright');
 const fs = require('fs');
 const assert = require('assert/strict');
 const base = process.env.LAUNCHOPS_URL || 'http://localhost:13000';
 const api = process.env.LAUNCHOPS_API || 'http://localhost:18000/api';
-const password = 'LaunchOpsDemo2026!';
+for (const url of [base, api]) assert(['localhost', '127.0.0.1', '[::1]'].includes(new URL(url).hostname), 'Walkthrough is local-only');
+const password = process.env.LAUNCHOPS_DEMO_PASSWORD || 'LaunchOpsDemo2026!';
+const reportDir = process.env.LAUNCHOPS_REPORT_DIR || '/tmp/launchops-walkthrough-' + Date.now();
+fs.mkdirSync(reportDir, { recursive: true });
 const report = { started: new Date().toISOString(), pages: [], actions: [], attacks: [], errors: [], timings: [] };
 (async () => {
-  const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN || '/usr/bin/google-chrome', headless: true, args: ['--no-sandbox'] });
+  const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN || (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' : '/usr/bin/google-chrome'), headless: true, args: ['--no-sandbox'] });
   const clients = {};
   async function login(role, username) {
     const context = await browser.newContext(); const page = await context.newPage(); page.setDefaultTimeout(60000);
     page.on('pageerror', e => report.errors.push(`${username}: ${e.message}`));
-    await page.goto(base); await page.locator('[name=username]').fill(username); await page.locator('[name=password]').fill(password);
+    await page.goto(base); await page.locator(`a[href="/login/${role}"]`).click(); await page.locator('[name=username]').fill(username); await page.locator('[name=password]').fill(password);
     await page.getByRole('button', { name: 'Sign In', exact: true }).click(); await page.waitForURL('**/workspace'); await page.locator('.ops-hero').waitFor();
-    const token = await page.evaluate(() => sessionStorage.access_token);
+    report.actions.push({ action: 'role login through landing page', role, username, path: '/login/' + role });
     const request = async (method, path, data) => {
+      const token = await page.evaluate(() => sessionStorage.access_token);
       const start = Date.now(); const res = await context.request.fetch(api + path, { method, headers: { Authorization: 'Bearer ' + token }, data });
       report.timings.push({ method, path, ms: Date.now() - start, status: res.status() });
       return { status: res.status(), data: await res.json() };
     };
     return { context, page, request, username, role };
   }
+  async function workflowsFor(client) {
+    const rows = [];
+    for (let page = 1; ; page++) {
+      const r = await client.request('GET', '/onboarding/workflows/?page=' + page);
+      assert.equal(r.status, 200); rows.push(...r.data.results);
+      if (!r.data.next) return rows;
+    }
+  }
   try {
     for (const role of ['hr', 'it', 'manager', 'employee']) clients[role] = await login(role, 'demo_' + role);
     const hr = clients.hr, it = clients.it;
-    let workflows = (await hr.request('GET', '/onboarding/workflows/')).data;
+    let workflows = await workflowsFor(hr);
     const demo = workflows.find(w => w.employee === 'demo_employee');
     // Read every migrated and demo task visible to each role, without changing the user's workflow.
     for (const role of process.env.SKIP_INSPECTION ? [] : Object.keys(clients)) {
-      const c = clients[role]; const visible = (await c.request('GET', '/onboarding/workflows/')).data;
+      const c = clients[role]; const visible = await workflowsFor(c);
       for (const w of visible.filter(w => w.id <= 2)) for (const s of w.steps) {
         await c.page.goto(`${base}/workspace/tasks/${s.id}`); await c.page.locator('h1').waitFor();
         report.pages.push({ role, workflow: w.id, task: s.key, heading: await c.page.locator('h1').innerText(), status: await c.page.locator('.ops-hero .status').innerText() });
@@ -39,15 +51,12 @@ const report = { started: new Date().toISOString(), pages: [], actions: [], atta
       console.log('Inspected tasks for', role);
     }
     // Registration and HR workflow creation exercise the actual forms.
-    const username = process.env.REUSE_AUDIT_EMPLOYEE || 'audit_employee_' + Date.now();
-    if (!process.env.REUSE_AUDIT_EMPLOYEE) {
+    const username = 'audit_employee_' + Date.now();
     const context = await browser.newContext(); const page = await context.newPage(); await page.goto(base + '/register');
     await page.locator('[name=username]').fill(username); await page.locator('[name=email]').fill(username + '@example.test');
     await page.locator('[name=password]').fill(password);
     await page.locator('button[type=submit]').click(); await page.waitForURL('**/workspace'); await context.close();
-    }
     const fresh = await login('employee', username);
-    if (!process.env.REUSE_AUDIT_EMPLOYEE) {
     await hr.page.goto(base + '/workspace'); await hr.page.getByRole('button', { name: '+ Start onboarding' }).click();
     await hr.page.getByLabel('New hire', { exact: true }).selectOption({ label: username });
     await hr.page.getByLabel('Manager', { exact: true }).selectOption({ label: 'demo_manager' });
@@ -55,19 +64,8 @@ const report = { started: new Date().toISOString(), pages: [], actions: [], atta
     await hr.page.getByLabel('Start date', { exact: true }).fill(new Date().toISOString().slice(0,10));
     await hr.page.locator('.launch-form').getByLabel('Learning track', { exact: true }).selectOption({ label: 'Security essentials' });
     await hr.page.getByRole('button', { name: 'Launch workflow →' }).click(); await hr.page.getByRole('status').filter({ hasText: 'Onboarding started' }).waitFor();
-    }
-    workflows = (await hr.request('GET', '/onboarding/workflows/')).data;
+    workflows = await workflowsFor(hr);
     const newWorkflow = workflows.find(w => w.employee === username); assert(newWorkflow);
-    const migratedWorkflow = workflows.find(w => w.employee === process.env.AUDIT_MIGRATED_EMPLOYEE);
-    const migratedEmployee = migratedWorkflow ? await login('employee', migratedWorkflow.employee) : null;
-    const migratedManager = migratedWorkflow ? await login('manager', migratedWorkflow.manager) : null;
-    if (migratedWorkflow?.date_needs_correction) {
-      await hr.page.goto(base + '/workspace'); await hr.page.locator('.person').filter({hasText:migratedWorkflow.employee}).click();
-      await hr.page.getByRole('button',{name:'Correct start date',exact:true}).click();
-      await hr.page.getByLabel('Correct start date',{exact:true}).fill(new Date().toISOString().slice(0,10));
-      await hr.page.getByRole('button',{name:'Save date',exact:true}).click(); await hr.page.getByRole('status').filter({hasText:'Start date and task due dates updated'}).waitFor();
-      report.actions.push({workflow:migratedWorkflow.id,action:'HR corrected copied year-1111 workflow through UI'});
-    }
     report.createdWorkflow = newWorkflow.id; report.createdEmployee = username;
     // Direct hostile requests before dependencies are satisfied.
     const attack = async (client, method, path, data, status, label) => {
@@ -78,24 +76,20 @@ const report = { started: new Date().toISOString(), pages: [], actions: [], atta
     if (newWorkflow.steps.find(s=>s.key==='profile').state !== 'completed') await attack(it, 'POST', `/onboarding/steps/${newWorkflow.steps.find(s=>s.key==='equipment').id}/complete/`, { evidence: { device:'Demo laptop',delivery_date:'2026-09-27' } }, 400, 'Skipped prerequisites');
     await attack(fresh, 'POST', `/onboarding/steps/${newWorkflow.steps.find(s=>s.key==='equipment').id}/complete/`, { evidence:{} }, 403, 'Employee cannot complete IT work');
     if (newWorkflow.steps.find(s=>s.key==='profile').state !== 'completed') await attack(hr, 'POST', `/onboarding/steps/${newWorkflow.steps.find(s=>s.key==='profile').id}/complete/`, { evidence:{review:'Match demo profile',_proof:{mode:'verified'}} }, 400, 'Forged simulation proof');
-    if (migratedWorkflow) {
-      await attack(clients.manager,'GET',`/onboarding/workflows/${migratedWorkflow.id}/`,undefined,404,'Other manager workflow');
-      await attack(clients.manager,'POST',`/onboarding/steps/${migratedWorkflow.steps.find(s=>s.key==='mentor').id}/complete/`,{evidence:{}},403,'Other manager completion');
-    }
     // Complete all tasks from their role-specific browser forms, including a failing quiz then retry.
-    for (const initial of [demo, newWorkflow, migratedWorkflow].filter(Boolean)) {
-      const employee = initial.id === demo.id ? clients.employee : initial.id === newWorkflow.id ? fresh : migratedEmployee;
+    for (const initial of [newWorkflow]) {
+      const employee = fresh;
       let w = (await hr.request('GET', `/onboarding/workflows/${initial.id}/`)).data;
       // Blueprint order differs on migrated workflows; repeatedly select ready tasks.
       while (w.steps.some(s => s.state !== 'completed')) {
         const s = w.steps.find(s => s.state === 'ready'); assert(s, 'No ready task: deadlock');
-        const c = s.owner_role === 'employee' ? employee : s.owner_role === 'manager' && initial.id === migratedWorkflow?.id ? migratedManager : clients[s.owner_role];
+        const c = s.owner_role === 'employee' ? employee : clients[s.owner_role];
         await c.page.goto(`${base}/workspace/tasks/${s.id}`); await c.page.locator('h1').waitFor();
         const task = (await c.request('GET', `/onboarding/steps/${s.id}/`)).data;
         if (s.key === 'equipment') {
           await employee.page.goto(`${base}/workspace/tasks/${s.id}`); await employee.page.getByText('Waiting for IT', { exact:true }).waitFor();
           assert.equal(await employee.page.locator('form.task-form').count(),0);
-          await employee.page.screenshot({path:'docs/audit/employee-waiting.png',fullPage:true});
+          await employee.page.screenshot({path:reportDir + '/employee-waiting.png',fullPage:true});
         }
         if (s.key === 'training') {
           for (const lesson of task.lessons) {
@@ -121,10 +115,19 @@ const report = { started: new Date().toISOString(), pages: [], actions: [], atta
           }
           await c.page.goto(`${base}/workspace/tasks/${s.id}`); await c.page.locator('h1').waitFor();
         }
+        if (s.key === 'ready') {
+          assert(task.issues.some(issue => !issue.resolved_at), 'Expected a reported blocker');
+          const blockedEvidence = Object.fromEntries(task.step.form_fields.map(field => [field.name, field.type === 'checkbox' ? true : 'Audit review']));
+          await attack(hr, 'POST', `/onboarding/steps/${s.id}/complete/`, { evidence: blockedEvidence }, 400, 'Final signoff blocked by unresolved issue');
+          await c.page.getByLabel('Resolution (no sensitive details)', {exact:true}).fill('Demo support discussion completed with the employee.');
+          await c.page.getByRole('button', {name:'Record resolution',exact:true}).click();
+          await c.page.getByText('Resolved (HR self-report)',{exact:true}).waitFor();
+          report.actions.push({workflow:w.id,action:'HR resolved reported blocker in browser'});
+        }
         const values = {};
         for (const field of task.step.form_fields) {
           const input = c.page.locator('.task-form').getByLabel(field.label,{exact:true});
-          const value = field.type === 'checkbox' ? true : field.type === 'select' ? field.options[0] : field.type === 'date' ? new Date().toISOString().slice(0,10) : 'Audit record: discuss the first-week delivery plan with the assigned team.';
+          const value = field.type === 'checkbox' ? true : field.type === 'select' ? (s.key === 'feedback' && field.name === 'status' ? 'Needs support' : field.options[0]) : field.type === 'date' ? new Date().toISOString().slice(0,10) : 'Audit record: discuss the first-week delivery plan with the assigned team.';
           values[field.name] = value;
           if (field.type === 'checkbox') await input.check(); else if (field.type === 'select') await input.selectOption(value); else await input.fill(value);
         }
@@ -141,7 +144,11 @@ const report = { started: new Date().toISOString(), pages: [], actions: [], atta
     // Logout and login in the same browser must replace identity and view.
     await clients.employee.page.getByRole('button',{name:'Logout'}).click(); await clients.employee.page.locator('[name=username]').fill('demo_it'); await clients.employee.page.locator('[name=password]').fill(password); await clients.employee.page.getByRole('button',{name:'Sign In',exact:true}).click(); await clients.employee.page.waitForURL('**/workspace'); await clients.employee.page.getByText('demo_it',{exact:true}).waitFor();
     await hr.page.goto(base+'/does-not-exist'); await hr.page.getByRole('heading',{name:'Page not found'}).waitFor();
+    const final = (await hr.request('GET', `/onboarding/workflows/${newWorkflow.id}/`)).data;
+    assert.equal(final.steps.filter(step => step.state === 'completed').length,20);
+    assert.equal(final.events.filter(event => event.action === 'completed').length,20);
+    report.completedTasks=20; report.completionEvents=20;
     assert.deepEqual(report.errors,[]); report.result='PASS';
-  } catch(e) { report.result='FAIL'; report.failure=e.stack; console.error(e); for (const [role,c] of Object.entries(clients)) { await c.page.screenshot({path:`docs/audit/failure-${role}.png`,fullPage:true}).catch(()=>{}); } process.exitCode=1; }
-  finally { report.finished=new Date().toISOString();fs.writeFileSync('docs/audit/walkthrough.json',JSON.stringify(report,null,2));await browser.close(); }
+  } catch(e) { report.result='FAIL'; report.failure=e.stack; console.error(e); for (const [role,c] of Object.entries(clients)) { await c.page.screenshot({path:`${reportDir}/failure-${role}.png`,fullPage:true}).catch(()=>{}); } process.exitCode=1; }
+  finally { report.finished=new Date().toISOString();fs.writeFileSync(reportDir + '/walkthrough.json',JSON.stringify(report,null,2));console.log('Report:',reportDir + '/walkthrough.json');await browser.close(); }
 })();

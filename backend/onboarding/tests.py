@@ -1,5 +1,5 @@
 from datetime import timedelta
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
@@ -301,6 +301,7 @@ class OnboardingFlowTests(TestCase):
         self.client.patch(f'/api/onboarding/workflows/{self.record.pk}/', {'start_date': timezone.localdate().isoformat()})
         self.assertEqual(self.complete('profile').status_code, 200)
 
+    @override_settings(DEBUG=True)
     def test_seed_is_repeatable_and_preserves_existing_records(self):
         from django.core.management import call_command
         from io import StringIO
@@ -325,6 +326,7 @@ class OnboardingFlowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertLessEqual(len(queries), 12)
 
+    @override_settings(DEBUG=True)
     def test_seed_incident_answers_are_safe_and_existing_publication_is_preserved(self):
         from django.core.management import call_command
         from io import StringIO
