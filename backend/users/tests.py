@@ -10,6 +10,43 @@ from lms_project.asgi import application
 from lms_project.celery import app as celery_app
 
 from .models import User
+from rest_framework.test import APIClient
+
+
+class RoleLoginTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_each_role_login_is_validated_without_changing_privileges(self):
+        for role in ('hr', 'it', 'manager', 'employee'):
+            with self.subTest(role=role):
+                user = User.objects.create_user(username=role, password='exact password', role=role)
+                response = self.client.post('/api/auth/login/', {'username': role, 'password': 'exact password', 'role': role})
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.data['user']['role'], role)
+                wrong = 'employee' if role != 'employee' else 'hr'
+                response = self.client.post('/api/auth/login/', {'username': role, 'password': 'exact password', 'role': wrong})
+                self.assertEqual(response.status_code, 403)
+                self.assertNotIn('access', response.data)
+                user.refresh_from_db()
+                self.assertEqual(user.role, role)
+
+    def test_invalid_role_and_credentials_issue_no_tokens(self):
+        for data, expected in [({'role': 'superuser'}, 400), ({'username': 'missing', 'password': 'bad', 'role': 'hr'}, 401)]:
+            response = self.client.post('/api/auth/login/', data)
+            self.assertEqual(response.status_code, expected)
+            self.assertNotIn('access', response.data)
+
+    def test_registration_and_login_preserve_exact_password(self):
+        password = '  whitespace password  '
+        response = self.client.post('/api/auth/register/', {'username': 'hire', 'password': password, 'role': 'hr', 'is_staff': True})
+        self.assertEqual(response.status_code, 201)
+        user = User.objects.get(username='hire')
+        self.assertTrue(user.check_password(password))
+        self.assertEqual(user.role, 'employee')
+        self.assertFalse(user.is_staff)
+        self.assertEqual(self.client.post('/api/auth/login/', {'username': 'hire', 'password': password}).status_code, 200)
+        self.assertEqual(self.client.post('/api/auth/login/', {'username': 'hire', 'password': password.strip()}).status_code, 401)
 
 
 class CeleryScaffoldTests(TestCase):

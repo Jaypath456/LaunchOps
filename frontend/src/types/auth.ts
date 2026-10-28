@@ -1,4 +1,5 @@
 export type UserRole = 'instructor' | 'student' | 'hr' | 'it' | 'manager' | 'employee';
+export type OnboardingRole = Extract<UserRole, 'hr' | 'it' | 'manager' | 'employee'>;
 
 export interface User {
   username: string;

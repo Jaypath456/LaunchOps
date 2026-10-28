@@ -7,6 +7,7 @@ import Navbar from './components/Navbar';
 // Auth pages
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import Landing from './pages/auth/Landing';
 
 // Instructor pages
 import Dashboard from './pages/instructor/Dashboard';
@@ -49,12 +50,13 @@ function AppRoutes(): React.JSX.Element {
             ? ['hr', 'it', 'manager', 'employee'].includes(user.role) ? <Navigate to="/workspace" replace /> : user.role === 'instructor'
               ? <Navigate to="/instructor/dashboard" replace />
               : <Navigate to="/student/catalog" replace />
-            : <Navigate to="/login" replace />
+            : <Landing />
         }
       />
 
       {/* Auth */}
       <Route path="/login" element={<Login />} />
+      <Route path="/login/:role" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/workspace" element={<ProtectedRoute><Workspace /></ProtectedRoute>} />
       <Route path="/workspace/tasks/:stepId" element={<ProtectedRoute><TaskDetail /></ProtectedRoute>} />

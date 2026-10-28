@@ -31,6 +31,9 @@ def register(request):
 def login(request):
     username = request.data.get('username')
     password = request.data.get('password')
+    role = request.data.get('role')
+    if role is not None and role not in ('hr', 'it', 'manager', 'employee'):
+        return Response({'error': 'Choose a valid onboarding role.'}, status=400)
 
     user = authenticate(username=username, password=password)
 
@@ -39,6 +42,9 @@ def login(request):
             {'error': 'Invalid username or password'},
             status=status.HTTP_401_UNAUTHORIZED
         )
+
+    if role is not None and user.role != role:
+        return Response({'error': 'This account does not belong to the selected role.'}, status=403)
 
     refresh = RefreshToken.for_user(user)
 

@@ -18,7 +18,7 @@ export default function Register(): React.JSX.Element {
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value.trim() });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -26,7 +26,7 @@ export default function Register(): React.JSX.Element {
     setError('');
     setLoading(true);
     try {
-      await register(form);
+      await register({ ...form, username: form.username.trim(), email: form.email.trim() });
       navigate('/workspace');
     } catch (err) {
       const errors = errorResponse(err)?.data;
@@ -51,8 +51,10 @@ export default function Register(): React.JSX.Element {
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label>Username</label>
+            <label htmlFor="register-username">Username</label>
             <input
+              id="register-username"
+              autoComplete="username"
               type="text"
               name="username"
               value={form.username}
@@ -63,8 +65,10 @@ export default function Register(): React.JSX.Element {
           </div>
 
           <div className="form-group">
-            <label>Email</label>
+            <label htmlFor="register-email">Email</label>
             <input
+              id="register-email"
+              autoComplete="email"
               type="email"
               name="email"
               value={form.email}
@@ -75,8 +79,10 @@ export default function Register(): React.JSX.Element {
           </div>
 
           <div className="form-group">
-            <label>Password</label>
+            <label htmlFor="register-password">Password</label>
             <input
+              id="register-password"
+              autoComplete="new-password"
               type="password"
               name="password"
               value={form.password}

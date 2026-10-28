@@ -126,3 +126,27 @@
 }
 
 .btn-primary { background:#153d43; }
+
+.auth-page { padding: 24px; box-sizing: border-box; }
+.auth-back { display: inline-block; margin-bottom: 24px; color: #285d48; font-size: 14px; }
+.landing-page { min-height: 100vh; background: radial-gradient(ellipse at 85% 10%, #dcebe0, transparent 45%), #f5f8f5; color: #163d3b; }
+.landing-header { display: flex; justify-content: space-between; align-items: center; max-width: 1180px; padding: 32px 24px; margin: auto; }
+.landing-header strong { font-size: 26px; letter-spacing: -1px; }
+.landing-header a { color: #285d48; font-size: 14px; }
+.landing-header span, .landing-content h1 span { color: #c47d41; }
+.landing-content { max-width: 1180px; margin: auto; padding: 48px 24px; }
+.landing-eyebrow, .role-kicker { font-size: 12px; letter-spacing: 1.4px; font-weight: 600; }
+.landing-content h1 { font-size: clamp(40px, 6vw, 72px); line-height: 1.08; letter-spacing: -2.5px; margin: 18px 0; }
+.landing-intro { color: #506963; line-height: 1.7; font-size: 18px; }
+.role-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; margin: 40px 0 24px; }
+.role-entry { display: flex; flex-direction: column; padding: 28px 24px; border: 1px solid #d7e1d9; border-radius: 16px; background: #fff; color: inherit; text-decoration: none; transition: transform .15s, box-shadow .15s; }
+.role-entry:hover { transform: translateY(-4px); box-shadow: 0 12px 30px #173d3b15; }
+.role-entry:focus-visible { outline: 3px solid #c47d41; outline-offset: 4px; }
+.role-kicker { color: #64796e; font-size: 10px; }
+.role-entry h2 { font-size: 30px; margin: 20px 0 8px; }
+.role-entry p { color: #5c6d65; font-size: 14px; line-height: 1.7; flex: 1; margin: 0 0 28px; }
+.role-entry > strong { font-size: 14px; }
+.landing-note { color: #64796e; font-size: 13px; }
+.landing-content .auth-link { text-align: left; }
+@media (max-width: 900px) { .role-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .role-grid { grid-template-columns: 1fr; } .landing-content { padding-top: 24px; } }

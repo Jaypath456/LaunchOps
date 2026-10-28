@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useParams } from 'react-router-dom';
+import { ROLE_ENTRIES } from './Landing';
 import { useAuth } from '../../context/AuthContext';
 import { errorResponse, errorField } from '../../types/api';
 import './auth.css';
@@ -15,9 +16,11 @@ export default function Login(): React.JSX.Element {
   const [loading, setLoading] = useState<boolean>(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { role } = useParams();
+  const entry = ROLE_ENTRIES.find(entry => entry.role === role);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value.trim() });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,7 +28,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
 
     try {
-      const user = await login(form.username, form.password);
+      const user = await login(form.username.trim(), form.password, entry?.role);
       
       if (['hr', 'it', 'manager', 'employee'].includes(user.role)) {
         navigate('/workspace');
@@ -50,14 +53,17 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     <div className="auth-page">
       <div className="auth-card">
         <h1 className="auth-title">LaunchOps<span style={{color:'#dd985b'}}>.</span></h1>
-        <p className="auth-subtitle">Your first day starts here. Sign in to continue.</p>
+        <p className="auth-subtitle">{entry ? `${entry.label} sign in · ${entry.description}` : 'Sign in with your existing account.'}</p>
+        <Link className="auth-back" to="/">← Choose your role</Link>
 
-        {error && <div className="auth-error">{error}</div>}
+        {error && <div role="alert" className="auth-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label>Username</label>
+            <label htmlFor="login-username">Username</label>
             <input
+              id="login-username"
+              autoComplete="username"
               type="text"
               name="username"
               value={form.username}
@@ -67,8 +73,10 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             />
           </div>
           <div className="form-group">
-            <label>Password</label>
+            <label htmlFor="login-password">Password</label>
             <input
+              id="login-password"
+              autoComplete="current-password"
               type="password"
               name="password"
               value={form.password}

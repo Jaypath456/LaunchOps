@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api/axios';
-import type { AuthResponse, RegisterRequest, User } from '../types/auth';
+import type { AuthResponse, RegisterRequest, User, OnboardingRole } from '../types/auth';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -9,7 +9,7 @@ interface AuthProviderProps {
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
-  login: (username: string, password: string) => Promise<User>;
+  login: (username: string, password: string, role?: OnboardingRole) => Promise<User>;
   register: (data: RegisterRequest) => Promise<User>;
   logout: () => void;
 }
@@ -49,8 +49,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     loadUser();
   }, []);
 
-  const login = async (username: string, password: string): Promise<User> => {
-    const res = await api.post<AuthResponse>('/auth/login/', { username, password });
+  const login = async (username: string, password: string, role?: OnboardingRole): Promise<User> => {
+    const res = await api.post<AuthResponse>('/auth/login/', { username, password, role });
     sessionStorage.setItem('access_token', res.data.access);
     sessionStorage.setItem('refresh_token', res.data.refresh);
     sessionStorage.setItem('user', JSON.stringify(res.data.user));

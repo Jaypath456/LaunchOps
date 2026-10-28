@@ -3,7 +3,7 @@ from .models import User
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, trim_whitespace=False)
     # Public signup cannot grant organizational privileges.
     role = serializers.CharField(read_only=True)
 
