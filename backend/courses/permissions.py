@@ -13,6 +13,18 @@ class IsInstructor(BasePermission):
 
 class IsStudent(BasePermission):
     def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == 'student'
+
+
+class IsLegacyLearner(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role in ('student', 'instructor')
+
+
+class IsLearner(BasePermission):
+    """Lesson and assessment access; legacy participation uses separate gates."""
+
+    def has_permission(self, request, view):
         return (
             request.user.is_authenticated
             and request.user.role in ('student', 'employee')
@@ -34,6 +46,8 @@ class IsCourseInstructor(BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
+        if not request.user.is_authenticated or request.user.role != 'instructor':
+            return False
         if isinstance(obj, Course):
             return obj.instructor == request.user
 

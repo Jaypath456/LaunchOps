@@ -16,6 +16,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from courses.models import Enrollment
+from courses.permissions import IsLegacyLearner
 from .models import LiveSession, Question
 from .serializers import StudentQuestionSerializer, LiveSessionSerializer
 from . import live_state
@@ -29,7 +30,7 @@ def _service_only(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLegacyLearner])
 def bootstrap(request, room_code):
     _service_only(request)
     session = get_object_or_404(LiveSession.objects.select_related('quiz__course'), room_code=room_code)
@@ -51,7 +52,7 @@ def bootstrap(request, room_code):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLegacyLearner])
 def finish(request, room_code):
     _service_only(request)
     session = get_object_or_404(LiveSession, room_code=room_code)
@@ -69,7 +70,7 @@ def finish(request, room_code):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLegacyLearner])
 def results(request, room_code):
     """Read durable per-room scores; a student sees only their own row."""
     from pymongo import MongoClient

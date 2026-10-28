@@ -93,6 +93,10 @@ class LiveQuizConsumer(AsyncWebsocketConsumer):
             await self.close(code=4001)
             return
 
+        if user.role not in ('student', 'instructor'):
+            await self.close(code=4003)
+            return
+
         session, enrolled = await self._authorize_room(user.id)
         if session is None or session.engine != 'django':
             await self.close(code=4004)

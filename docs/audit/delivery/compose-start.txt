@@ -1,0 +1,166 @@
+ Image launchops-repo-worker Building 
+ Image launchops-repo-backend Building 
+ Image launchops-repo-frontend Building 
+ Image launchops-repo-beat Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.03kB done
+#1 DONE 0.0s
+
+#2 [frontend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 270B 0.0s done
+#2 DONE 0.0s
+
+#3 [beat internal] load build definition from Dockerfile
+#3 transferring dockerfile: 553B 0.0s done
+#3 DONE 0.0s
+
+#4 [auth] library/node:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#5 [auth] library/python:pull token for registry-1.docker.io
+#5 DONE 0.0s
+
+#6 [beat internal] load metadata for docker.io/library/python:3.12-slim
+#6 ...
+
+#7 [frontend internal] load metadata for docker.io/library/node:22-alpine
+#7 DONE 0.6s
+
+#6 [worker internal] load metadata for docker.io/library/python:3.12-slim
+#6 DONE 0.6s
+
+#8 [frontend internal] load .dockerignore
+#8 transferring context: 114B done
+#8 DONE 0.0s
+
+#9 [beat internal] load .dockerignore
+#9 transferring context: 158B done
+#9 DONE 0.0s
+
+#10 [backend 1/7] FROM docker.io/library/python:3.12-slim@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159
+#10 DONE 0.0s
+
+#11 [frontend 1/5] FROM docker.io/library/node:22-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf1e844699914
+#11 DONE 0.0s
+
+#12 [frontend internal] load build context
+#12 transferring context: 50.27kB done
+#12 DONE 0.0s
+
+#13 [beat internal] load build context
+#13 transferring context: 146.76kB 0.0s done
+#13 DONE 0.0s
+
+#14 [frontend 2/5] WORKDIR /app
+#14 CACHED
+
+#15 [frontend 3/5] COPY package.json package-lock.json ./
+#15 CACHED
+
+#16 [worker 3/7] RUN apt-get update     && apt-get install -y --no-install-recommends libpq5     && rm -rf /var/lib/apt/lists/*
+#16 CACHED
+
+#17 [worker 2/7] WORKDIR /app
+#17 CACHED
+
+#18 [worker 4/7] COPY requirements.txt .
+#18 CACHED
+
+#19 [frontend 4/5] RUN npm ci
+#19 CACHED
+
+#20 [worker 5/7] RUN pip install --no-cache-dir -r requirements.txt
+#20 CACHED
+
+#21 [frontend 5/5] COPY . .
+#21 DONE 0.1s
+
+#22 [beat 6/7] COPY . .
+#22 DONE 0.1s
+
+#23 [frontend] exporting to image
+#23 exporting layers 0.0s done
+#23 writing image sha256:e1a3e956e9bdb197a72822dab52d179fe19588ad6ec8513e181d9b7ee3f4af86 done
+#23 naming to docker.io/library/launchops-repo-frontend done
+#23 DONE 0.0s
+
+#24 [frontend] resolving provenance for metadata file
+#24 DONE 0.0s
+
+#25 [worker 7/7] RUN chmod +x docker-entrypoint.sh
+#25 DONE 0.2s
+
+#26 [worker] exporting to image
+#26 exporting layers 0.0s done
+#26 writing image sha256:c51161b74c6db2a990426b88977e668f3af695fcbf1a1b314d2f2eedab3351dd done
+#26 naming to docker.io/library/launchops-repo-worker done
+#26 DONE 0.0s
+
+#27 [backend] exporting to image
+#27 exporting layers 0.0s done
+#27 writing image sha256:5905b1d3174f1264516d9df0bf3b27a83ef19344450a67e0fc3f2f6dbbe5d5c4 done
+#27 naming to docker.io/library/launchops-repo-backend done
+#27 DONE 0.0s
+
+#28 [beat] exporting to image
+#28 exporting layers 0.0s done
+#28 writing image sha256:f964b25e850c28a020f8ae6263890a5f09c1a6ac2d916a3952ef6cac606a53e6 done
+#28 naming to docker.io/library/launchops-repo-beat done
+#28 DONE 0.0s
+
+#29 [worker] resolving provenance for metadata file
+#29 DONE 0.0s
+
+#30 [backend] resolving provenance for metadata file
+#30 DONE 0.0s
+
+#31 [beat] resolving provenance for metadata file
+#31 DONE 0.0s
+ Image launchops-repo-beat Built 
+ Image launchops-repo-frontend Built 
+ Image launchops-repo-worker Built 
+ Image launchops-repo-backend Built 
+ Container launchops-repo-postgres-1 Running 
+ Container launchops-repo-redis-1 Running 
+ Container launchops-repo-backend-1 Recreate 
+ Container launchops-repo-backend-1 Recreated 
+ Container launchops-repo-beat-1 Recreate 
+ Container launchops-repo-frontend-1 Recreate 
+ Container launchops-repo-worker-1 Recreate 
+ Container launchops-repo-frontend-1 Recreated 
+ Container launchops-repo-beat-1 Recreated 
+ Container launchops-repo-worker-1 Recreated 
+ Container launchops-repo-redis-1 Waiting 
+ Container launchops-repo-postgres-1 Waiting 
+ Container launchops-repo-postgres-1 Healthy 
+ Container launchops-repo-redis-1 Healthy 
+ Container launchops-repo-backend-1 Starting 
+ Container launchops-repo-backend-1 Started 
+ Container launchops-repo-backend-1 Waiting 
+ Container launchops-repo-redis-1 Waiting 
+ Container launchops-repo-backend-1 Waiting 
+ Container launchops-repo-redis-1 Waiting 
+ Container launchops-repo-backend-1 Waiting 
+ Container launchops-repo-redis-1 Healthy 
+ Container launchops-repo-redis-1 Healthy 
+ Container launchops-repo-backend-1 Healthy 
+ Container launchops-repo-frontend-1 Starting 
+ Container launchops-repo-backend-1 Healthy 
+ Container launchops-repo-beat-1 Starting 
+ Container launchops-repo-backend-1 Healthy 
+ Container launchops-repo-worker-1 Starting 
+ Container launchops-repo-frontend-1 Started 
+ Container launchops-repo-beat-1 Started 
+ Container launchops-repo-worker-1 Started 
+ Container launchops-repo-worker-1 Waiting 
+ Container launchops-repo-backend-1 Waiting 
+ Container launchops-repo-postgres-1 Waiting 
+ Container launchops-repo-beat-1 Waiting 
+ Container launchops-repo-redis-1 Waiting 
+ Container launchops-repo-frontend-1 Waiting 
+ Container launchops-repo-backend-1 Healthy 
+ Container launchops-repo-redis-1 Healthy 
+ Container launchops-repo-frontend-1 Healthy 
+ Container launchops-repo-postgres-1 Healthy 
+ Container launchops-repo-worker-1 Healthy 
+ Container launchops-repo-beat-1 Healthy 

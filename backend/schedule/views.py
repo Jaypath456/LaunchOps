@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from courses.models import Course, Enrollment
-from courses.permissions import IsCourseInstructor, IsInstructor, IsStudent
+from courses.permissions import IsCourseInstructor, IsInstructor, IsStudent, IsLegacyLearner
 
 from .models import Break, Meeting, SavedSchedule, Section, Term
 from .serializers import BreakSerializer, SavedScheduleSerializer, SectionSerializer, TermSerializer
@@ -20,7 +20,7 @@ def _is_section_owner(request, section):
 # ─── Term Views ─────────────────────────────────────────────
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLegacyLearner])
 def term_list(request):
     terms = Term.objects.all()
     return Response(TermSerializer(terms, many=True).data)
@@ -29,9 +29,11 @@ def term_list(request):
 # ─── Section Views ─────────────────────────────────────────────
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLegacyLearner])
 def section_list(request, course_id):
     course = get_object_or_404(Course, id=course_id)
+    if not course.is_published and course.instructor_id != request.user.pk:
+        return Response({'error': 'This course is not available'}, status=403)
     sections = Section.objects.filter(course=course).select_related('term').prefetch_related('meetings')
 
     term_id = request.query_params.get('term')
@@ -57,11 +59,13 @@ def section_create(request, course_id):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLegacyLearner])
 def section_detail(request, section_id):
     section = get_object_or_404(Section, id=section_id)
 
     if request.method == 'GET':
+        if not section.course.is_published and not _is_section_owner(request, section):
+            return Response({'error': 'This course is not available'}, status=403)
         return Response(SectionSerializer(section).data)
 
     if not _is_section_owner(request, section):
@@ -123,7 +127,7 @@ def _section_to_candidate(section):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLegacyLearner])
 def generate_schedule(request):
     course_ids = request.data.get('course_ids')
     term_id = request.data.get('term_id')

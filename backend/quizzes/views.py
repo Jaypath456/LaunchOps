@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from courses.models import Course, Enrollment
-from courses.permissions import IsCourseInstructor, IsInstructor, IsStudent
+from courses.permissions import IsCourseInstructor, IsInstructor, IsLearner, IsLegacyLearner
 from lms_project.safe_cache import safe_add, safe_delete
 
 from . import live_state
@@ -96,7 +96,7 @@ def quiz_detail(request, quiz_id):
     is_owner = _is_quiz_owner(request, quiz)
 
     if request.method == 'GET':
-        if not is_owner and not quiz.is_published:
+        if not is_owner and (not quiz.is_published or not quiz.course.is_published):
             return Response({'error': 'This quiz is not available'}, status=status.HTTP_403_FORBIDDEN)
         return Response(QuizSerializer(quiz).data)
 
@@ -170,9 +170,9 @@ def question_detail(request, question_id):
 # ─── Student Quiz-Taking Views ─────────────────────────────────────
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsStudent])
+@permission_classes([IsAuthenticated, IsLearner])
 def quiz_take(request, quiz_id):
-    quiz = get_object_or_404(Quiz, id=quiz_id, is_published=True)
+    quiz = get_object_or_404(Quiz, id=quiz_id, is_published=True, course__is_published=True)
 
     if not _is_enrolled(request.user, quiz.course):
         return Response(
@@ -188,7 +188,7 @@ def quiz_take(request, quiz_id):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsStudent])
+@permission_classes([IsAuthenticated, IsLearner])
 def quiz_submit(request, quiz_id):
     from django.db import transaction
     from onboarding.models import Onboarding, Event
@@ -205,7 +205,7 @@ def quiz_submit(request, quiz_id):
 
 
 def _quiz_submit(request, quiz_id):
-    quiz = get_object_or_404(Quiz, id=quiz_id, is_published=True)
+    quiz = get_object_or_404(Quiz, id=quiz_id, is_published=True, course__is_published=True)
 
     if not _is_enrolled(request.user, quiz.course):
         return Response(
@@ -273,7 +273,7 @@ def _quiz_submit(request, quiz_id):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsStudent])
+@permission_classes([IsAuthenticated, IsLearner])
 def quiz_my_result(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
 
@@ -321,9 +321,9 @@ def session_create(request, quiz_id):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLegacyLearner])
 def session_detail(request, room_code):
-    # Deliberately open to any authenticated user, not just the host or
+    # Room metadata is available to legacy students/instructors, not just the host or
     # quiz owner: this is how a student "joins" a live session - by
     # looking up the room code they were given. The consumer (a later
     # milestone) is what actually enforces course enrollment before
@@ -412,6 +412,8 @@ def course_leaderboard(request, course_id):
         .annotate(total_score=Sum('score'))
         .order_by('-total_score', 'student__username')
     )
+    if not is_owner:
+        rows = rows.filter(student__role='student')
 
     rankings = [
         {

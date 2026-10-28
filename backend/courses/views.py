@@ -13,7 +13,7 @@ from .serializers import (
     ChapterSerializer, 
     EnrollmentSerializer
 )
-from .permissions import IsInstructor, IsStudent, IsCourseInstructor, IsEnrolled
+from .permissions import IsInstructor, IsLearner, IsCourseInstructor, IsEnrolled
 
 
 def _with_course_counts(queryset):
@@ -178,7 +178,11 @@ def chapter_list(request, course_id):
         return Response({'error': 'This course is not available'}, status=status.HTTP_403_FORBIDDEN)
 
     serializer = ChapterSerializer(chapters.order_by('order_index', 'id'), many=True)
-    return Response(serializer.data)
+    data = serializer.data
+    if course.instructor_id != request.user.pk and not Enrollment.objects.filter(student=request.user, course=course).exists():
+        # Catalog previews expose titles, while lesson content requires enrollment.
+        data = [{key: value for key, value in row.items() if key != 'content'} for row in data]
+    return Response(data)
 
 
 @api_view(['POST'])
@@ -229,7 +233,7 @@ def chapter_detail(request, chapter_id):
 # ─── Enrollment Views ─────────────────────────────────────────────
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsStudent])
+@permission_classes([IsAuthenticated, IsLearner])
 def my_courses(request):
     enrollments = Enrollment.objects.filter(student=request.user).select_related(
         'course', 'course__instructor', 'course__term'
@@ -239,14 +243,16 @@ def my_courses(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsStudent])
+@permission_classes([IsAuthenticated, IsLearner])
 def enrollment_status(request, course_id):
     enrolled = Enrollment.objects.filter(student=request.user, course_id=course_id).exists()
     return Response({'enrolled': enrolled})
 
 @api_view(['POST', 'DELETE'])
-@permission_classes([IsAuthenticated, IsStudent])
+@permission_classes([IsAuthenticated, IsLearner])
 def manage_enrollment(request, course_id):
+    if request.user.role == 'employee':
+        return Response({'error': 'HR manages employee learning assignments.'}, status=403)
     if request.method == 'POST':
         # Only published courses can be joined - draft courses are not
         # available to students even if they know the course id.

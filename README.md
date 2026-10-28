@@ -7,16 +7,20 @@ A local onboarding demo built with Django REST Framework, PostgreSQL, Redis/Cele
 ## Start
 
 ```bash
-docker compose up --build --wait -d
+DEBUG=True docker compose up --build --wait -d
 docker compose exec backend python manage.py migrate --noinput
 docker compose exec backend python manage.py seed_launchops
 ```
 
 The default stack runs six services: `postgres`, `redis`, `backend`, `worker`, `beat` and `frontend`. Open [http://localhost:13000](http://localhost:13000). The API is at [http://localhost:18000/api/](http://localhost:18000/api/). Override `FRONTEND_PORT`, `BACKEND_PORT`, `REACT_APP_API_URL` and `CORS_ALLOWED_ORIGINS` in the root `.env` together if a port is occupied.
 
-**Preserve the PostgreSQL volume. Do not run `docker compose down -v`.** If you switch from an older checkout that used Create React App, recreate the frontend container's `node_modules` volume once with `docker compose up -d --build -V frontend`.
+**Preserve existing Docker volumes and application data. Do not run `docker compose down -v` or renew volumes.**
 
-All demo accounts use the local-only password **LaunchOpsDemo2026!**:
+The explicit `DEBUG=True` override is for this local demonstration and does not edit `.env`. The seed refuses to run with `DEBUG=False`, rolls back on account collisions, and never resets existing passwords or workflows. Do not seed or reuse demo accounts in a production database.
+
+Open the shared landing page and choose **HR**, **IT**, **Manager**, or **Employee**. Each entry has a dedicated sign-in path; the server verifies the account's assigned role before issuing tokens. Existing legacy accounts can use **Existing account**. Public registration always creates an employee.
+
+New demo accounts use the local-only password **LaunchOpsDemo2026!**:
 
 | Username | Role | Five assigned tasks |
 | --- | --- | --- |
@@ -33,7 +37,8 @@ All demo accounts use the local-only password **LaunchOpsDemo2026!**:
 - **Final signoff.** It requires all other 19 tasks, a realistic start date and no unresolved blockers, and it displays the saved evidence for review.
 - **Training.** The employee's Learning page has five lessons with acknowledgment buttons and five three-question assessments graded on the server. A pass needs all three answers correct. Acknowledgments record a declaration, not proof of reading. A failed assessment can be retried; the failed attempt is archived.
 - **Overdue scan.** A Celery scan records at most one overdue event per ready task and sends no notifications. The legacy chat purge, which hard-deletes chat messages of courses whose term has ended, is off by default; `CHAT_PURGE_ENABLED=true` schedules it.
-- **Refresh and limits.** The dashboard refreshes every 15 seconds and on window focus. There is one workflow per employee, and lists show at most 100 workflows.
+- **Refresh and pagination.** The dashboard refreshes every 15 seconds and on window focus. There is one workflow per employee. Lists use numbered pages with previous/next controls; metrics and ready tasks describe the current page. The API returns `count`, `page`, `total_pages`, `next`, `previous`, and `results`, ordered by newest creation and ID. The default page size is 12; `page_size` is capped at 100 per page, with no total-record cutoff.
+- **Session renewal.** Expired access tokens use `/api/auth/refresh/`. Concurrent 401s share a refresh request, each request retries once, and a failed renewal clears the session and asks for sign-in. Login errors, permission errors and network failures are not replayed. Logout prevents a pending refresh from restoring the session.
 
 ## Concurrency design
 
@@ -48,7 +53,7 @@ docker compose exec backend python manage.py makemigrations --check --dry-run
 cd frontend && npm ci && npm run typecheck && npm test && npm run build
 ```
 
-Measured in October 2026 on a MacBook Air with Docker Desktop: the backend suite ran **266 tests, all passing, none skipped, on PostgreSQL 16** in 106 to 207 seconds depending on machine load, and the frontend ran 4 Vitest tests. Most of the backend tests cover the legacy learning modules. The onboarding-specific tests include:
+Validated on October 28, 2026 with Docker Desktop: the backend suite ran **284 tests, all passing, none skipped, on PostgreSQL 16.15** in 222.916 seconds, and the host frontend ran **21 Vitest tests**, all passing. Typecheck, production build, Django checks, and migration checks passed. Exact commands, environments, browser reports and limitations are in the [delivery evidence](docs/DEMO_DELIVERY.md). Most backend tests cover the legacy learning modules. The onboarding-specific tests include:
 
 - **Workflow tests** (`onboarding/tests.py`): all 20 tasks end to end with owner boundaries, invalid and forged evidence, the dependency gate, final signoff rules, idempotent overdue scan and a query budget.
 - **Matrix tests** (`onboarding/test_matrix.py`, table-driven with `subTest`): blueprint integrity (20 steps, 5 per role, unique keys, existing dependencies, acyclic graph), every step against every non-owner role, every step's prerequisites, and missing, unknown and empty evidence fields for every step.
@@ -63,7 +68,16 @@ npm install --prefix /tmp/launchops-browser playwright@1.51.1
 NODE_PATH=/tmp/launchops-browser/node_modules node scripts/walkthrough.cjs
 ```
 
-It writes `docs/audit/walkthrough.json` and keeps the audit workflow it creates. It is for this local demo, not production data. The earlier [audit report](docs/AUDIT.md) predates the current test suite and CI, so its counts are historical.
+It prints its report path under `/tmp/launchops-walkthrough-*` and keeps the fresh audit employee/workflow it creates. Each run uses a new employee, completes all tasks through the correct role's forms, deliberately fails and retries an assessment, reports and resolves a blocker before final signoff, and checks duplicate completion requests. Existing workflows are only inspected. `CHROME_BIN` overrides the detected macOS/Linux Chrome path; `LAUNCHOPS_DEMO_PASSWORD` supports existing demo accounts whose passwords were changed. Both browser scripts refuse non-local hosts.
+
+To exercise real pagination beyond 100 workflows and signed token expiry in Chrome:
+
+```bash
+docker compose exec backend python manage.py seed_launchops --pagination-demo
+NODE_PATH=/tmp/launchops-browser/node_modules node scripts/check_session_pagination.cjs
+```
+
+The optional flag adds named pagination fixtures with unusable passwords and preserves existing records. The session check requires the local Compose backend with `DEBUG=True`; it creates signed expired tokens in memory without logging or saving them. It checks page navigation, concurrent refresh, refresh-only session restoration, expired refresh and missing refresh. `LAUNCHOPS_REPORT_DIR` selects either script's report directory. See [executed delivery evidence and LMS audit](docs/DEMO_DELIVERY.md). The earlier [audit report](docs/AUDIT.md) predates the current suite; its counts are historical.
 
 ## Frontend
 
@@ -89,4 +103,4 @@ LaunchOps started as a learning-management system I built (courses, chapters, qu
 
 ## Limits
 
-Use Python 3.12+, Node 20+, PostgreSQL and Redis for a non-Docker setup: copy `backend/.env.example` to `backend/.env`, install `backend/requirements.txt`, then migrate, seed and run Django, and run `npm ci` and `npm start` in `frontend/`. Docker is the recommended setup. HR and IT see all workflows in this single workspace; managers see their assigned workflows and employees see their own. Staff provisioning requires trusted administration. There is no tenant isolation, invitation system, identity provider, external evidence verification or production notification channel. The legacy learning authoring, messaging, live quiz and scheduling modules have separate role gates and are not part of the four-role onboarding walkthrough. The `loadtests/` suite predates onboarding and does not establish its performance.
+Use Python 3.12+, Node 20+, PostgreSQL and Redis for a non-Docker setup: copy `backend/.env.example` to `backend/.env`, install `backend/requirements.txt`, then migrate, seed with `DEBUG=True` for local use, and run Django, and run `npm ci` and `npm start` in `frontend/`. Docker is the recommended setup. HR and IT see all workflows in this single workspace; managers see their assigned workflows and employees see their own. Staff provisioning requires trusted administration. There is no tenant isolation, invitation system, identity provider, external evidence verification or production notification channel. Training reuses course lessons and server-graded quizzes; employees cannot use legacy chat, live quiz or scheduling routes or change their enrollment. Legacy students retain those features; their leaderboard excludes employee training scores. Tokens remain in tab-scoped session storage; logout clears that tab but does not revoke an already-issued refresh token on the server. Access tokens last 24 hours and refresh tokens seven days. The `loadtests/` suite predates onboarding and does not establish its performance.
