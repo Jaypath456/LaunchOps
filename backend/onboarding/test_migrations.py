@@ -34,8 +34,7 @@ class WorkflowMigrationTests(TransactionTestCase):
             self.assertEqual(Onboarding.objects.get(pk=record.pk).start_date, date(1111, 11, 11))
             self.assertEqual(CurrentEvent.objects.filter(onboarding_id=record.pk).count(), 1)
             # The data operation itself, in addition to migration tracking, is repeatable.
-            import importlib
-            expand = importlib.import_module('onboarding.migrations.0004_expand_workflow').expand
+            expand = executor.loader.get_migration('onboarding', '0004_expand_workflow').operations[0].code
             expand(executor.loader.project_state(latest).apps, None)
             self.assertEqual(CurrentStep.objects.filter(onboarding_id=record.pk).count(), 20)
             self.assertEqual(CurrentStep.objects.get(onboarding_id=record.pk, key='ready').evidence, {'legacy': 'ready'})

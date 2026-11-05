@@ -49,6 +49,9 @@ INSTALLED_APPS = [
     'onboarding',
 ]
 
+# Preserve PostgreSQL upgrade history outside the onboarding application.
+MIGRATION_MODULES = {'onboarding': 'lms_project.onboarding_migrations'}
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',

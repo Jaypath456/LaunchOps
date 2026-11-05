@@ -5,11 +5,9 @@ from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
 from rest_framework.test import APIClient
 from users.models import User
-from courses.models import Course, Enrollment, Chapter
-from quizzes.models import Quiz, Question, Submission
-from .models import Event, Step, LessonReview, AssessmentAttempt, Issue, Onboarding
+from .models import Event, Step, Issue, Onboarding
 from .services import create_onboarding
-from .blueprint import BLUEPRINT, FORMS
+from .blueprint import BLUEPRINT, FORMS, TRAINING_POLICY_VERSION
 from .tasks import scan_overdue
 
 
@@ -18,14 +16,9 @@ class OnboardingFlowTests(TestCase):
         self.users = {role: User.objects.create_user(username=role, password='pass123456', role=role)
                       for role in ('hr', 'it', 'manager', 'employee')}
         self.other = User.objects.create_user(username='other', password='pass123456', role='employee')
-        self.editor = User.objects.create_user(username='editor', password='pass123456', role='instructor')
-        self.course = Course.objects.create(title='Security', instructor=self.editor, is_published=True)
-        self.quiz = Quiz.objects.create(course=self.course, title='Check', is_published=True)
         self.record = create_onboarding(employee=self.users['employee'], manager=self.users['manager'],
             creator=self.users['hr'], job_title='Engineer', department='Engineering',
-            start_date=timezone.localdate() + timedelta(days=10), course=self.course)
-        self.chapter = Chapter.objects.create(course=self.course, title='Lesson', visibility='public', content=[{'type': 'paragraph', 'children': [{'text': 'Read this lesson'}]}])
-        LessonReview.objects.create(onboarding=self.record, chapter=self.chapter)
+            start_date=timezone.localdate() + timedelta(days=10))
         self.client = APIClient()
 
     def as_role(self, role):
@@ -65,14 +58,14 @@ class OnboardingFlowTests(TestCase):
         self.as_role('it')
         self.assertEqual(self.complete('access').status_code, 200)
         self.as_role('employee')
-        self.assertEqual(self.complete('training').status_code, 400)
-        Submission.objects.create(quiz=self.quiz, student=self.users['employee'], score=6, max_score=10)
-        self.assertEqual(self.complete('training').status_code, 400)
-        submission = Submission.objects.get(quiz=self.quiz)
-        submission.score = 8
-        submission.save()
+        self.assertEqual(self.complete('training', {'confirmed': False}).status_code, 400)
         self.assertEqual(self.complete('training').status_code, 200)
-        self.assertTrue(Enrollment.objects.filter(course=self.course, student=self.users['employee']).exists())
+        self.assertEqual(self.step('training').evidence['_proof'], {
+            'mode': 'attestation', 'version': TRAINING_POLICY_VERSION,
+            'result': 'Acknowledgment recorded; not proof of reading or identity.',
+        })
+        self.assertFalse(self.complete('training').data['changed'])
+        self.assertEqual(Event.objects.filter(step=self.step('training'), action='completed').count(), 1)
         self.as_role('hr')
         self.assertEqual(self.complete('ready').status_code, 400)
         self.assertEqual(self.record.steps.get(key='training').evidence['confirmed'], True)
@@ -83,30 +76,17 @@ class OnboardingFlowTests(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(User.objects.get(username='selfregister').role, 'employee')
 
-    def test_failed_assessment_can_be_retried_with_audit_record(self):
+    def test_training_attestation_requires_access_and_its_employee(self):
+        self.assertEqual(list(self.step('training').prerequisites.values_list('key', flat=True)), ['access'])
         self.as_role('employee')
-        Submission.objects.create(quiz=self.quiz, student=self.users['employee'], score=0, max_score=10)
-        url = f'/api/onboarding/assessments/{self.quiz.pk}/retry/'
-        self.assertEqual(self.client.post(url).status_code, 200)
-        self.assertFalse(Submission.objects.filter(quiz=self.quiz, student=self.users['employee']).exists())
-        self.assertEqual(Event.objects.filter(action='assessment_retry').count(), 1)
-        self.assertEqual(self.client.post(url).status_code, 409)
-
-    def test_employee_completes_training_through_quiz_api(self):
-        question = Question.objects.create(quiz=self.quiz, question_type=Question.SINGLE_CHOICE, points=1,
-            body={'prompt': [{'type': 'paragraph', 'children': [{'text': 'Question'}]}],
-                  'options': [{'id': 'a', 'text': 'Yes'}, {'id': 'b', 'text': 'No'}], 'correct_option_ids': ['a']})
-        self.as_role('hr')
-        self.complete('profile')
-        self.as_role('it')
-        self.complete('access')
+        self.assertEqual(self.complete('training').status_code, 400)
+        self.record.steps.filter(key='access').update(completed_at=timezone.now())
+        for role in ('hr', 'it', 'manager'):
+            self.as_role(role)
+            self.assertEqual(self.complete('training').status_code, 403)
+        self.client.force_authenticate(user=self.other)
+        self.assertEqual(self.complete('training').status_code, 403)
         self.as_role('employee')
-        take = self.client.get(f'/api/quizzes/{self.quiz.pk}/take/')
-        self.assertEqual(take.status_code, 200)
-        self.assertNotIn('correct_option_ids', str(take.data))
-        result = self.client.post(f'/api/quizzes/{self.quiz.pk}/submit/',
-                                  {'answers': {str(question.pk): ['a']}}, format='json')
-        self.assertEqual(result.status_code, 201)
         self.assertEqual(self.complete('training').status_code, 200)
 
     def test_overdue_scan_is_idempotent(self):
@@ -130,8 +110,6 @@ class OnboardingFlowTests(TestCase):
         for key, _, _, role, _, _, _ in BLUEPRINT:
             if key in ('profile', 'mentor'):
                 continue
-            if key == 'training':
-                Submission.objects.create(quiz=self.quiz, student=self.users['employee'], score=3, max_score=3)
             self.as_role(role)
             response = self.complete(key)
             self.assertEqual(response.status_code, 200, f'{key}: {response.data}')
@@ -157,8 +135,7 @@ class OnboardingFlowTests(TestCase):
         self.as_role('hr')
         response = self.client.post('/api/onboarding/workflows/', {
             'employee_id': self.other.pk, 'manager_id': self.users['manager'].pk,
-            'job_title': 'Engineer', 'department': 'Engineering', 'start_date': '1111-01-01',
-            'training_course_id': self.course.pk})
+            'job_title': 'Engineer', 'department': 'Engineering', 'start_date': '1111-01-01'})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(self.record.steps.filter(completed_at__isnull=False).count(), 0)
         self.assertEqual(self.complete('profile', {'verified': True}).status_code, 400)
@@ -166,7 +143,7 @@ class OnboardingFlowTests(TestCase):
     def test_other_manager_and_employee_cannot_complete_or_read_tasks(self):
         manager2 = User.objects.create_user(username='other_manager', password='pass123456', role='manager')
         other_record = create_onboarding(employee=self.other, manager=manager2, creator=self.users['hr'],
-            job_title='Analyst', department='Operations', start_date=timezone.localdate(), course=self.course)
+            job_title='Analyst', department='Operations', start_date=timezone.localdate())
         other_step = other_record.steps.get(key='mentor')
         other_employee_step = other_record.steps.get(key='contact')
         self.as_role('manager')
@@ -188,25 +165,23 @@ class OnboardingFlowTests(TestCase):
         self.assertEqual(Event.objects.filter(action='completed').count(), 0)
         self.assertIsNone(self.record.steps.get(key='profile').completed_at)
 
-    def test_training_progress_is_visible_to_its_employee_only(self):
-        second_quiz = Quiz.objects.create(course=self.course, title='Another check', is_published=True)
-        Submission.objects.create(quiz=self.quiz, student=self.users['employee'], score=8, max_score=10)
-        url = f'/api/onboarding/steps/{self.step("training").pk}/'
+    def test_training_detail_exposes_attestation_form_and_mode(self):
         self.as_role('employee')
-        result = self.client.get(url)
+        result = self.client.get(f'/api/onboarding/steps/{self.step("training").pk}/')
         self.assertEqual(result.status_code, 200)
-        self.assertEqual(len(result.data['assessments']), 2)
-        self.assertTrue(next(row for row in result.data['assessments'] if row['id'] == self.quiz.pk)['passed'])
-        self.assertIsNone(next(row for row in result.data['assessments'] if row['id'] == second_quiz.pk)['score'])
-        self.as_role('it')
-        self.assertEqual(self.client.get(url).data['assessments'], [])
+        self.assertEqual(result.data['step']['completion_mode'], 'attestation')
+        self.assertEqual(result.data['step']['form_fields'], [{
+            'name': 'confirmed', 'label': 'I read and acknowledge the security policy',
+            'type': 'checkbox', 'required': True,
+        }])
+        self.assertEqual({item['id'] for item in result.data['dependencies']}, {self.step('access').pk})
 
     def test_workflow_list_prefetches_related_tasks(self):
         self.as_role('hr')
         for number in range(2):
             employee = User.objects.create_user(username=f'new_hire_{number}', password='pass123456', role='employee')
             create_onboarding(employee=employee, manager=self.users['manager'], creator=self.users['hr'],
-                              job_title='Engineer', department='Ops', start_date=timezone.localdate(), course=self.course)
+                              job_title='Engineer', department='Ops', start_date=timezone.localdate())
         with CaptureQueriesContext(connection) as queries:
             response = self.client.get('/api/onboarding/workflows/')
         self.assertEqual(response.status_code, 200)
@@ -230,46 +205,19 @@ class OnboardingFlowTests(TestCase):
         self.assertEqual(self.step('access').evidence, old)
         self.assertEqual(self.client.get(f'/api/onboarding/steps/{self.step("access").pk}/').data['step']['completion_mode'], 'legacy_unverified')
 
-    def test_lesson_acknowledgments_required_and_idempotent(self):
-        self.as_role('hr'); self.complete('profile')
-        self.as_role('it'); self.complete('access')
-        Submission.objects.create(quiz=self.quiz, student=self.users['employee'], score=3, max_score=3)
-        self.record.lesson_reviews.all().delete()
+    def test_attestation_rejects_invalid_or_forged_evidence_without_side_effects(self):
+        self.record.steps.filter(key='access').update(completed_at=timezone.now())
         self.as_role('employee')
-        self.assertEqual(self.complete('training').status_code, 400)
-        url = f'/api/onboarding/lessons/{self.chapter.pk}/review/'
-        self.assertEqual(self.client.post(url, {'acknowledged': 'true'}, format='json').status_code, 400)
-        self.client.force_authenticate(user=self.other)
-        self.assertEqual(self.client.post(url, {'acknowledged': True}, format='json').status_code, 404)
-        self.as_role('employee')
-        for _ in range(2):
-            self.assertEqual(self.client.post(url, {'acknowledged': True}, format='json').status_code, 200)
-        self.assertEqual(Event.objects.filter(action='lesson_acknowledged').count(), 1)
-        self.assertEqual(self.complete('training').status_code, 200)
-
-    def test_failed_attempt_retained_and_pass_is_exact(self):
-        self.as_role('employee')
-        submission = Submission.objects.create(quiz=self.quiz, student=self.users['employee'], score=139, max_score=200, answers={'1': ['a']})
-        result = self.client.get(f'/api/quizzes/{self.quiz.pk}/my-result/').data
-        self.assertFalse(result['passed'])  # 69.5% must not be rounded into a pass.
-        self.assertEqual(self.client.post(f'/api/onboarding/assessments/{self.quiz.pk}/retry/').status_code, 200)
-        archived = AssessmentAttempt.objects.get()
-        self.assertEqual(archived.answers, submission.answers)
-        self.assertEqual(archived.score, 139)
-        Submission.objects.create(quiz=self.quiz, student=self.users['employee'], score=140, max_score=200)
-        self.assertEqual(self.client.post(f'/api/onboarding/assessments/{self.quiz.pk}/retry/').status_code, 409)
-
-    def test_forged_quiz_score_and_malformed_answer(self):
-        q = Question.objects.create(quiz=self.quiz, question_type=Question.SINGLE_CHOICE, points=1,
-            body={'options': [{'id': 'a', 'text': 'Answer'}], 'correct_option_ids': ['a']})
-        self.as_role('employee')
-        url = f'/api/quizzes/{self.quiz.pk}/submit/'
-        self.assertEqual(self.client.post(url, {'answers': {}, 'score': 100}, format='json').status_code, 400)
-        response = self.client.post(url, {'answers': {str(q.pk): [{}]}}, format='json')
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data['score'], 0)
-        self.assertEqual(self.client.post(url, {'answers': {str(q.pk): ['a']}}, format='json').data['score'], 0)
-        self.assertEqual(Event.objects.filter(action='assessment_submitted').count(), 1)
+        for evidence in (None, {}, {'confirmed': False}, {'confirmed': 'true'}, {'confirmed': 1},
+                         {'confirmed': True, '_proof': {'mode': 'attestation', 'version': 'forged'}},
+                         {'confirmed': True, 'version': 'forged'}):
+            with self.subTest(evidence=evidence):
+                response = self.client.post(f'/api/onboarding/steps/{self.step("training").pk}/complete/',
+                                            {'evidence': evidence}, format='json')
+                self.assertEqual(response.status_code, 400)
+                self.assertIsNone(self.step('training').completed_at)
+                self.assertEqual(self.step('training').evidence, {})
+                self.assertFalse(Event.objects.filter(step=self.step('training'), action='completed').exists())
 
     def test_final_signoff_checks_all_tasks_and_open_issues(self):
         # Even legacy/incomplete dependency graphs cannot bypass the all-task gate.
@@ -312,9 +260,9 @@ class OnboardingFlowTests(TestCase):
         profile.evidence = {'old': 'preserve me'}
         profile.completed_at = timezone.now()
         profile.save()
-        snapshots = (User.objects.count(), Course.objects.count(), Chapter.objects.count(), Quiz.objects.count(), Question.objects.count(), Onboarding.objects.count(), Step.objects.count(), Event.objects.count(), employee.password)
+        snapshots = (User.objects.count(), Onboarding.objects.count(), Step.objects.count(), Event.objects.count(), employee.password)
         call_command('seed_launchops', stdout=StringIO())
-        self.assertEqual(snapshots, (User.objects.count(), Course.objects.count(), Chapter.objects.count(), Quiz.objects.count(), Question.objects.count(), Onboarding.objects.count(), Step.objects.count(), Event.objects.count(), User.objects.get(pk=employee.pk).password))
+        self.assertEqual(snapshots, (User.objects.count(), Onboarding.objects.count(), Step.objects.count(), Event.objects.count(), User.objects.get(pk=employee.pk).password))
         profile.refresh_from_db()
         self.assertEqual(profile.evidence, {'old': 'preserve me'})
         self.assertIsNotNone(profile.completed_at)
@@ -326,37 +274,26 @@ class OnboardingFlowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertLessEqual(len(queries), 12)
 
-    @override_settings(DEBUG=True)
-    def test_seed_incident_answers_are_safe_and_existing_publication_is_preserved(self):
-        from django.core.management import call_command
-        from io import StringIO
-        call_command('seed_launchops', stdout=StringIO())
-        quiz = Quiz.objects.get(title='Incident response check')
-        for q in quiz.questions.all():
-            correct = [o['text'] for o in q.body['options'] if o['id'] in q.body['correct_option_ids']]
-            self.assertNotIn('Your password', correct)
-            self.assertNotIn('A public social post', correct)
-        quiz.is_published = False
-        quiz.save()
-        call_command('seed_launchops', stdout=StringIO())
-        quiz.refresh_from_db()
-        self.assertFalse(quiz.is_published)
-
-    def test_training_track_repair_is_hr_only_and_preserves_completed_training(self):
-        self.record.training_course = None
-        self.record.save()
-        url = f'/api/onboarding/workflows/{self.record.pk}/'
-        self.as_role('employee')
-        self.assertEqual(self.client.patch(url, {'training_course_id': self.course.pk}).status_code, 403)
+    def test_workflow_creation_and_directory_need_only_onboarding_data(self):
         self.as_role('hr')
-        self.assertEqual(self.client.patch(url, {'training_course_id': self.course.pk}).status_code, 200)
-        self.assertEqual(Event.objects.filter(action='track_assigned').count(), 1)
-        self.client.patch(url, {'training_course_id': self.course.pk})
-        self.assertEqual(Event.objects.filter(action='track_assigned').count(), 1)
-        second = Course.objects.create(title='Another track', instructor=self.editor, is_published=True)
-        self.assertEqual(self.client.patch(url, {'training_course_id': second.pk}).status_code, 400)
-        self.record.steps.filter(key='training').update(completed_at=timezone.now())
-        self.assertEqual(self.client.patch(url, {'training_course_id': second.pk}).status_code, 400)
+        directory = self.client.get('/api/onboarding/directory/')
+        self.assertEqual(directory.status_code, 200)
+        self.assertEqual(set(directory.data), {'users'})
+        self.assertEqual({row['role'] for row in directory.data['users']}, {'employee', 'manager'})
+        response = self.client.post('/api/onboarding/workflows/', {
+            'employee_id': self.other.pk, 'manager_id': self.users['manager'].pk,
+            'job_title': 'Engineer', 'department': 'Engineering',
+            'start_date': timezone.localdate().isoformat(),
+        }, format='json')
+        self.assertEqual(response.status_code, 201, response.data)
+        record = Onboarding.objects.get(pk=response.data['id'])
+        self.assertEqual(record.steps.count(), len(BLUEPRINT))
+        self.assertEqual(record.steps.get(key='training').evidence, {})
+
+    def test_reschedule_requires_a_start_date(self):
+        self.as_role('hr')
+        response = self.client.patch(f'/api/onboarding/workflows/{self.record.pk}/', {}, format='json')
+        self.assertEqual(response.status_code, 400)
 
     def test_attendance_cannot_be_future_dated(self):
         self.record.steps.filter(key__in=['equipment', 'mentor']).update(completed_at=timezone.now())

@@ -21,16 +21,16 @@ export default function Workspace(): React.JSX.Element {
   const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
   const [pagination, setPagination] = useState({ count: 0, total_pages: 1 });
   const requestId = useRef(0);
-  const [directory, setDirectory] = useState<Directory>({ users: [], tracks: [] });
+  const [directory, setDirectory] = useState<Directory>({ users: [] });
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [busy, setBusy] = useState<'date' | 'track' | 'launch' | null>(null);
+  const [busy, setBusy] = useState<'date' | 'launch' | null>(null);
   const [error, setError] = useState<string>('');
   const [notice, setNotice] = useState<string>('');
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editingDate, setEditingDate] = useState<boolean>(false);
   const [revisedDate, setRevisedDate] = useState<string>('');
-  const [form, setForm] = useState<WorkflowForm>({ employee_id: '', manager_id: '', training_course_id: '', job_title: '', department: '', start_date: '' });
+  const [form, setForm] = useState<WorkflowForm>({ employee_id: '', manager_id: '', job_title: '', department: '', start_date: '' });
 
   const refresh = useCallback(async () => {
     const id = ++requestId.current;
@@ -74,20 +74,10 @@ export default function Workspace(): React.JSX.Element {
     } finally { setBusy(null); }
   }
 
-  async function changeTrack(value: string) {
-    if (!value) return;
-    setBusy('track'); setError('');
-    // This handler is only exposed in the selected workflow panel.
-    try { await api.patch<Workflow>(`/onboarding/workflows/${selected!.id}/`, { training_course_id: Number(value) }); await refresh(); setNotice('Learning track assigned.'); }
-    catch (err) { setError(Object.values(errorResponse(err)?.data || {}).flat().join(' ') || 'Could not assign track.'); }
-    finally { setBusy(null); }
-  }
-
   async function launch(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy('launch'); setError(''); setNotice('');
     try {
-      const payload = { ...form, training_course_id: form.training_course_id || null };
-      const result = await api.post<Workflow>('/onboarding/workflows/', payload);
+      const result = await api.post<Workflow>('/onboarding/workflows/', form);
       if (page === 1) { await refresh(); setSelectedId(result.data.id); }
       else setParams({ page: '1' });
       setShowForm(false);
@@ -118,7 +108,6 @@ export default function Workspace(): React.JSX.Element {
         <label>Job title<input required maxLength={160} value={form.job_title} onChange={e => setForm({ ...form, job_title: e.target.value })} placeholder="Software Engineer" /></label>
         <label>Department<input required maxLength={100} value={form.department} onChange={e => setForm({ ...form, department: e.target.value })} placeholder="Engineering" /></label>
         <label>Start date<input required type="date" value={form.start_date} onChange={e => setForm({ ...form, start_date: e.target.value })} /></label>
-        <label>Learning track<select aria-label="Learning track" required value={form.training_course_id} onChange={e => setForm({ ...form, training_course_id: e.target.value })}><option value="">Select a published track</option>{directory.tracks.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}</select></label>
       </div><button className="ops-primary" disabled={busy === 'launch'}>{busy === 'launch' ? 'Launching…' : 'Launch workflow →'}</button>
     </form>}
 
@@ -145,12 +134,11 @@ export default function Workspace(): React.JSX.Element {
           </button>; })}
       </aside>
       {selected && <div className="ops-main">
-        <section className="ops-panel summary-panel"><div className="section-heading"><div><span className="eyebrow">WORKFLOW #{selected.id} · {selected.department.toUpperCase()}</span><h2>{selected.employee}'s first chapter</h2><p>{selected.job_title} · Starts {fmt(selected.start_date)} · Manager {selected.manager}</p>{selected.date_needs_correction && <p role="alert">Start date needs HR correction; existing records are preserved.</p>}{user.role === 'hr' && <>{editingDate ? <form className="date-form" onSubmit={saveDate}><label>Correct start date <input required type="date" value={revisedDate} onChange={e => setRevisedDate(e.target.value)} /></label><button className="complete-btn" disabled={busy === 'date'}>Save date</button><button type="button" className="learning-link" onClick={() => setEditingDate(false)}>Cancel</button></form> : <button className="learning-link link-button" onClick={() => { setRevisedDate(selected.start_date); setEditingDate(true); }}>Correct start date</button>}</>}</div>{user.role === 'hr' && !selected.steps.some(s => s.key === 'training' && s.state === 'completed') && <label>Learning track<select aria-label="Assigned learning track" disabled={busy === 'track'} value={selected.training_course_id || ''} onChange={e => changeTrack(e.target.value)}><option value="">Choose a track</option>{directory.tracks.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}</select></label>}<span className="completion-ring">{Math.round(selected.steps.filter(s => s.state === 'completed').length / selected.steps.length * 100)}%</span></div></section>
+        <section className="ops-panel summary-panel"><div className="section-heading"><div><span className="eyebrow">WORKFLOW #{selected.id} · {selected.department.toUpperCase()}</span><h2>{selected.employee}'s first chapter</h2><p>{selected.job_title} · Starts {fmt(selected.start_date)} · Manager {selected.manager}</p>{selected.date_needs_correction && <p role="alert">Start date needs HR correction; existing records are preserved.</p>}{user.role === 'hr' && <>{editingDate ? <form className="date-form" onSubmit={saveDate}><label>Correct start date <input required type="date" value={revisedDate} onChange={e => setRevisedDate(e.target.value)} /></label><button className="complete-btn" disabled={busy === 'date'}>Save date</button><button type="button" className="learning-link" onClick={() => setEditingDate(false)}>Cancel</button></form> : <button className="learning-link link-button" onClick={() => { setRevisedDate(selected.start_date); setEditingDate(true); }}>Correct start date</button>}</>}</div><span className="completion-ring">{Math.round(selected.steps.filter(s => s.state === 'completed').length / selected.steps.length * 100)}%</span></div></section>
         <section className="ops-panel"><div className="section-heading"><div><span className="eyebrow">DEPENDENCY-AWARE</span><h2>Launch checklist</h2>{selected.steps.some(s => s.key === 'ready' && s.state === 'completed') && <p>Workflow signed off. Any unfinished tasks added after historical signoff are shown for transparency; the original completion is preserved.</p>}</div><span className="muted">{selected.steps.filter(s => s.state === 'completed').length}/{selected.steps.length} complete</span></div>
           <div className="step-list">{selected.steps.map((step, index) => {
             const mine = step.owner_role === user.role && (user.role !== 'manager' || selected.manager === user.username) && (user.role !== 'employee' || selected.employee === user.username);
             return <article key={step.id} className={`step ${step.state}`}><span className="step-icon">{step.state === 'completed' ? '✓' : String(index + 1).padStart(2, '0')}</span><div className="step-body"><div className="step-head"><h3><Link to={`/workspace/tasks/${step.id}`}>{step.title}</Link></h3><span className={`status ${step.state}`}>{stateLabel(step, selected, user)}</span></div><p>{step.description}</p><div className="step-meta"><span>{step.owner_role.toUpperCase()}</span><span>Due {fmt(step.due_at)}</span>{step.prerequisites.length > 0 && <span>After {step.prerequisites.join(', ')}</span>}</div>
-              {step.key === 'training' && selected.training_course_id && selected.employee === user.username && <Link className="learning-link" to={`/student/courses/${selected.training_course_id}`}>Open learning track ↗</Link>}
               <Link className="complete-btn task-open" to={`/workspace/tasks/${step.id}`}>{step.state === 'ready' && mine ? 'Open and complete task →' : 'View task details →'}</Link>
               {step.completed_by && <small className="completed-by">Confirmed by {step.completed_by}</small>}
             </div></article>; })}</div>

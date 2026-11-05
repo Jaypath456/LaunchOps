@@ -4,9 +4,8 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 from rest_framework.test import APIClient
 from users.models import User
-from courses.models import Course, Enrollment
-from .models import Onboarding, Event, AssessmentAttempt
-from .blueprint import BLUEPRINT, FORMS
+from .models import Onboarding, Event
+from .blueprint import BLUEPRINT, FORMS, TRAINING_POLICY_VERSION
 
 
 class SeedSafetyTests(TestCase):
@@ -33,7 +32,7 @@ class SeedSafetyTests(TestCase):
         with self.assertRaises(CommandError):
             call_command('seed_launchops', stdout=StringIO())
         self.assertEqual(list(User.objects.values_list('id', flat=True)), [original.pk])
-        self.assertFalse(Course.objects.exists())
+        self.assertFalse(Onboarding.objects.exists())
 
 
 @override_settings(DEBUG=True)
@@ -43,20 +42,6 @@ class SeededDemoTests(TestCase):
         users = {role: User.objects.get(username='demo_' + role) for role in ('hr', 'it', 'manager', 'employee')}
         record = Onboarding.objects.get(employee=users['employee'])
         client = APIClient()
-        for chapter in record.training_course.chapters.all():
-            client.force_authenticate(users['employee'])
-            self.assertEqual(client.post(f'/api/onboarding/lessons/{chapter.pk}/review/', {'acknowledged': True}, format='json').status_code, 200)
-        for index, quiz in enumerate(record.training_course.quizzes.all()):
-            if index == 0:
-                response = client.post(f'/api/quizzes/{quiz.pk}/submit/', {'answers': {}}, format='json')
-                self.assertEqual(response.status_code, 201)
-                self.assertEqual(response.data['score'], 0)
-                self.assertEqual(client.post(f'/api/onboarding/assessments/{quiz.pk}/retry/').status_code, 200)
-                self.assertEqual(AssessmentAttempt.objects.filter(onboarding=record).count(), 1)
-            answers = {str(q.pk): q.body['correct_option_ids'] for q in quiz.questions.all()}
-            response = client.post(f'/api/quizzes/{quiz.pk}/submit/', {'answers': answers}, format='json')
-            self.assertEqual(response.status_code, 201)
-            self.assertEqual((response.data['score'], response.data['max_score']), (3, 3))
         for key, _, _, role, _, _, _ in BLUEPRINT:
             if key == 'ready':
                 continue
@@ -67,6 +52,9 @@ class SeededDemoTests(TestCase):
             if key == 'feedback':
                 evidence['status'] = 'Needs support'
             client.force_authenticate(users[role])
+            if key == 'training':
+                self.assertEqual(client.post(f'/api/onboarding/steps/{step.pk}/complete/',
+                    {'evidence': {'confirmed': False}}, format='json').status_code, 400)
             response = client.post(f'/api/onboarding/steps/{step.pk}/complete/', {'evidence': evidence}, format='json')
             self.assertEqual(response.status_code, 200, (key, response.data))
         ready = record.steps.get(key='ready')
@@ -85,4 +73,7 @@ class SeededDemoTests(TestCase):
         call_command('seed_launchops', stdout=StringIO())
         self.assertEqual(list(record.steps.values_list('id', 'completed_at', 'evidence')), saved)
         self.assertEqual(record.events.count(), snapshots[1])
-        self.assertTrue(Enrollment.objects.filter(student=users['employee'], course=record.training_course).exists())
+        self.assertEqual(record.steps.get(key='training').evidence['_proof'], {
+            'mode': 'attestation', 'version': TRAINING_POLICY_VERSION,
+            'result': 'Acknowledgment recorded; not proof of reading or identity.',
+        })

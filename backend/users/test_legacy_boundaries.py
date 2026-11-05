@@ -6,8 +6,8 @@ from courses.models import Course, Chapter, Enrollment
 from messaging.permissions import can_access_course_chat
 from quizzes.models import Quiz, Question, Submission
 from schedule.models import Term, Section
-from .models import Event
-from .services import create_onboarding
+from onboarding.models import Event
+from onboarding.services import create_onboarding
 
 
 class LegacyBoundaryTests(TestCase):
@@ -20,8 +20,9 @@ class LegacyBoundaryTests(TestCase):
         cls.quiz = Quiz.objects.create(course=cls.course, title='Quiz', is_published=True)
         cls.question = Question.objects.create(quiz=cls.quiz, body={'options': [{'id': 'a', 'text': 'Yes'}], 'correct_option_ids': ['a']})
         cls.record = create_onboarding(employee=cls.users['employee'], manager=cls.users['manager'], creator=cls.users['hr'],
-                                       job_title='Engineer', department='Demo', start_date=timezone.localdate(), course=cls.course)
+                                       job_title='Engineer', department='Demo', start_date=timezone.localdate())
         Enrollment.objects.create(student=cls.users['student'], course=cls.course)
+        Enrollment.objects.create(student=cls.users['employee'], course=cls.course)
         term = Term.objects.create(name='Audit term', start_date=timezone.localdate(), end_date=timezone.localdate())
         cls.section = Section.objects.create(course=cls.course, term=term)
 

@@ -4,11 +4,9 @@ from datetime import date as date_type
 from django.db import transaction
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError, PermissionDenied
-from courses.models import Enrollment, Chapter
-from quizzes.models import Quiz, Submission
 
 from .models import Onboarding, Step, Event, Issue
-from .blueprint import BLUEPRINT, FORMS, SIMULATIONS, HANDBOOK_VERSION
+from .blueprint import BLUEPRINT, FORMS, SIMULATIONS, HANDBOOK_VERSION, TRAINING_POLICY_VERSION
 
 # Fixed, versioned workflow definition. Relationships are constructed server side
 # and cannot be supplied by an untrusted client.
@@ -45,11 +43,11 @@ def validate_evidence(key, evidence):
     return clean
 
 
-def create_onboarding(*, employee, manager, creator, job_title, department, start_date, course=None):
+def create_onboarding(*, employee, manager, creator, job_title, department, start_date):
     with transaction.atomic():
         record = Onboarding.objects.create(employee=employee, manager=manager, created_by=creator,
                                             job_title=job_title, department=department,
-                                            start_date=start_date, training_course=course)
+                                            start_date=start_date)
         steps = {}
         for key, title, description, role, kind, offset, _ in BLUEPRINT:
             due = due_at(start_date, offset)
@@ -57,8 +55,6 @@ def create_onboarding(*, employee, manager, creator, job_title, department, star
                                            description=description, owner_role=role, kind=kind, due_at=due)
         for key, _, _, _, _, _, dependencies in BLUEPRINT:
             steps[key].prerequisites.add(*(steps[dependency] for dependency in dependencies))
-        if course:
-            Enrollment.objects.get_or_create(student=employee, course=course)
         Event.objects.create(onboarding=record, actor=creator, action='created', detail='Workflow launched')
     return record
 
@@ -117,21 +113,8 @@ def complete_step(step_id, actor, evidence=None):
                 (step.key == 'feedback' and clean['status'] == 'Needs support')):
             Issue.objects.get_or_create(onboarding=record, step=step, defaults={'detail': clean.get('feedback', 'Simulated device needs support')})
         if step.key == 'training':
-            if not record.training_course_id:
-                raise ValidationError({'training': 'Ask HR to assign a published learning track.'})
-            chapters = Chapter.objects.filter(course_id=record.training_course_id, visibility='public')
-            if not chapters.exists() or chapters.exclude(pk__in=record.lesson_reviews.values('chapter_id')).exists():
-                raise ValidationError({'training': 'Acknowledge every linked lesson before completing training.'})
-            quizzes = list(Quiz.objects.filter(course_id=record.training_course_id, is_published=True).values_list('id', flat=True))
-            if not quizzes:
-                raise ValidationError({'training': 'The training track has no published assessment yet.'})
-            passed = set(Submission.objects.filter(student=record.employee, quiz_id__in=quizzes,
-                                                   max_score__gt=0).extra(where=['score * 100 >= max_score * 70']).values_list('quiz_id', flat=True))
-            if len(passed) != len(quizzes):
-                raise ValidationError({'training': 'Pass every published assessment with at least 70% first.'})
-        if step.key == 'training':
-            clean['_proof'] = {'mode': 'assessment', 'result': 'Lesson acknowledgments and server-graded assessments; not proof of identity or reading.',
-                'assessments': list(Submission.objects.filter(student=record.employee, quiz_id__in=quizzes).values('quiz_id', 'score', 'max_score'))}
+            clean['_proof'] = {'mode': 'attestation', 'version': TRAINING_POLICY_VERSION,
+                               'result': 'Acknowledgment recorded; not proof of reading or identity.'}
         if step.key == 'ready':
             clean['_proof']['reviewed_tasks'] = list(record.steps.exclude(pk=step.pk).values_list('id', flat=True))
         step.completed_at = timezone.now()

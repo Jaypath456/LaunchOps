@@ -9,7 +9,6 @@ class Onboarding(models.Model):
     job_title = models.CharField(max_length=160)
     department = models.CharField(max_length=100)
     start_date = models.DateField()
-    training_course = models.ForeignKey('courses.Course', null=True, blank=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -50,26 +49,6 @@ class Event(models.Model):
         ordering = ['-created_at']
         indexes = [models.Index(fields=['onboarding', '-created_at'])]
         constraints = [models.UniqueConstraint(fields=['step', 'action'], condition=models.Q(action='overdue'), name='unique_overdue_event')]
-
-
-class LessonReview(models.Model):
-    onboarding = models.ForeignKey(Onboarding, on_delete=models.CASCADE, related_name='lesson_reviews')
-    chapter = models.ForeignKey('courses.Chapter', on_delete=models.PROTECT)
-    reviewed_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        constraints = [models.UniqueConstraint(fields=['onboarding', 'chapter'], name='unique_lesson_review')]
-
-
-class AssessmentAttempt(models.Model):
-    """Retains failed attempts when the legacy single-submission slot is retried."""
-    onboarding = models.ForeignKey(Onboarding, on_delete=models.CASCADE)
-    quiz = models.ForeignKey('quizzes.Quiz', on_delete=models.PROTECT)
-    answers = models.JSONField(default=dict)
-    score = models.IntegerField()
-    max_score = models.IntegerField()
-    submitted_at = models.DateTimeField()
-    archived_at = models.DateTimeField(auto_now_add=True)
 
 
 class Issue(models.Model):

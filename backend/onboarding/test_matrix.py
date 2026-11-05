@@ -5,11 +5,9 @@ from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
 from rest_framework.test import APIClient
 
-from courses.models import Chapter, Course
-from quizzes.models import Quiz, Submission
 from users.models import User
 from .blueprint import BLUEPRINT, FORMS
-from .models import Event, LessonReview, Step
+from .models import Event, Step
 from .services import create_onboarding
 
 
@@ -53,20 +51,10 @@ class MatrixHelpers:
             username='other', password='pass123456', role='employee')
         self.editor = User.objects.create_user(
             username='editor', password='pass123456', role='instructor')
-        self.course = Course.objects.create(
-            title='Security', instructor=self.editor, is_published=True)
-        self.quiz = Quiz.objects.create(
-            course=self.course, title='Check', is_published=True)
         self.record = create_onboarding(
             employee=self.users['employee'], manager=self.users['manager'],
             creator=self.users['hr'], job_title='Engineer', department='Engineering',
-            start_date=timezone.localdate() + timedelta(days=10), course=self.course)
-        self.chapter = Chapter.objects.create(
-            course=self.course, title='Lesson', visibility='public',
-            content=[{'type': 'paragraph', 'children': [{'text': 'Read this lesson'}]}])
-        LessonReview.objects.create(onboarding=self.record, chapter=self.chapter)
-        Submission.objects.create(student=self.users['employee'], quiz=self.quiz,
-                                  score=1, max_score=1)
+            start_date=timezone.localdate() + timedelta(days=10))
         self.client = APIClient()
 
     def as_role(self, role):

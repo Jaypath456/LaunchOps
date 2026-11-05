@@ -20,7 +20,6 @@ export interface WorkflowSummary extends WorkflowOwners {
   job_title: string;
   department: string;
   start_date: string;
-  training_course_id: number | null;
   date_needs_correction: boolean;
 }
 
@@ -57,7 +56,6 @@ export interface Workflow extends WorkflowSummary {
 
 export interface Directory {
   users: { id: number; username: string; role: UserRole }[];
-  tracks: { id: number; title: string }[];
 }
 
 export interface WorkflowPage {
@@ -72,7 +70,6 @@ export interface WorkflowPage {
 export interface WorkflowForm {
   employee_id: string;
   manager_id: string;
-  training_course_id: string;
   job_title: string;
   department: string;
   start_date: string;
@@ -90,7 +87,6 @@ export interface EvidenceProof {
   asset?: string;
   version?: string;
   profile?: Pick<WorkflowSummary, 'employee' | 'job_title' | 'department' | 'start_date'>;
-  assessments?: { score: number; max_score: number }[];
   reviewed_tasks?: unknown[];
 }
 
@@ -106,8 +102,6 @@ export interface TaskDetailResponse {
   review: TaskStep[];
   handbook: { version: string; sections: string[] } | null;
   issues: { id: number; detail: string; resolution: string; resolved_at: string | null }[];
-  lessons: { id: number; title: string; reviewed: boolean }[];
-  assessments: { id: number; title: string; score: number | null; max_score: number | null; passed: boolean }[];
 }
 
 export interface CompletionResponse {
