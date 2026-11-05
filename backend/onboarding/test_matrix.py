@@ -49,8 +49,6 @@ class MatrixHelpers:
             for role in ('hr', 'it', 'manager', 'employee')}
         self.other = User.objects.create_user(
             username='other', password='pass123456', role='employee')
-        self.editor = User.objects.create_user(
-            username='editor', password='pass123456', role='instructor')
         self.record = create_onboarding(
             employee=self.users['employee'], manager=self.users['manager'],
             creator=self.users['hr'], job_title='Engineer', department='Engineering',
@@ -99,7 +97,7 @@ class OwnerMatrixTests(MatrixHelpers, TestCase):
         for key, _, _, owner, _, _, _ in BLUEPRINT:
             self.complete_others(key)
             non_owners = [user for role, user in self.users.items() if role != owner]
-            for user in non_owners + [self.other, self.editor]:
+            for user in non_owners + [self.other]:
                 with self.subTest(key=key, actor=user.username):
                     self.client.force_authenticate(user=user)
                     response = self.complete(key)

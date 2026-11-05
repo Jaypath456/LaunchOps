@@ -1,7 +1,0 @@
-NAME                        IMAGE                     COMMAND                  SERVICE    CREATED          STATUS                    PORTS
-launchops-repo-backend-1    launchops-repo-backend    "sh ./docker-entrypo…"   backend    9 minutes ago    Up 9 minutes (healthy)    0.0.0.0:18000->8000/tcp, [::]:18000->8000/tcp
-launchops-repo-beat-1       launchops-repo-beat       "celery -A lms_proje…"   beat       9 minutes ago    Up 9 minutes              8000/tcp
-launchops-repo-frontend-1   launchops-repo-frontend   "docker-entrypoint.s…"   frontend   9 minutes ago    Up 9 minutes              0.0.0.0:13000->3000/tcp, [::]:13000->3000/tcp
-launchops-repo-postgres-1   postgres:16-alpine        "docker-entrypoint.s…"   postgres   20 minutes ago   Up 20 minutes (healthy)   5432/tcp
-launchops-repo-redis-1      redis:7-alpine            "docker-entrypoint.s…"   redis      20 minutes ago   Up 20 minutes (healthy)   6379/tcp
-launchops-repo-worker-1     launchops-repo-worker     "celery -A lms_proje…"   worker     9 minutes ago    Up 9 minutes              8000/tcp

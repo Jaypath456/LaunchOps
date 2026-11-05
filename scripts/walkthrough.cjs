@@ -2,6 +2,7 @@
  * Creates a fresh audit employee and completes only its workflow; never modifies existing workflows or deletes data.
  */
 const { chromium } = require('playwright');
+const { execFileSync } = require('child_process');
 const fs = require('fs');
 const assert = require('assert/strict');
 const base = process.env.LAUNCHOPS_URL || 'http://localhost:13000';
@@ -14,10 +15,10 @@ const report = { started: new Date().toISOString(), pages: [], actions: [], atta
 (async () => {
   const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN || (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' : '/usr/bin/google-chrome'), headless: true, args: ['--no-sandbox'] });
   const clients = {};
-  async function login(role, username) {
+  async function login(role, username, accountPassword = password) {
     const context = await browser.newContext(); const page = await context.newPage(); page.setDefaultTimeout(60000);
     page.on('pageerror', e => report.errors.push(`${username}: ${e.message}`));
-    await page.goto(base); await page.locator(`a[href="/login/${role}"]`).click(); await page.locator('[name=username]').fill(username); await page.locator('[name=password]').fill(password);
+    await page.goto(base); await page.locator(`a[href="/login/${role}"]`).click(); await page.locator('[name=username]').fill(username); await page.locator('[name=password]').fill(accountPassword);
     await page.getByRole('button', { name: 'Sign In', exact: true }).click(); await page.waitForURL('**/workspace'); await page.locator('.ops-hero').waitFor();
     report.actions.push({ action: 'role login through landing page', role, username, path: '/login/' + role });
     const request = async (method, path, data) => {
@@ -41,7 +42,7 @@ const report = { started: new Date().toISOString(), pages: [], actions: [], atta
     const hr = clients.hr, it = clients.it;
     let workflows = await workflowsFor(hr);
     const demo = workflows.find(w => w.employee === 'demo_employee');
-    // Read every migrated and demo task visible to each role, without changing the user's workflow.
+    // Read every demo task visible to each role, without changing the user's workflow.
     for (const role of process.env.SKIP_INSPECTION ? [] : Object.keys(clients)) {
       const c = clients[role]; const visible = await workflowsFor(c);
       for (const w of visible.filter(w => w.id <= 2)) for (const s of w.steps) {
@@ -50,19 +51,15 @@ const report = { started: new Date().toISOString(), pages: [], actions: [], atta
       }
       console.log('Inspected tasks for', role);
     }
-    // Registration and HR workflow creation exercise the actual forms.
+    // Seed a fresh account; HR still launches its workflow through the actual form.
     const username = 'audit_employee_' + Date.now();
-    const context = await browser.newContext(); const page = await context.newPage(); await page.goto(base + '/register');
-    await page.locator('[name=username]').fill(username); await page.locator('[name=email]').fill(username + '@example.test');
-    await page.locator('[name=password]').fill(password);
-    await page.locator('button[type=submit]').click(); await page.waitForURL('**/workspace'); await context.close();
-    const fresh = await login('employee', username);
+    execFileSync('docker', ['compose', 'exec', '-T', 'backend', 'python', 'manage.py', 'seed_launchops', '--walkthrough-employee', username], { stdio: 'pipe' });
+    const fresh = await login('employee', username, 'LaunchOpsDemo2026!');
     await hr.page.goto(base + '/workspace'); await hr.page.getByRole('button', { name: '+ Start onboarding' }).click();
     await hr.page.getByLabel('New hire', { exact: true }).selectOption({ label: username });
     await hr.page.getByLabel('Manager', { exact: true }).selectOption({ label: 'demo_manager' });
     await hr.page.getByLabel('Job title', { exact: true }).fill('Audit engineer'); await hr.page.getByLabel('Department', { exact: true }).fill('Product audit');
     await hr.page.getByLabel('Start date', { exact: true }).fill(new Date().toISOString().slice(0,10));
-    await hr.page.locator('.launch-form').getByLabel('Learning track', { exact: true }).selectOption({ label: 'Security essentials' });
     await hr.page.getByRole('button', { name: 'Launch workflow →' }).click(); await hr.page.getByRole('status').filter({ hasText: 'Onboarding started' }).waitFor();
     workflows = await workflowsFor(hr);
     const newWorkflow = workflows.find(w => w.employee === username); assert(newWorkflow);
@@ -76,11 +73,11 @@ const report = { started: new Date().toISOString(), pages: [], actions: [], atta
     if (newWorkflow.steps.find(s=>s.key==='profile').state !== 'completed') await attack(it, 'POST', `/onboarding/steps/${newWorkflow.steps.find(s=>s.key==='equipment').id}/complete/`, { evidence: { device:'Demo laptop',delivery_date:'2026-09-27' } }, 400, 'Skipped prerequisites');
     await attack(fresh, 'POST', `/onboarding/steps/${newWorkflow.steps.find(s=>s.key==='equipment').id}/complete/`, { evidence:{} }, 403, 'Employee cannot complete IT work');
     if (newWorkflow.steps.find(s=>s.key==='profile').state !== 'completed') await attack(hr, 'POST', `/onboarding/steps/${newWorkflow.steps.find(s=>s.key==='profile').id}/complete/`, { evidence:{review:'Match demo profile',_proof:{mode:'verified'}} }, 400, 'Forged simulation proof');
-    // Complete all tasks from their role-specific browser forms, including a failing quiz then retry.
+    // Complete all tasks from their role-specific browser forms, including policy attestation.
     for (const initial of [newWorkflow]) {
       const employee = fresh;
       let w = (await hr.request('GET', `/onboarding/workflows/${initial.id}/`)).data;
-      // Blueprint order differs on migrated workflows; repeatedly select ready tasks.
+      // Repeatedly select ready tasks to respect prerequisites.
       while (w.steps.some(s => s.state !== 'completed')) {
         const s = w.steps.find(s => s.state === 'ready'); assert(s, 'No ready task: deadlock');
         const c = s.owner_role === 'employee' ? employee : clients[s.owner_role];
@@ -90,30 +87,6 @@ const report = { started: new Date().toISOString(), pages: [], actions: [], atta
           await employee.page.goto(`${base}/workspace/tasks/${s.id}`); await employee.page.getByText('Waiting for IT', { exact:true }).waitFor();
           assert.equal(await employee.page.locator('form.task-form').count(),0);
           await employee.page.screenshot({path:reportDir + '/employee-waiting.png',fullPage:true});
-        }
-        if (s.key === 'training') {
-          for (const lesson of task.lessons) {
-            await c.page.goto(`${base}/student/chapters/${lesson.id}`); await c.page.getByRole('button',{name:/Acknowledge this lesson|Lesson acknowledged/}).waitFor();
-            if (!lesson.reviewed) await c.page.getByRole('button',{name:'Acknowledge this lesson',exact:true}).click();
-            await c.page.getByRole('button',{name:'Lesson acknowledged',exact:true}).waitFor();
-            report.actions.push({ workflow:w.id,lesson:lesson.id,action:'acknowledged in browser' });
-          }
-          for (const [index, q] of task.assessments.entries()) {
-            const current = await c.request('GET', `/quizzes/${q.id}/my-result/`);
-            if (current.status === 200 && current.data.passed) continue;
-            if (current.status === 200) { await c.page.goto(`${base}/student/quizzes/${q.id}/result`); await c.page.getByRole('button',{name:'Retry assessment'}).click(); }
-            await c.page.goto(`${base}/student/quizzes/${q.id}/take`); await c.page.locator('.quiz-question-card').first().waitFor();
-            if (index === 0 && initial.id === newWorkflow.id) {
-              // Intentionally leave all unanswered, then exercise retry navigation.
-              await c.page.getByRole('button',{name:'Submit Quiz',exact:true}).click(); await c.page.getByRole('button',{name:'Retry assessment'}).click(); await c.page.locator('.quiz-question-card').first().waitFor();
-            }
-            const questions = await c.page.locator('.quiz-question-card').all();
-            const safe = /Report it to IT without opening it|Report it without opening it|A unique password|Multi-factor authentication|Report to IT|Ask IT to inspect it|Tell IT promptly|Lock the screen|Report it to IT immediately|Apply the update|An approved work system|Only the access they need|Report the incident promptly|Refuse and alert IT|The time and what happened|An approved IT channel/;
-            for (const card of questions) await card.locator('label').filter({hasText:safe}).locator('input').check();
-            await c.page.getByRole('button',{name:'Submit Quiz',exact:true}).click(); await c.page.getByText(/100% · Passed/).waitFor();
-            report.actions.push({workflow:w.id,quiz:q.id,action:'passed in browser'});
-          }
-          await c.page.goto(`${base}/workspace/tasks/${s.id}`); await c.page.locator('h1').waitFor();
         }
         if (s.key === 'ready') {
           assert(task.issues.some(issue => !issue.resolved_at), 'Expected a reported blocker');

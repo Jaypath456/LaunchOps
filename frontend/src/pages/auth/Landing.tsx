@@ -20,7 +20,6 @@ export default function Landing() {
         <span className="role-kicker">{entry.description}</span><h2>{entry.label}</h2><p>{entry.detail}</p><strong>Sign in as {entry.label} →</strong>
       </Link>)}</div>
       <p className="landing-note">Use your assigned account. Your role is verified when you sign in.</p>
-      <p className="auth-link">Joining as a new hire? <Link to="/register">Create an employee account</Link></p>
     </main>
   </div>;
 }

@@ -1,6 +1,7 @@
 from datetime import timedelta
 from django.conf import settings
 from django.db import transaction
+from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from users.models import User
@@ -15,11 +16,20 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--pagination-demo', action='store_true', help='Also add named, non-login demo workflows for browsing beyond 100 records.')
+        parser.add_argument('--walkthrough-employee', help='Create a fresh employee account without a workflow for the local browser walkthrough.')
 
     @transaction.atomic
     def handle(self, *args, **kwargs):
         if not settings.DEBUG:
             raise CommandError('Demo fixtures are available only with DEBUG=True. No data was changed.')
+        walkthrough_username = kwargs.get('walkthrough_employee')
+        if walkthrough_username is not None:
+            try:
+                User._meta.get_field('username').clean(walkthrough_username, None)
+            except ValidationError as exc:
+                raise CommandError('Invalid walkthrough employee username.') from exc
+            if User.objects.filter(username=walkthrough_username).exists() or walkthrough_username.startswith('demo_'):
+                raise CommandError('Walkthrough employee must be a fresh, non-demo username. No data was changed.')
         people = {}
         for username, role in [('demo_hr', 'hr'), ('demo_it', 'it'), ('demo_manager', 'manager'), ('demo_employee', 'employee')]:
             user, created = User.objects.get_or_create(username=username, defaults={'role': role, 'email': username + '@example.test'})
@@ -34,6 +44,9 @@ class Command(BaseCommand):
         if not Onboarding.objects.filter(employee=people['employee']).exists():
             create_onboarding(employee=people['employee'], manager=people['manager'], creator=people['hr'],
                 job_title='Software Engineer', department='Engineering', start_date=timezone.localdate() + timedelta(days=7))
+        if walkthrough_username is not None:
+            User.objects.create_user(username=walkthrough_username, role='employee', password=PASSWORD,
+                                     email=walkthrough_username + '@example.test')
         if kwargs['pagination_demo']:
             for number in range(1, 106):
                 user, created = User.objects.get_or_create(username=f'demo_page_{number:03}', defaults={'role': 'employee'})

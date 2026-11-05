@@ -51,7 +51,7 @@ services:
     volumes:
       - ./backend:/app
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/admin/login/', timeout=2)"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:8000/api/auth/login/', method='OPTIONS'), timeout=2)"]
       interval: 3s
       timeout: 3s
       retries: 20

@@ -10,6 +10,27 @@ from .blueprint import BLUEPRINT, FORMS, TRAINING_POLICY_VERSION
 
 class SeedSafetyTests(TestCase):
     @override_settings(DEBUG=True)
+    def test_walkthrough_employee_is_fresh_and_ready_for_hr_to_launch(self):
+        call_command('seed_launchops', walkthrough_employee='walkthrough_hire', stdout=StringIO())
+        user = User.objects.get(username='walkthrough_hire')
+        self.assertEqual(user.role, 'employee')
+        self.assertTrue(user.check_password('LaunchOpsDemo2026!'))
+        self.assertFalse(user.is_staff or user.is_superuser)
+        self.assertFalse(Onboarding.objects.filter(employee=user).exists())
+        password = user.password
+        with self.assertRaises(CommandError):
+            call_command('seed_launchops', walkthrough_employee='walkthrough_hire', stdout=StringIO())
+        user.refresh_from_db()
+        self.assertEqual(user.password, password)
+
+    @override_settings(DEBUG=True)
+    def test_walkthrough_employee_rejects_invalid_or_reserved_names_before_writes(self):
+        for username in ('', 'invalid name', 'a' * 151, 'demo_hr', 'demo_page_001'):
+            with self.subTest(username=username), self.assertRaises(CommandError):
+                call_command('seed_launchops', walkthrough_employee=username, stdout=StringIO())
+            self.assertFalse(User.objects.exists())
+
+    @override_settings(DEBUG=True)
     def test_pagination_demo_is_repeatable_and_has_no_login_passwords(self):
         call_command('seed_launchops', pagination_demo=True, stdout=StringIO())
         self.assertEqual(Onboarding.objects.count(), 106)

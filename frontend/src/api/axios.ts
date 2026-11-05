@@ -15,7 +15,7 @@ interface SessionRequest extends InternalAxiosRequestConfig {
 // A separate client prevents refresh recursion and sends no expired bearer token.
 const refreshApi = axios.create({ baseURL: api.defaults.baseURL });
 let pending: { generation: number; promise: Promise<string> } | null = null;
-const publicAuth = (url = '') => /\/auth\/(login|register|refresh)\/?(?:\?|$)/.test(url);
+const publicAuth = (url = '') => /\/auth\/(login|refresh)\/?(?:\?|$)/.test(url);
 
 api.interceptors.request.use((config: SessionRequest) => {
 

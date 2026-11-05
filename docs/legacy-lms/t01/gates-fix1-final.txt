@@ -1,6 +1,0 @@
-
-==> task gate t01
-ok: no live/Channels leftovers
-ok: go-live and loadtests removed
-
-CHECKS: PASS

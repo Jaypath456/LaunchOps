@@ -12,20 +12,7 @@ class SessionRefreshSerializer(TokenRefreshSerializer):
             raise InvalidToken('This account is no longer available.')
 
 
-class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, trim_whitespace=False)
-    # Public signup cannot grant organizational privileges.
-    role = serializers.CharField(read_only=True)
-
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'password', 'role', 'bio']
-
-    def create(self, validated_data):
-        return User.objects.create_user(role='employee', **validated_data)
-
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role', 'bio']
+        fields = ['id', 'username', 'email', 'role']

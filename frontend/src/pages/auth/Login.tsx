@@ -22,22 +22,14 @@ export default function Login(): React.JSX.Element {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      const user = await login(form.username.trim(), form.password, entry?.role);
-      
-      if (['hr', 'it', 'manager', 'employee'].includes(user.role)) {
-        navigate('/workspace');
-      } else if (user.role === 'instructor') {
-        navigate('/instructor/dashboard');
-      } else {
-        navigate('/student/catalog');
-      }
-      
+      await login(form.username.trim(), form.password, entry?.role);
+      navigate('/workspace');
     } catch (err) {
       setLoading(false);
       setError(errorField(errorResponse(err)?.data, 'error') || 'Login failed');
@@ -91,9 +83,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           </button>
         </form>
 
-        <p className="auth-link">
-          Don't have an account? <Link to="/register">Register here</Link>
-        </p>
+        <p className="auth-link">Use the account provided for your role.</p>
       </div>
     </div>
   );

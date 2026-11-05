@@ -70,12 +70,6 @@ class OnboardingFlowTests(TestCase):
         self.assertEqual(self.complete('ready').status_code, 400)
         self.assertEqual(self.record.steps.get(key='training').evidence['confirmed'], True)
 
-    def test_public_registration_cannot_claim_staff_role(self):
-        self.client.force_authenticate(user=None)
-        response = self.client.post('/api/auth/register/', {'username': 'selfregister', 'password': 'pass123456', 'role': 'hr'})
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(User.objects.get(username='selfregister').role, 'employee')
-
     def test_training_attestation_requires_access_and_its_employee(self):
         self.assertEqual(list(self.step('training').prerequisites.values_list('key', flat=True)), ['access'])
         self.as_role('employee')

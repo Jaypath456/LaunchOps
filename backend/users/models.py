@@ -10,8 +10,6 @@ username_validator = RegexValidator(
 class User(AbstractUser):
     username = models.CharField(max_length=150, unique=True, validators=[username_validator])
     ROLE_CHOICES = (
-        ('instructor', 'Instructor'),
-        ('student', 'Student'),
         ('hr', 'HR'),
         ('it', 'IT'),
         ('manager', 'Manager'),
@@ -21,10 +19,8 @@ class User(AbstractUser):
     role = models.CharField(
         max_length=20,
         choices=ROLE_CHOICES,
-        default='student'
+        default='employee'
     )
-
-    bio = models.TextField(blank=True, default='')
 
     def __str__(self):
         return self.username

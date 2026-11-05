@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api/axios';
-import type { AuthResponse, RegisterRequest, User, OnboardingRole } from '../types/auth';
+import type { AuthResponse, User, OnboardingRole } from '../types/auth';
 import { clearSession, storeSession, SESSION_ENDED, sessionGeneration } from '../api/session';
 
 interface AuthProviderProps {
@@ -11,7 +11,6 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   login: (username: string, password: string, role?: OnboardingRole) => Promise<User>;
-  register: (data: RegisterRequest) => Promise<User>;
   logout: () => void;
   sessionError: string;
 }
@@ -61,20 +60,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return res.data.user;
   };
 
-  const register = async (data: RegisterRequest): Promise<User> => {
-    const res = await api.post<AuthResponse>('/auth/register/', data);
-    storeSession(res.data);
-    setSessionError('');
-    setUser(res.data.user);
-    return res.data.user;
-  };
-
   const logout = () => {
     clearSession();
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, sessionError }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, sessionError }}>
       {children}
     </AuthContext.Provider>
   );

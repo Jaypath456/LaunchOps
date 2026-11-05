@@ -32,7 +32,6 @@ DEBUG = _get_bool_env('DEBUG', default=False)
 ALLOWED_HOSTS = _get_list_env('ALLOWED_HOSTS', default='localhost,127.0.0.1')
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -42,15 +41,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'users',
-    'courses',
-    'quizzes',
-    'schedule',
-    'messaging',
     'onboarding',
 ]
-
-# Preserve PostgreSQL upgrade history outside the onboarding application.
-MIGRATION_MODULES = {'onboarding': 'lms_project.onboarding_migrations'}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -116,12 +108,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    # Only applies automatically to generic/class-based views. The
-    # function-based views in courses/views.py that need pagination
-    # (course_list) apply courses.pagination.StandardResultsPagination
-    # explicitly - this default exists so any future generic/class-based
-    # views (e.g. upcoming quizzes app) get sane pagination for free.
-    'DEFAULT_PAGINATION_CLASS': 'courses.pagination.StandardResultsPagination',
+    'DEFAULT_PAGINATION_CLASS': 'onboarding.pagination.WorkflowPagination',
     'PAGE_SIZE': 12,
 }
 
@@ -134,11 +121,6 @@ CORS_ALLOWED_ORIGINS = _get_list_env('CORS_ALLOWED_ORIGINS', default='http://loc
 CORS_ALLOW_CREDENTIALS = True
 
 # ─── Redis (cache + Celery broker) ─────────────────────────────
-# Every feature that touches Redis in this project (caching, the quiz
-# submission idempotency lock) is written to degrade gracefully if Redis
-# is unreachable - see lms_project/safe_cache.py. Redis is an
-# optimization here, never a correctness requirement; the real
-# guarantees are DB constraints (see quizzes/views.py::quiz_submit).
 REDIS_URL = os.getenv('REDIS_URL', 'redis://127.0.0.1:6379/0')
 
 CACHES = {
@@ -152,7 +134,7 @@ CACHES = {
 }
 
 # ─── Celery ─────────────────────────────────────────────────────
-# Beat runs the onboarding overdue scan. The legacy chat purge is opt-in (CHAT_PURGE_ENABLED).
+# Beat runs the onboarding overdue scan during the PostgreSQL phase.
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_ACCEPT_CONTENT = ['json']
@@ -167,10 +149,3 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-# Legacy learning chat: hard-deletes messages of courses whose term has ended.
-# Off by default so a normal start never deletes data; set CHAT_PURGE_ENABLED=true to schedule it.
-if _get_bool_env('CHAT_PURGE_ENABLED'):
-    CELERY_BEAT_SCHEDULE['purge-ended-term-chats-daily'] = {
-        'task': 'messaging.tasks.purge_ended_term_chats',
-        'schedule': crontab(hour=3, minute=0),
-    }

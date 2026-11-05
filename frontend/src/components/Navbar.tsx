@@ -21,33 +21,9 @@ export default function Navbar(): React.JSX.Element | null {
     <nav className="navbar">
       <div className="navbar-left">
         <Link to="/" className="navbar-brand">LaunchOps<span style={{color: '#dc9457'}}>.</span></Link>
-        {['hr', 'it', 'manager', 'employee'].includes(user.role) ? (
-          <div className="navbar-links">
-            <Link to="/workspace" className={isActive('/workspace') ? 'active' : ''}>Workspace</Link>
-            {user.role === 'employee' && <Link to="/student/my-courses">Learning</Link>}
-          </div>
-        ) : user.role === 'instructor' ? (
-          <div className="navbar-links">
-            <Link to="/instructor/dashboard" className={isActive('/instructor/dashboard') ? 'active' : ''}>
-              Dashboard
-            </Link>
-            <Link to="/instructor/courses" className={isActive('/instructor/courses') ? 'active' : ''}>
-              My Courses
-            </Link>
-          </div>
-        ) : (
-          <div className="navbar-links">
-            <Link to="/student/catalog" className={isActive('/student/catalog') ? 'active' : ''}>
-              Browse Courses
-            </Link>
-            <Link to="/student/my-courses" className={isActive('/student/my-courses') ? 'active' : ''}>
-              My Learning
-            </Link>
-            <Link to="/student/schedule" className={isActive('/student/schedule') ? 'active' : ''}>
-              My Schedule
-            </Link>
-          </div>
-        )}
+        <div className="navbar-links">
+          <Link to="/workspace" className={isActive('/workspace') ? 'active' : ''}>Workspace</Link>
+        </div>
       </div>
 
       <div className="navbar-right">
