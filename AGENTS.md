@@ -1,11 +1,37 @@
-# AGENTS.md
+# AGENTS.md (LaunchOps v2)
 
-LaunchOps: onboarding workflow app (20 tasks, 4 roles). Django 6 + DRF + simplejwt, PostgreSQL, Celery/Redis, React (Create React App).
+Onboarding workflow app (roles hr, it, manager, employee). Work happens on `v2-*` branches; `main` stays v1 until v2 is merged
+(v1 is tagged `v1-postgres`). Spec: `docs/V2_SPEC.md` — read only the sections your task names.
 
-- Scope: backend/onboarding, backend/users, frontend/src unless the task says otherwise.
-- Never read or grep: docs/review/, frontend/node_modules/, frontend/build/, go-live/ unless the task names it.
-- Do not run `docker compose down -v`. Never delete volumes or data.
-- Backend tests: `docker compose exec -e REDIS_URL=redis://redis:6379/15 backend python manage.py test --noinput > /tmp/t.log 2>&1; tail -30 /tmp/t.log`. Report exact counts.
-- Frontend checks: `npx tsc --noEmit` and `CI=true npm test -- --watchAll=false`, tail the output.
-- One task per session. One commit per tested increment. No squash, rebase or force-push.
-- No invented numbers: every figure needs its command and environment.
+**Status line (owner edits):** Phase 1 (tasks t01-t03): still PostgreSQL + Django ORM + Celery/Redis while the LMS is stripped.
+[mongo] and [go] rules apply from t04.
+
+Target: Django 6 + DRF + simplejwt over PyMongo (no ORM) and MongoDB 8 standalone; Go `provisioner` (3 replicas) and Go `mock-saas`;
+React + TypeScript + Vite. No Celery, Redis, PostgreSQL or broker.
+
+## Rules
+- [mongo] Business state changes only in `backend/onboarding/repository.py`: conditional `update_one` guarded by `version` plus an
+  `$elemMatch` on the step; events `$push`ed in the same write. `arrayFilters` alone is not a guard. Use `matched_count`.
+- [mongo] No Django ORM, no `django.db.transaction`, no raw SQL, no mongomock. Tests use `MongoTestCase` (real MongoDB, unique DB per class).
+- [mongo] Datetimes UTC and tz-aware at boundaries. Never order by timestamp; array order is event order.
+- [go] Go writes only inside one `provisioning` element and pushes only `provisioning.*` events; never `version`, `steps` or `issues`.
+  Every job transition is a compare-and-set. `fence` is never reset. Every network/DB call has a context deadline. No package-level
+  mutable state. Logs via `log/slog` JSON. mock-saas is a simulator; never call it a real integration.
+- Contract changes update `contracts/` plus both the Python and Go contract tests in the same task.
+- No invented numbers: every figure in a doc comes from `docs/evidence/<name>/` (COMMAND.txt, ENV.txt, raw output).
+- Never `docker compose down -v`; never delete volumes; never push.
+- Do NOT commit, amend, rebase or create branches; never add `Co-authored-by` or "Generated with" lines anywhere. Leave changes in the working tree.
+- Do not read `frontend/node_modules/`, `frontend/dist/`, `.git/`.
+- Unattended runs: nobody can answer questions. If something is ambiguous, choose the most conservative option consistent with the spec,
+  write the decision to `.night/notes.md`, and continue. If truly blocked, write why in `.night/notes.md` and stop.
+- Stop when the task's "done when" holds. Do not improve unrelated code.
+
+## Commands
+- Phase 1 backend: `docker compose exec -e REDIS_URL=redis://redis:6379/15 backend python manage.py test --noinput`
+- From t04: `docker compose exec backend python manage.py test --noinput`
+- Go: `cd provisioner && go vet ./... && MONGO_URI=mongodb://localhost:27017 go test -race ./...`
+- Frontend: `cd frontend && npm run typecheck && npm test && npm run build`
+- If you cannot run Docker in your sandbox, say so; an outside script runs the checks and sends you failures.
+
+## Finish with
+1. Files changed. 2. Commands run with exact pass/fail counts (or "not runnable here"). 3. Decisions recorded in `.night/notes.md`.
