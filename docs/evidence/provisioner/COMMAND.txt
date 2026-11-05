@@ -1,0 +1,14 @@
+# Throwaway MongoDB (stopped afterwards)
+docker run -d --rm --name cc-c11a-mongo -p 47017:27017 mongo:8
+
+# Full passing run (output.txt), from provisioner/
+cd provisioner
+go vet ./...
+MONGO_URI=mongodb://localhost:47017 go test -race -count=1 -v ./...
+
+# Missing MONGO_URI must fail, not skip (output.txt, last section)
+env -u MONGO_URI go test -count=1 ./internal/jobs/
+
+# Guard-removal runs (one per guard; store.go restored and sha256-checked after each):
+#   remove one guard line from internal/jobs/store.go (diffs in guard-removal-results.md), then
+MONGO_URI=mongodb://localhost:47017 go test -race -count=1 -v ./internal/jobs/
