@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from django.core.cache import cache
 from django.core.management import call_command
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -192,21 +192,6 @@ class CatalogCacheTests(APITestCase):
         self.assertEqual(first_again.data, first_page.data)
         self.assertEqual(second_again.data, second_page.data)
 
-    @override_settings(LOAD_TEST_DISABLE_REDIS_OPTIMIZATIONS=True)
-    def test_caching_is_skipped_when_load_test_toggle_disables_it(self):
-        Course.objects.create(title='Toggle Course', instructor=self.instructor, is_published=True)
-
-        first = self.client.get('/api/courses/')
-        self.assertEqual(len(first.data['results']), 1)
-        self.assertIsNone(cache.get(CATALOG_CACHE_KEY))
-
-        # With caching disabled, a course created after the first
-        # request DOES show up on the very next request (no stale
-        # cached response in the way) - the opposite of
-        # test_second_request_is_served_from_cache above.
-        Course.objects.create(title='Also Visible', instructor=self.instructor, is_published=True)
-        second = self.client.get('/api/courses/')
-        self.assertEqual(len(second.data['results']), 2)
 
 
 class SeedDemoCommandTests(TestCase):
@@ -251,38 +236,6 @@ class SeedDemoCommandTests(TestCase):
 
         user = User.objects.get(username='demo_instructor')
         self.assertTrue(user.check_password('password123'))
-
-    def test_students_flag_is_a_no_op_by_default(self):
-        self._run_seed()
-
-        self.assertFalse(User.objects.filter(username__startswith='loadtest_student_').exists())
-
-    def test_students_flag_seeds_load_test_scale_data(self):
-        call_command('seed_demo', students=25, stdout=io.StringIO())
-
-        loadtest_students = User.objects.filter(username__startswith='loadtest_student_')
-        self.assertEqual(loadtest_students.count(), 25)
-        self.assertTrue(User.objects.filter(username='loadtest_student_0000').exists())
-        self.assertTrue(User.objects.filter(username='loadtest_student_0024').exists())
-
-        published_course = Course.objects.get(title='Introduction to Python')
-        self.assertEqual(
-            Enrollment.objects.filter(course=published_course, student__username__startswith='loadtest_student_').count(),
-            25,
-        )
-
-        from quizzes.models import Quiz
-        self.assertTrue(Quiz.objects.filter(course=published_course, title='Load Test Quiz').exists())
-
-    def test_students_flag_is_idempotent(self):
-        call_command('seed_demo', students=10, stdout=io.StringIO())
-        first_count = User.objects.filter(username__startswith='loadtest_student_').count()
-
-        call_command('seed_demo', students=10, stdout=io.StringIO())
-        second_count = User.objects.filter(username__startswith='loadtest_student_').count()
-
-        self.assertEqual(first_count, second_count)
-        self.assertEqual(first_count, 10)
 
 
 class EnrollmentPermissionTests(APITestCase):

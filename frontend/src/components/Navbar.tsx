@@ -43,9 +43,6 @@ export default function Navbar(): React.JSX.Element | null {
             <Link to="/student/my-courses" className={isActive('/student/my-courses') ? 'active' : ''}>
               My Learning
             </Link>
-            <Link to="/student/live" className={isActive('/student/live') ? 'active' : ''}>
-              Join Live Quiz
-            </Link>
             <Link to="/student/schedule" className={isActive('/student/schedule') ? 'active' : ''}>
               My Schedule
             </Link>

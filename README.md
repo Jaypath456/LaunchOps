@@ -53,7 +53,7 @@ docker compose exec backend python manage.py makemigrations --check --dry-run
 cd frontend && npm ci && npm run typecheck && npm test && npm run build
 ```
 
-Validated on October 28, 2026 with Docker Desktop: the backend suite ran **284 tests, all passing, none skipped, on PostgreSQL 16.15** in 222.916 seconds, and the host frontend ran **21 Vitest tests**, all passing. Typecheck, production build, Django checks, and migration checks passed. Exact commands, environments, browser reports and limitations are in the [delivery evidence](docs/DEMO_DELIVERY.md). Most backend tests cover the legacy learning modules. The onboarding-specific tests include:
+The phase-one cleanup passed **212 backend tests** on PostgreSQL and **20 frontend tests**, with no failures or skips. Typecheck, production build, Django system checks and migration checks passed. Exact commands, environment and raw output are in [t01 evidence](docs/evidence/t01/COMMAND.txt). Earlier browser and delivery results are [archived](docs/legacy-lms/DEMO_DELIVERY.md). The onboarding-specific tests include:
 
 - **Workflow tests** (`onboarding/tests.py`): all 20 tasks end to end with owner boundaries, invalid and forged evidence, the dependency gate, final signoff rules, idempotent overdue scan and a query budget.
 - **Matrix tests** (`onboarding/test_matrix.py`, table-driven with `subTest`): blueprint integrity (20 steps, 5 per role, unique keys, existing dependencies, acyclic graph), every step against every non-owner role, every step's prerequisites, and missing, unknown and empty evidence fields for every step.
@@ -77,21 +77,13 @@ docker compose exec backend python manage.py seed_launchops --pagination-demo
 NODE_PATH=/tmp/launchops-browser/node_modules node scripts/check_session_pagination.cjs
 ```
 
-The optional flag adds named pagination fixtures with unusable passwords and preserves existing records. The session check requires the local Compose backend with `DEBUG=True`; it creates signed expired tokens in memory without logging or saving them. It checks page navigation, concurrent refresh, refresh-only session restoration, expired refresh and missing refresh. `LAUNCHOPS_REPORT_DIR` selects either script's report directory. See [executed delivery evidence and LMS audit](docs/DEMO_DELIVERY.md). The earlier [audit report](docs/AUDIT.md) predates the current suite; its counts are historical.
+The optional flag adds named pagination fixtures with unusable passwords and preserves existing records. The session check requires the local Compose backend with `DEBUG=True`; it creates signed expired tokens in memory without logging or saving them. It checks page navigation, concurrent refresh, refresh-only session restoration, expired refresh and missing refresh. `LAUNCHOPS_REPORT_DIR` selects either script's report directory. See [executed delivery evidence and LMS audit](docs/legacy-lms/DEMO_DELIVERY.md). The earlier [audit report](docs/legacy-lms/AUDIT.md) predates the current suite; its counts are historical.
 
 ## Frontend
 
-The frontend uses Vite, Vitest and a strict `tsconfig.json`. The shared API layer, auth context, app shell, login and registration pages and the onboarding pages are TypeScript (`.ts` and `.tsx`, with API model types in `frontend/src/types`). The legacy learning pages (courses, quizzes, schedule, chat and live quiz) are still JavaScript and compile through `allowJs`. `npm start` runs the Vite dev server; a successful production build is not a production deployment.
+The frontend uses Vite, Vitest and a strict `tsconfig.json`. The shared API layer, auth context, app shell, login and registration pages and the onboarding pages are TypeScript (`.ts` and `.tsx`, with API model types in `frontend/src/types`). The legacy learning pages (courses, quizzes, schedule, chat history) are still JavaScript and compile through `allowJs`. `npm start` runs the Vite dev server; a successful production build is not a production deployment.
 
-## Optional live quiz (Go and MongoDB)
-
-The live quiz is an experiment and is not part of the default stack or the onboarding workflow. Its Go WebSocket workers, gateway and MongoDB sit behind the `live` Compose profile:
-
-```bash
-LIVE_QUIZ_ENGINE=go docker compose --profile live up --build --wait -d
-```
-
-By default `LIVE_QUIZ_ENGINE` is `django` and live rooms use Django channels over Redis. The Go gateway uses port `19090`; override `LIVE_PORT` and `REACT_APP_LIVE_WS_URL` together if it is occupied. See [live quiz architecture and benchmark](docs/LIVE_ARCHITECTURE.md). The audit's test counts do not cover the Go path.
+Course chat displays saved history only; sending is unavailable during this phase.
 
 ## Existing data and dates
 
@@ -99,8 +91,8 @@ Migrations preserve completed steps, evidence and activity. Seven-step workflows
 
 ## Origins
 
-LaunchOps started as a learning-management system I built (courses, chapters, quizzes, scheduling, course chat and live quizzes) and that I converted into this onboarding platform. The onboarding workflow engine is the later work in this repository: the 20-task blueprint, the role and prerequisite rules, the evidence forms and checks, transactional completion with row locks, the overdue scan, the onboarding pages, and the tests, CI and frontend tooling described above. The learning modules remain for the training step and are not part of the onboarding walkthrough. This repository's history starts from a snapshot of the combined code, so it does not show that split.
+LaunchOps started as a learning-management system I built (courses, chapters, quizzes, scheduling, course chat history) and that I converted into this onboarding platform. The onboarding workflow engine is the later work in this repository: the 20-task blueprint, the role and prerequisite rules, the evidence forms and checks, transactional completion with row locks, the overdue scan, the onboarding pages, and the tests, CI and frontend tooling described above. The learning modules remain for the training step and are not part of the onboarding walkthrough. This repository's history starts from a snapshot of the combined code, so it does not show that split.
 
 ## Limits
 
-Use Python 3.12+, Node 20+, PostgreSQL and Redis for a non-Docker setup: copy `backend/.env.example` to `backend/.env`, install `backend/requirements.txt`, then migrate, seed with `DEBUG=True` for local use, and run Django, and run `npm ci` and `npm start` in `frontend/`. Docker is the recommended setup. HR and IT see all workflows in this single workspace; managers see their assigned workflows and employees see their own. Staff provisioning requires trusted administration. There is no tenant isolation, invitation system, identity provider, external evidence verification or production notification channel. Training reuses course lessons and server-graded quizzes; employees cannot use legacy chat, live quiz or scheduling routes or change their enrollment. Legacy students retain those features; their leaderboard excludes employee training scores. Tokens remain in tab-scoped session storage; logout clears that tab but does not revoke an already-issued refresh token on the server. Access tokens last 24 hours and refresh tokens seven days. The `loadtests/` suite predates onboarding and does not establish its performance.
+Use Python 3.12+, Node 20+, PostgreSQL and Redis for a non-Docker setup: copy `backend/.env.example` to `backend/.env`, install `backend/requirements.txt`, then migrate, seed with `DEBUG=True` for local use, and run Django, and run `npm ci` and `npm start` in `frontend/`. Docker is the recommended setup. HR and IT see all workflows in this single workspace; managers see their assigned workflows and employees see their own. Staff provisioning requires trusted administration. There is no tenant isolation, invitation system, identity provider, external evidence verification or production notification channel. Training reuses course lessons and server-graded quizzes; employees cannot use legacy chat history or scheduling routes or change their enrollment. Legacy students retain read-only chat history and scheduling. The course score API excludes employee training scores. Tokens remain in tab-scoped session storage; logout clears that tab but does not revoke an already-issued refresh token on the server. Access tokens last 24 hours and refresh tokens seven days.

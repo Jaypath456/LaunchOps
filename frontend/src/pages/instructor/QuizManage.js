@@ -67,9 +67,6 @@ export default function QuizManage() {
           <Link to={`/instructor/courses/${quiz.course}/quizzes/${quizId}/edit`} className="btn-secondary">
             Edit Quiz
           </Link>
-          <Link to={`/instructor/quizzes/${quizId}/live`} className="btn-primary">
-            Go Live
-          </Link>
         </div>
       </div>
 

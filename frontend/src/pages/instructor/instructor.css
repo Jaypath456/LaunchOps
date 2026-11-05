@@ -446,29 +446,3 @@
   border: 1px solid #fecaca;
   border-radius: 6px;
 }
-
-/* Live quiz host console */
-.live-quiz-room-badge {
-  display: inline-block;
-  padding: 6px 14px;
-  margin-bottom: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: #4f46e5;
-  background: #eef2ff;
-  border-radius: 20px;
-}
-
-.live-room-code-display {
-  padding: 24px;
-  margin: 20px 0;
-  font-size: 40px;
-  font-weight: 700;
-  text-align: center;
-  letter-spacing: 0.08em;
-  color: #4f46e5;
-  background: #fff;
-  border: 2px dashed #c7d2fe;
-  border-radius: 10px;
-}

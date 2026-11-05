@@ -1,0 +1,15 @@
+Working directory: repository root unless noted.
+
+docker compose config --services
+BUILDX_CONFIG=/tmp/launchops-t01-buildx docker compose up --build --wait -d
+docker compose exec backend python manage.py check
+docker compose exec backend python manage.py makemigrations --check --dry-run
+docker compose exec -e REDIS_URL=redis://redis:6379/15 backend python manage.py test --noinput
+cd frontend && npm run typecheck && npm test && npm run build
+docker compose ps
+docker compose exec -T backend python manage.py shell < docs/legacy-lms/t01/runtime-check.py
+
+Initial failed attempts, corrected before completion:
+- docker compose up --build --wait -d: invalid Compose project from an incomplete edit; corrected the service/volume definitions.
+- docker compose up --build --wait -d: sandbox denied writing Docker buildx activity under the home directory; reran successfully with BUILDX_CONFIG above.
+- Inline runtime check: incorrectly expected /api/onboarding/ to resolve; the existing route is /api/onboarding/workflows/. Corrected verification input; initial raw error retained.

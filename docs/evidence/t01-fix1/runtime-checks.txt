@@ -1,0 +1,3 @@
+30 objects imported automatically (use -v 2 for details).
+
+PASS: HTTP ASGI handler, dependency removal, model removal, route removal, retained HTTP APIs.

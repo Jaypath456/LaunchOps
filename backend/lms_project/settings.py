@@ -32,18 +32,12 @@ DEBUG = _get_bool_env('DEBUG', default=False)
 ALLOWED_HOSTS = _get_list_env('ALLOWED_HOSTS', default='localhost,127.0.0.1')
 
 INSTALLED_APPS = [
-    # Must be listed before django.contrib.staticfiles so that
-    # `manage.py runserver` automatically uses Daphne (ASGI) instead of
-    # Django's WSGI dev server - required for WebSocket support locally.
-    # Production deployments should invoke daphne directly regardless.
-    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels',
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
@@ -177,31 +171,3 @@ if _get_bool_env('CHAT_PURGE_ENABLED'):
         'task': 'messaging.tasks.purge_ended_term_chats',
         'schedule': crontab(hour=3, minute=0),
     }
-
-# ─── Channels (WebSockets) ──────────────────────────────────────
-# Same Redis instance as the cache/Celery broker - separate logical use,
-# same physical server is fine for this project's scale.
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [REDIS_URL],
-        },
-    },
-}
-
-# ─── Load testing: before/after toggle ─────────────────────────
-# Flips off the Redis-backed optimizations (catalog caching in
-# courses/views.py, the quiz-submit idempotency fast path in
-# quizzes/views.py) while leaving Redis itself running - this isolates
-# exactly the contribution those optimizations make in the load-test
-# comparison (loadtests/), rather than conflating "Redis optimizations
-# off" with "Redis unreachable" (which is the *degrade gracefully*
-# scenario safe_cache already covers, and a different thing to measure).
-# Never set outside of load testing - defaults to False (optimizations
-# on) everywhere else, including production.
-LOAD_TEST_DISABLE_REDIS_OPTIMIZATIONS = (
-    os.getenv('LOAD_TEST_DISABLE_REDIS_OPTIMIZATIONS', 'False').strip().lower() == 'true'
-)
-LIVE_SERVICE_SECRET = os.getenv('LIVE_SERVICE_SECRET', '')
-LIVE_QUIZ_ENGINE = os.getenv('LIVE_QUIZ_ENGINE', 'django')

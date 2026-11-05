@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../../api/axios';
-import Leaderboard from '../../components/Leaderboard';
 import CourseChat from '../../components/CourseChat';
 import './student.css';
 import { useAuth } from '../../context/AuthContext';
@@ -15,7 +14,6 @@ export default function CourseView() {
   const [loading, setLoading] = useState(true);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
-  const [leaderboard, setLeaderboard] = useState([]);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -32,14 +30,6 @@ export default function CourseView() {
         setIsEnrolled(enrollRes.data.enrolled);
         setQuizzes(quizzesRes.data);
 
-        // The persistent (non-live) leaderboard - total quiz score
-        // across this course - only enrolled students can see it
-        // (see quizzes/views.py::course_leaderboard), so only fetch it
-        // once we know enrollment status.
-        if (enrollRes.data.enrolled && user?.role === 'student') {
-          const leaderboardRes = await api.get(`/courses/${courseId}/leaderboard/`);
-          setLeaderboard(leaderboardRes.data);
-        }
       } catch (err) {
         console.error("Error loading course:", err);
       } finally {
@@ -154,11 +144,7 @@ export default function CourseView() {
       )}
 
       {isEnrolled && user?.role === 'student' && (
-        <Leaderboard rankings={leaderboard} title="Quiz Leaderboard" />
-      )}
-
-      {isEnrolled && user?.role === 'student' && (
-        <CourseChat courseId={courseId} chatOpen={course.chat_open} />
+        <CourseChat courseId={courseId} />
       )}
     </div>
   );

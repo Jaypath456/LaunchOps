@@ -23,8 +23,8 @@ class Migration(migrations.Migration):
                 ('started_at', models.DateTimeField(blank=True, null=True)),
                 ('ended_at', models.DateTimeField(blank=True, null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('host', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='hosted_live_sessions', to=settings.AUTH_USER_MODEL)),
-                ('quiz', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='live_sessions', to='quizzes.quiz')),
+                ('host', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='hosted_retired_sessions', to=settings.AUTH_USER_MODEL)),
+                ('quiz', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='retired_sessions', to='quizzes.quiz')),
             ],
             options={
                 'ordering': ['-created_at'],

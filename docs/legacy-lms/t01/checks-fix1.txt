@@ -1,0 +1,291 @@
+
+==> backend tests (PostgreSQL phase, project ln-t01)
+ Image ln-t01-backend Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 572B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 553B done
+#2 DONE 0.0s
+
+#3 [auth] library/python:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#4 [internal] load metadata for docker.io/library/python:3.12-slim
+#4 DONE 0.6s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 158B done
+#5 DONE 0.0s
+
+#6 [1/7] FROM docker.io/library/python:3.12-slim@sha256:b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 15.89kB done
+#7 DONE 0.0s
+
+#8 [2/7] WORKDIR /app
+#8 CACHED
+
+#9 [3/7] RUN apt-get update     && apt-get install -y --no-install-recommends libpq5     && rm -rf /var/lib/apt/lists/*
+#9 CACHED
+
+#10 [4/7] COPY requirements.txt .
+#10 DONE 0.0s
+
+#11 [5/7] RUN pip install --no-cache-dir -r requirements.txt
+#11 0.822 Collecting Django==6.0.6 (from -r requirements.txt (line 1))
+#11 0.966   Downloading django-6.0.6-py3-none-any.whl.metadata (3.9 kB)
+#11 1.016 Collecting djangorestframework==3.17.1 (from -r requirements.txt (line 2))
+#11 1.050   Downloading djangorestframework-3.17.1-py3-none-any.whl.metadata (7.9 kB)
+#11 1.092 Collecting djangorestframework-simplejwt==5.5.1 (from -r requirements.txt (line 3))
+#11 1.129   Downloading djangorestframework_simplejwt-5.5.1-py3-none-any.whl.metadata (4.6 kB)
+#11 1.174 Collecting django-cors-headers==4.9.0 (from -r requirements.txt (line 4))
+#11 1.211   Downloading django_cors_headers-4.9.0-py3-none-any.whl.metadata (16 kB)
+#11 1.300 Collecting psycopg2-binary==2.9.12 (from -r requirements.txt (line 5))
+#11 1.328   Downloading psycopg2_binary-2.9.12-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl.metadata (4.9 kB)
+#11 1.369 Collecting python-dotenv==1.2.2 (from -r requirements.txt (line 6))
+#11 1.400   Downloading python_dotenv-1.2.2-py3-none-any.whl.metadata (27 kB)
+#11 1.468 Collecting redis==7.4.0 (from -r requirements.txt (line 7))
+#11 1.500   Downloading redis-7.4.0-py3-none-any.whl.metadata (12 kB)
+#11 1.545 Collecting django-redis==7.0.0 (from -r requirements.txt (line 8))
+#11 1.579   Downloading django_redis-7.0.0-py3-none-any.whl.metadata (32 kB)
+#11 1.656 Collecting celery==5.6.3 (from celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 1.688   Downloading celery-5.6.3-py3-none-any.whl.metadata (23 kB)
+#11 1.744 Collecting asgiref>=3.9.1 (from Django==6.0.6->-r requirements.txt (line 1))
+#11 1.776   Downloading asgiref-3.13.0-py3-none-any.whl.metadata (12 kB)
+#11 1.814 Collecting sqlparse>=0.5.0 (from Django==6.0.6->-r requirements.txt (line 1))
+#11 1.844   Downloading sqlparse-0.6.1-py3-none-any.whl.metadata (6.9 kB)
+#11 1.903 Collecting pyjwt>=1.7.1 (from djangorestframework-simplejwt==5.5.1->-r requirements.txt (line 3))
+#11 1.933   Downloading pyjwt-2.15.1-py3-none-any.whl.metadata (3.5 kB)
+#11 1.992 Collecting typing_extensions>=4.12 (from django-redis==7.0.0->-r requirements.txt (line 8))
+#11 2.022   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+#11 2.069 Collecting billiard<5.0,>=4.2.1 (from celery==5.6.3->celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 2.101   Downloading billiard-4.3.2-py3-none-any.whl.metadata (5.0 kB)
+#11 2.201 Collecting kombu>=5.6.0 (from celery==5.6.3->celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 2.237   Downloading kombu-5.7.0-py3-none-any.whl.metadata (17 kB)
+#11 2.288 Collecting vine<6.0,>=5.1.0 (from celery==5.6.3->celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 2.324   Downloading vine-5.1.0-py3-none-any.whl.metadata (2.7 kB)
+#11 2.376 Collecting click<9.0,>=8.1.2 (from celery==5.6.3->celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 2.410   Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+#11 2.450 Collecting click-didyoumean>=0.3.0 (from celery==5.6.3->celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 2.489   Downloading click_didyoumean-0.3.1-py3-none-any.whl.metadata (3.9 kB)
+#11 2.532 Collecting click-repl>=0.2.0 (from celery==5.6.3->celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 2.571   Downloading click_repl-0.4.1-py3-none-any.whl.metadata (3.7 kB)
+#11 2.614 Collecting click-plugins>=1.1.1 (from celery==5.6.3->celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 2.651   Downloading click_plugins-1.1.1.2-py2.py3-none-any.whl.metadata (6.5 kB)
+#11 2.695 Collecting python-dateutil>=2.8.2 (from celery==5.6.3->celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 2.734   Downloading python_dateutil-4.0.0-py3-none-any.whl.metadata (7.3 kB)
+#11 2.783 Collecting tzlocal (from celery==5.6.3->celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 2.817   Downloading tzlocal-5.4.5-py3-none-any.whl.metadata (7.7 kB)
+#11 2.894 Collecting prompt_toolkit>=3.0.36 (from click-repl>=0.2.0->celery==5.6.3->celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 2.924   Downloading prompt_toolkit-3.0.53-py3-none-any.whl.metadata (6.4 kB)
+#11 2.973 Collecting amqp>=5.4.2 (from kombu>=5.6.0->celery==5.6.3->celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 3.005   Downloading amqp-5.4.2-py3-none-any.whl.metadata (9.4 kB)
+#11 3.052 Collecting tzdata (from python-dateutil>=2.8.2->celery==5.6.3->celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 3.083   Downloading tzdata-2026.6-py2.py3-none-any.whl.metadata (1.4 kB)
+#11 3.137 Collecting packaging==26.3 (from kombu[redis]; extra == "redis"->celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 3.169   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+#11 3.221 Collecting wcwidth>=0.1.4 (from prompt_toolkit>=3.0.36->click-repl>=0.2.0->celery==5.6.3->celery[redis]==5.6.3->-r requirements.txt (line 9))
+#11 3.253   Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl.metadata (23 kB)
+#11 3.297 Downloading django-6.0.6-py3-none-any.whl (8.4 MB)
+#11 3.547    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.4/8.4 MB 42.8 MB/s eta 0:00:00
+#11 3.580 Downloading djangorestframework-3.17.1-py3-none-any.whl (898 kB)
+#11 3.591    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 898.8/898.8 kB 82.7 MB/s eta 0:00:00
+#11 3.624 Downloading djangorestframework_simplejwt-5.5.1-py3-none-any.whl (107 kB)
+#11 3.658 Downloading django_cors_headers-4.9.0-py3-none-any.whl (12 kB)
+#11 3.691 Downloading psycopg2_binary-2.9.12-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl (5.9 MB)
+#11 3.781    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.9/5.9 MB 66.8 MB/s eta 0:00:00
+#11 3.818 Downloading python_dotenv-1.2.2-py3-none-any.whl (22 kB)
+#11 3.858 Downloading redis-7.4.0-py3-none-any.whl (409 kB)
+#11 3.894 Downloading django_redis-7.0.0-py3-none-any.whl (38 kB)
+#11 3.927 Downloading celery-5.6.3-py3-none-any.whl (451 kB)
+#11 3.967 Downloading asgiref-3.13.0-py3-none-any.whl (27 kB)
+#11 4.000 Downloading billiard-4.3.2-py3-none-any.whl (90 kB)
+#11 4.035 Downloading click-8.5.0-py3-none-any.whl (125 kB)
+#11 4.070 Downloading click_didyoumean-0.3.1-py3-none-any.whl (3.6 kB)
+#11 4.106 Downloading click_plugins-1.1.1.2-py2.py3-none-any.whl (11 kB)
+#11 4.143 Downloading click_repl-0.4.1-py3-none-any.whl (14 kB)
+#11 4.176 Downloading kombu-5.7.0-py3-none-any.whl (266 kB)
+#11 4.212 Downloading vine-5.1.0-py3-none-any.whl (9.6 kB)
+#11 4.245 Downloading pyjwt-2.15.1-py3-none-any.whl (33 kB)
+#11 4.279 Downloading python_dateutil-4.0.0-py3-none-any.whl (92 kB)
+#11 4.315 Downloading sqlparse-0.6.1-py3-none-any.whl (51 kB)
+#11 4.348 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#11 4.383 Downloading packaging-26.3-py3-none-any.whl (129 kB)
+#11 4.421 Downloading tzlocal-5.4.5-py3-none-any.whl (18 kB)
+#11 4.454 Downloading amqp-5.4.2-py3-none-any.whl (51 kB)
+#11 4.489 Downloading prompt_toolkit-3.0.53-py3-none-any.whl (392 kB)
+#11 4.522 Downloading tzdata-2026.6-py2.py3-none-any.whl (348 kB)
+#11 4.557 Downloading wcwidth-0.9.4-cp310-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (789 kB)
+#11 4.567    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 789.0/789.0 kB 105.2 MB/s eta 0:00:00
+#11 4.647 Installing collected packages: wcwidth, vine, tzlocal, tzdata, typing_extensions, sqlparse, redis, python-dotenv, pyjwt, psycopg2-binary, packaging, click, billiard, asgiref, python-dateutil, prompt_toolkit, Django, click-plugins, click-didyoumean, amqp, kombu, djangorestframework, django-redis, django-cors-headers, click-repl, djangorestframework-simplejwt, celery
+#11 6.500 Successfully installed Django-6.0.6 amqp-5.4.2 asgiref-3.13.0 billiard-4.3.2 celery-5.6.3 click-8.5.0 click-didyoumean-0.3.1 click-plugins-1.1.1.2 click-repl-0.4.1 django-cors-headers-4.9.0 django-redis-7.0.0 djangorestframework-3.17.1 djangorestframework-simplejwt-5.5.1 kombu-5.7.0 packaging-26.3 prompt_toolkit-3.0.53 psycopg2-binary-2.9.12 pyjwt-2.15.1 python-dateutil-4.0.0 python-dotenv-1.2.2 redis-7.4.0 sqlparse-0.6.1 typing_extensions-4.16.0 tzdata-2026.6 tzlocal-5.4.5 vine-5.1.0 wcwidth-0.9.4
+#11 6.500 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#11 6.633 
+#11 6.633 [notice] A new release of pip is available: 25.0.1 -> 26.3
+#11 6.633 [notice] To update, run: pip install --upgrade pip
+#11 DONE 6.8s
+
+#12 [6/7] COPY . .
+#12 DONE 0.0s
+
+#13 [7/7] RUN chmod +x docker-entrypoint.sh
+#13 DONE 0.1s
+
+#14 exporting to image
+#14 exporting layers
+#14 exporting layers 0.4s done
+#14 writing image sha256:02737ef9b6249407c8642455fc3fb8074ed2a5ac0dc3302852ebaefdc30fff01 done
+#14 naming to docker.io/library/ln-t01-backend done
+#14 DONE 0.4s
+
+#15 resolving provenance for metadata file
+#15 DONE 0.0s
+ Image ln-t01-backend Built 
+ Network ln-t01_default Creating 
+ Network ln-t01_default Creating 
+ Network ln-t01_default Created 
+ Network ln-t01_default Created 
+ Container ln-t01-postgres-1 Creating 
+ Container ln-t01-redis-1 Creating 
+ Container ln-t01-redis-1 Created 
+ Container ln-t01-postgres-1 Created 
+ Container ln-t01-backend-1 Creating 
+ Container ln-t01-backend-1 Created 
+ Container ln-t01-postgres-1 Starting 
+ Container ln-t01-redis-1 Starting 
+ Container ln-t01-postgres-1 Started 
+ Container ln-t01-redis-1 Started 
+ Container ln-t01-redis-1 Waiting 
+ Container ln-t01-postgres-1 Waiting 
+ Container ln-t01-postgres-1 Healthy 
+ Container ln-t01-redis-1 Healthy 
+ Container ln-t01-backend-1 Starting 
+ Container ln-t01-backend-1 Started 
+ Container ln-t01-postgres-1 Waiting 
+ Container ln-t01-redis-1 Waiting 
+ Container ln-t01-backend-1 Waiting 
+ Container ln-t01-postgres-1 Healthy 
+ Container ln-t01-redis-1 Healthy 
+ Container ln-t01-backend-1 Healthy 
+Found 212 test(s).
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+....Cache GET failed for key=course_catalog:published; treating as a miss.
+Traceback (most recent call last):
+  File "/app/lms_project/safe_cache.py", line 21, in safe_get
+    return cache.get(key, default)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1198, in _execute_mock_call
+    raise effect
+ConnectionError: redis down
+.Cache SET failed for key=course_catalog:published; continuing without caching.
+Traceback (most recent call last):
+  File "/app/lms_project/safe_cache.py", line 29, in safe_set
+    cache.set(key, value, timeout)
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1198, in _execute_mock_call
+    raise effect
+ConnectionError: redis down
+.............................................Bad Request: /api/onboarding/steps/2140/complete/
+.......................................................................Cache ADD failed for key=quiz_submit_lock:90:610; degrading gracefully.
+Traceback (most recent call last):
+  File "/app/lms_project/safe_cache.py", line 68, in safe_add
+    return cache.add(key, value, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/unittest/mock.py", line 1198, in _execute_mock_call
+    raise effect
+ConnectionError: redis down
+...........................................................................................
+----------------------------------------------------------------------
+Ran 212 tests in 73.686s
+
+OK
+Destroying test database for alias 'default'...
+ Container ln-t01-backend-1 Stopping 
+ Container ln-t01-backend-1 Stopped 
+ Container ln-t01-backend-1 Removing 
+ Container ln-t01-backend-1 Removed 
+ Container ln-t01-postgres-1 Stopping 
+ Container ln-t01-redis-1 Stopping 
+ Container ln-t01-postgres-1 Stopped 
+ Container ln-t01-postgres-1 Removing 
+ Container ln-t01-postgres-1 Removed 
+ Container ln-t01-redis-1 Stopped 
+ Container ln-t01-redis-1 Removing 
+ Container ln-t01-redis-1 Removed 
+ Network ln-t01_default Removing 
+ Network ln-t01_default Removed 
+
+==> frontend typecheck, tests, build
+npm warn install-scripts 2 packages have install scripts not yet covered by allowScripts:
+npm warn install-scripts   esbuild@0.28.2 (postinstall: node install.js)
+npm warn install-scripts   fsevents@2.3.3 (install: (install scripts present))
+npm warn install-scripts
+npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+
+> launchops-frontend@0.1.0 typecheck
+> tsc --noEmit
+
+
+> launchops-frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.7 /Users/jayz/Documents/Projects/LaunchOps-repo-night/frontend
+
+ ✓ src/App.test.ts (1 test) 1ms
+ ✓ src/pages/onboarding/taskState.test.ts (2 tests) 27ms
+ ✓ src/api/axios.test.ts (12 tests) 102ms
+ ✓ src/pages/auth/auth.test.tsx (3 tests) 94ms
+ ✓ src/pages/onboarding/Workspace.test.tsx (2 tests) 102ms
+
+ Test Files  5 passed (5)
+      Tests  20 passed (20)
+   Start at  04:11:24
+   Duration  767ms (transform 116ms, setup 168ms, collect 325ms, tests 327ms, environment 1.67s, prepare 189ms)
+
+
+> launchops-frontend@0.1.0 build
+> vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 1492 modules transformed.
+rendering chunks...
+computing gzip size...
+build/index.html                     0.67 kB │ gzip:   0.39 kB
+build/assets/index-Delr366y.css     39.15 kB │ gzip:   8.01 kB
+build/assets/index-D3o-xK6v.js   1,032.80 kB │ gzip: 314.94 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.42s
+
+==> task gate t01
+ok: no live/Channels leftovers
+ok: go-live and loadtests removed
+
+CHECKS: PASS

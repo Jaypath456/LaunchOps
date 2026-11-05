@@ -1,0 +1,28 @@
+Working directory: repository root unless noted.
+
+docker compose down
+BUILDX_CONFIG=/tmp/launchops-t01-buildx bash /Users/jayz/launchops-night/checks.sh /Users/jayz/Documents/Projects/LaunchOps-repo-night t01 pg,front
+  Raw output: docs/legacy-lms/t01/checks-fix1.txt
+  Runs PostgreSQL backend tests with Redis DB 15, frontend typecheck/tests/build, and both unchanged task gates.
+  Creates and removes the isolated ln-t01 stack without deleting named volumes.
+
+docker compose config --services
+python3 --version
+node --version
+npm --version
+
+BACKEND_PORT=28000 FRONTEND_PORT=23000 BUILDX_CONFIG=/tmp/launchops-t01-buildx docker compose up --build --wait -d
+  Raw output: compose-start.txt
+
+docker compose exec -T backend python manage.py check
+docker compose exec -T backend python manage.py makemigrations --check --dry-run
+docker compose exec -T backend python manage.py shell < docs/legacy-lms/t01/runtime-check.py
+docker compose exec -T worker celery -A lms_project inspect ping --timeout=10
+docker compose ps --format json
+docker compose logs --tail=25 worker beat
+docker compose config --services
+docker compose down
+docker ps --format '{{.Names}}\t{{.Ports}}'
+
+bash /Users/jayz/launchops-night/checks.sh /Users/jayz/Documents/Projects/LaunchOps-repo-night t01 none
+  Final gate-only rerun; raw output: docs/legacy-lms/t01/gates-fix1-final.txt

@@ -1,0 +1,6 @@
+postgres
+redis
+backend
+beat
+frontend
+worker

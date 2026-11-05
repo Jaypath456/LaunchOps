@@ -31,7 +31,6 @@ export default function QuestionForm() {
   const [correctAnswer, setCorrectAnswer] = useState('');
   const [points, setPoints] = useState(1);
   const [orderIndex, setOrderIndex] = useState(0);
-  const [timeLimitSeconds, setTimeLimitSeconds] = useState(20);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -43,7 +42,6 @@ export default function QuestionForm() {
       setQuestionType(q.question_type);
       setPoints(q.points);
       setOrderIndex(q.order_index);
-      setTimeLimitSeconds(q.time_limit_seconds ?? 20);
       setPrompt(q.body?.prompt || emptyDocument);
       if (q.question_type === 'short_answer') {
         setCorrectAnswer(q.body?.correct_answer || '');
@@ -106,7 +104,6 @@ export default function QuestionForm() {
         body,
         points: Number(points),
         order_index: Number(orderIndex),
-        time_limit_seconds: Number(timeLimitSeconds),
       };
       if (isEditing) {
         await api.put(`/questions/${questionId}/`, payload);
@@ -160,17 +157,6 @@ export default function QuestionForm() {
                 min="0"
                 value={orderIndex}
                 onChange={(e) => setOrderIndex(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label>Time Limit (seconds)</label>
-              <input
-                type="number"
-                min="5"
-                max="300"
-                value={timeLimitSeconds}
-                onChange={(e) => setTimeLimitSeconds(e.target.value)}
-                title="How long students have to answer once revealed in a live session"
               />
             </div>
           </div>

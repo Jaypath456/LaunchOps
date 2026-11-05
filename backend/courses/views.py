@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.db.models import Count
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -50,11 +49,6 @@ def _invalidate_catalog_cache():
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def course_list(request):
-    # See settings.LOAD_TEST_DISABLE_REDIS_OPTIMIZATIONS - this branch
-    # exists purely so loadtests/ can measure this endpoint with the
-    # exact same code path minus caching, never for production use.
-    caching_enabled = not settings.LOAD_TEST_DISABLE_REDIS_OPTIMIZATIONS
-
     # The cached payload is the *paginated* envelope (count/next/previous/
     # results), so the cache key has to vary by page/page_size too -
     # otherwise a page-2 request could be served page 1's cached response.
@@ -67,10 +61,9 @@ def course_list(request):
     if page_param or page_size_param:
         cache_key = f'{CATALOG_CACHE_KEY}:page={page_param or "1"}:size={page_size_param or ""}'
 
-    if caching_enabled:
-        cached = safe_get(cache_key)
-        if cached is not None:
-            return Response(cached)
+    cached = safe_get(cache_key)
+    if cached is not None:
+        return Response(cached)
 
     # Course.Meta.ordering (-created_at) isn't a unique key - courses
     # created in the same request/transaction can share a timestamp,
@@ -89,8 +82,7 @@ def course_list(request):
     serializer = CourseSerializer(page, many=True)
     response = paginator.get_paginated_response(serializer.data)
 
-    if caching_enabled:
-        safe_set(cache_key, response.data, CATALOG_CACHE_TTL_SECONDS)
+    safe_set(cache_key, response.data, CATALOG_CACHE_TTL_SECONDS)
 
     return response
 

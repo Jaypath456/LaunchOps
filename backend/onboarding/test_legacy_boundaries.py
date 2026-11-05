@@ -1,10 +1,10 @@
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 from django.utils import timezone
 from rest_framework.test import APIClient
 from users.models import User
 from courses.models import Course, Chapter, Enrollment
 from messaging.permissions import can_access_course_chat
-from quizzes.models import Quiz, Question, Submission, LiveSession
+from quizzes.models import Quiz, Question, Submission
 from schedule.models import Term, Section
 from .models import Event
 from .services import create_onboarding
@@ -22,7 +22,6 @@ class LegacyBoundaryTests(TestCase):
         cls.record = create_onboarding(employee=cls.users['employee'], manager=cls.users['manager'], creator=cls.users['hr'],
                                        job_title='Engineer', department='Demo', start_date=timezone.localdate(), course=cls.course)
         Enrollment.objects.create(student=cls.users['student'], course=cls.course)
-        cls.room = LiveSession.objects.create(quiz=cls.quiz, host=cls.users['instructor'], room_code='AUDIT1')
         term = Term.objects.create(name='Audit term', start_date=timezone.localdate(), end_date=timezone.localdate())
         cls.section = Section.objects.create(course=cls.course, term=term)
 
@@ -33,10 +32,9 @@ class LegacyBoundaryTests(TestCase):
         for role in ('hr', 'it', 'manager', 'employee'):
             self.client.force_authenticate(self.users[role])
             for method, url in [('post', '/api/courses/create/'), ('post', f'/api/courses/{self.course.pk}/quizzes/create/'),
-                                ('get', f'/api/quizzes/{self.quiz.pk}/questions/'), ('post', f'/api/quizzes/{self.quiz.pk}/sessions/'),
+                                ('get', f'/api/quizzes/{self.quiz.pk}/questions/'),
                                 ('get', '/api/terms/'), ('get', '/api/breaks/'), ('post', '/api/schedule/generate/'),
-                                ('get', '/api/schedule/saved/'), ('get', f'/api/sessions/{self.room.room_code}/'),
-                                ('get', f'/api/sessions/{self.room.room_code}/live-results/'),
+                                ('get', '/api/schedule/saved/'),
                                 ('get', f'/api/courses/{self.course.pk}/messages/')]:
                 with self.subTest(role=role, url=url):
                     self.assertEqual(getattr(self.client, method)(url).status_code, 403)
@@ -60,7 +58,6 @@ class LegacyBoundaryTests(TestCase):
         Submission.objects.create(quiz=self.quiz, student=self.users['student'], score=1, max_score=1)
         self.assertTrue(can_access_course_chat(self.users['student'], self.course))
         self.assertEqual(self.client.get(f'/api/courses/{self.course.pk}/messages/').status_code, 200)
-        self.assertEqual(self.client.get(f'/api/sessions/{self.room.room_code}/').status_code, 200)
         response = self.client.get(f'/api/courses/{self.course.pk}/leaderboard/')
         self.assertEqual([row['username'] for row in response.data], ['student'])
 
@@ -75,28 +72,3 @@ class LegacyBoundaryTests(TestCase):
             self.assertEqual(self.client.get(url).status_code, 403)
         self.client.force_authenticate(self.users['instructor'])
         self.assertEqual(self.client.get(f'/api/sections/{self.section.pk}/').status_code, 200)
-
-
-class EmployeeLegacySocketTests(TransactionTestCase):
-    async def test_training_enrollment_cannot_join_chat_or_live_websockets(self):
-        from channels.db import database_sync_to_async
-        from channels.testing import WebsocketCommunicator
-        from rest_framework_simplejwt.tokens import RefreshToken
-        from lms_project.asgi import application
-
-        @database_sync_to_async
-        def fixtures():
-            editor = User.objects.create(username='editor', role='instructor')
-            employee = User.objects.create(username='employee', role='employee')
-            course = Course.objects.create(title='Training', instructor=editor, is_published=True)
-            Enrollment.objects.create(student=employee, course=course)
-            quiz = Quiz.objects.create(title='Quiz', course=course, is_published=True)
-            room = LiveSession.objects.create(quiz=quiz, host=editor, room_code='SOCKET')
-            return str(RefreshToken.for_user(employee).access_token), course.pk, room.room_code
-
-        token, course_id, room_code = await fixtures()
-        for path in (f'/ws/chat/{course_id}/', f'/ws/live/{room_code}/'):
-            communicator = WebsocketCommunicator(application, path, subprotocols=[token])
-            connected, _ = await communicator.connect()
-            self.assertFalse(connected, path)
-            await communicator.disconnect()

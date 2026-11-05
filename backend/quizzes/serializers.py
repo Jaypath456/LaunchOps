@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import LiveSession, Question, Quiz, Submission
+from .models import Question, Quiz, Submission
 
 
 class QuizSerializer(serializers.ModelSerializer):
@@ -41,7 +41,6 @@ class QuestionSerializer(serializers.ModelSerializer):
             'body',
             'points',
             'order_index',
-            'time_limit_seconds',
         ]
 
     def validate(self, attrs):
@@ -111,7 +110,7 @@ class StudentQuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ['id', 'question_type', 'body', 'points', 'order_index', 'time_limit_seconds']
+        fields = ['id', 'question_type', 'body', 'points', 'order_index']
 
     def get_body(self, obj):
         body = obj.body or {}
@@ -142,24 +141,3 @@ class SubmissionResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Submission
         fields = ['id', 'quiz', 'course', 'score', 'max_score', 'submitted_at', 'passed']
-
-
-class LiveSessionSerializer(serializers.ModelSerializer):
-    quiz = serializers.PrimaryKeyRelatedField(read_only=True)
-    host = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    class Meta:
-        model = LiveSession
-        fields = [
-            'id',
-            'quiz',
-            'host',
-            'room_code',
-            'engine',
-            'status',
-            'current_question_index',
-            'started_at',
-            'ended_at',
-            'created_at',
-        ]
-        read_only_fields = ['room_code', 'engine', 'status', 'current_question_index', 'started_at', 'ended_at']
