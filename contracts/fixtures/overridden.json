@@ -1,0 +1,19 @@
+{
+  "connector": "workspace",
+  "idempotency_key": "507f1f77bcf86cd799439011:workspace",
+  "payload": {
+    "username": "demo_employee",
+    "display_name": "Demo Employee",
+    "department": "Engineering"
+  },
+  "status": "overridden",
+  "attempts": 1,
+  "fence": 1,
+  "lease_owner": null,
+  "lease_until": null,
+  "next_attempt_at": null,
+  "last_error": "Simulated account rejected",
+  "external_ref": null,
+  "override_reason": "Demo IT approval to continue after simulated failure",
+  "updated_at": "2026-01-01T00:00:00Z"
+}
