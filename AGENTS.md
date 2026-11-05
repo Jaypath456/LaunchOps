@@ -25,6 +25,7 @@ React + TypeScript + Vite. No Celery, Redis, PostgreSQL or broker.
 - Unattended runs: nobody can answer questions. If something is ambiguous, choose the most conservative option consistent with the spec,
   write the decision to `.night/notes.md`, and continue. If truly blocked, write why in `.night/notes.md` and stop.
 - Stop when the task's "done when" holds. Do not improve unrelated code.
+- Do not create files under `docs/evidence/` unless the task explicitly asks for evidence. Put scratch output in `/tmp`, never in the repo.
 
 ## Commands
 - Phase 1 backend: `docker compose exec -e REDIS_URL=redis://redis:6379/15 backend python manage.py test --noinput`
