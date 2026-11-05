@@ -1,9 +1,5 @@
 #!/bin/sh
-# Runs migrations before handing off to the container's main command
-# (e.g. `runserver`), so `docker compose up` always starts from an
-# up-to-date schema without a separate manual step.
+# MongoDB collections are accessed directly; there are no ORM migrations.
 set -e
-
-python manage.py migrate --noinput
 
 exec "$@"

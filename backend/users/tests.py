@@ -1,91 +1,245 @@
+from datetime import UTC, datetime, timedelta
+from uuid import uuid4
 
-from django.conf import settings
-from django.test import TestCase
-from rest_framework_simplejwt.tokens import RefreshToken
+from bson import ObjectId
+from django.contrib.auth.hashers import check_password, make_password
+from django.test import override_settings
+from pymongo.errors import DuplicateKeyError
+from rest_framework.test import APIClient, APIRequestFactory
+from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
+from rest_framework_simplejwt.models import TokenUser
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from .models import User
-from rest_framework.test import APIClient
+from onboarding.auth import get_actor, issue_refresh_token
+from onboarding.db import get_db, get_users
+from onboarding.testing import MongoTestCase
 
 
-class RoleLoginTests(TestCase):
+def create_user(username, password='test password', role='employee'):
+    user = {
+        '_id': ObjectId(),
+        'username': username,
+        'display_name': username,
+        'role': role,
+        'password': make_password(password),
+    }
+    get_users().insert_one(user)
+    return user
+
+
+class RoleLoginTests(MongoTestCase):
     def setUp(self):
         self.client = APIClient()
 
     def test_each_role_login_is_validated_without_changing_privileges(self):
         for role in ('hr', 'it', 'manager', 'employee'):
             with self.subTest(role=role):
-                user = User.objects.create_user(username=role, password='exact password', role=role)
-                response = self.client.post('/api/auth/login/', {'username': role, 'password': 'exact password', 'role': role})
+                user = create_user(role, password='exact password', role=role)
+                response = self.client.post('/api/auth/login/', {
+                    'username': role, 'password': 'exact password', 'role': role,
+                })
                 self.assertEqual(response.status_code, 200)
-                self.assertEqual(response.data['user']['role'], role)
+                self.assertEqual(set(response.data), {'user', 'access', 'refresh'})
+                self.assertEqual(response.data['user'], {
+                    'id': str(user['_id']), 'username': role, 'email': '', 'role': role,
+                })
+                for token in (AccessToken(response.data['access']), RefreshToken(response.data['refresh'])):
+                    self.assertEqual(token['user_id'], str(user['_id']))
+                    self.assertEqual(token['username'], role)
+                    self.assertEqual(token['role'], role)
+                    self.assertNotIn('password', token.payload)
                 wrong = 'employee' if role != 'employee' else 'hr'
-                response = self.client.post('/api/auth/login/', {'username': role, 'password': 'exact password', 'role': wrong})
+                response = self.client.post('/api/auth/login/', {
+                    'username': role, 'password': 'exact password', 'role': wrong,
+                })
                 self.assertEqual(response.status_code, 403)
                 self.assertNotIn('access', response.data)
-                user.refresh_from_db()
-                self.assertEqual(user.role, role)
+                self.assertEqual(get_users().find_one({'_id': user['_id']})['role'], role)
 
     def test_invalid_role_and_credentials_issue_no_tokens(self):
-        for data, expected in [({'role': 'superuser'}, 400), ({'username': 'missing', 'password': 'bad', 'role': 'hr'}, 401)]:
-            response = self.client.post('/api/auth/login/', data)
-            self.assertEqual(response.status_code, expected)
-            self.assertNotIn('access', response.data)
+        create_user('known')
+        cases = [
+            ({'role': 'superuser'}, 400),
+            ({'role': {'$ne': ''}}, 400),
+            ({'username': 'missing', 'password': 'bad', 'role': 'hr'}, 401),
+            ({'username': 'known', 'password': 'wrong'}, 401),
+            ({'username': 'known'}, 401),
+            ({'password': 'test password'}, 401),
+            ({'username': 'known', 'password': 123}, 401),
+            ({'username': {'$ne': ''}, 'password': 'test password'}, 401),
+            ({'username': 'known', 'password': {'$ne': ''}}, 401),
+        ]
+        for data, expected in cases:
+            with self.subTest(data=data):
+                response = self.client.post('/api/auth/login/', data, format='json')
+                self.assertEqual(response.status_code, expected)
+                self.assertNotIn('access', response.data)
+                self.assertNotIn('refresh', response.data)
 
     def test_login_preserves_exact_password(self):
         password = '  whitespace password  '
-        user = User.objects.create_user(username='hire', password=password)
-        self.assertTrue(user.check_password(password))
-        self.assertEqual(user.role, 'employee')
-        self.assertFalse(user.is_staff)
-        self.assertEqual(self.client.post('/api/auth/login/', {'username': 'hire', 'password': password}).status_code, 200)
-        self.assertEqual(self.client.post('/api/auth/login/', {'username': 'hire', 'password': password.strip()}).status_code, 401)
+        user = create_user('hire', password=password)
+        self.assertNotEqual(user['password'], password)
+        self.assertTrue(check_password(password, user['password']))
+        self.assertEqual(self.client.post('/api/auth/login/', {
+            'username': 'hire', 'password': password,
+        }).status_code, 200)
+        self.assertEqual(self.client.post('/api/auth/login/', {
+            'username': 'hire', 'password': password.strip(),
+        }).status_code, 401)
+
+    def test_login_and_refresh_allow_an_expired_bearer_header(self):
+        user = create_user('expired_header')
+        refresh = issue_refresh_token(user)
+        access = refresh.access_token
+        access.set_exp(lifetime=timedelta(seconds=-1))
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access}')
+        self.assertEqual(self.client.post('/api/auth/login/', {
+            'username': user['username'], 'password': 'test password',
+        }).status_code, 200)
+        self.assertEqual(self.client.post('/api/auth/refresh/', {
+            'refresh': str(refresh),
+        }).status_code, 200)
 
 
-class TokenRefreshTests(TestCase):
+class TokenRefreshTests(MongoTestCase):
     def setUp(self):
         self.client = APIClient()
-        self.user = User.objects.create_user(username='refresh_user', password='test password', role='employee')
-        self.refresh = RefreshToken.for_user(self.user)
+        self.user = create_user(f'refresh_{uuid4().hex}')
+        self.refresh = issue_refresh_token(self.user)
 
-    def test_expired_access_refreshes_and_new_access_uses_current_server_role(self):
-        from datetime import timedelta
+    def test_expired_access_refreshes_and_new_access_uses_current_server_identity(self):
         access = self.refresh.access_token
         access.set_exp(lifetime=timedelta(seconds=-1))
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access}')
         self.assertEqual(self.client.get('/api/auth/me/').status_code, 401)
-        self.user.role = 'manager'
-        self.user.save()
+        get_users().update_one({'_id': self.user['_id']}, {
+            '$set': {'role': 'manager', 'username': 'renamed'},
+        })
         response = self.client.post('/api/auth/refresh/', {'refresh': str(self.refresh)})
         self.assertEqual(response.status_code, 200)
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + response.data['access'])
-        self.assertEqual(self.client.get('/api/auth/me/').data['role'], 'manager')
+        self.assertEqual(set(response.data), {'access'})
+        access = AccessToken(response.data['access'])
+        self.assertEqual(access['user_id'], str(self.user['_id']))
+        self.assertEqual(access['username'], 'renamed')
+        self.assertEqual(access['role'], 'manager')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access}')
+        self.assertEqual(self.client.get('/api/auth/me/').data, {
+            'id': str(self.user['_id']), 'username': 'renamed', 'email': '', 'role': 'manager',
+        })
 
     def test_invalid_expired_and_wrong_token_types_are_rejected(self):
-        from datetime import timedelta
-        expired = RefreshToken.for_user(self.user)
+        expired = issue_refresh_token(self.user)
         expired.set_exp(lifetime=timedelta(seconds=-1))
-        for token in ('invalid', str(expired), str(self.refresh.access_token)):
-            with self.subTest(token_type=token[:8]):
+        tampered = str(self.refresh).split('.')
+        tampered[1] = tampered[1][::-1]
+        for token in ('invalid', str(expired), str(self.refresh.access_token), '.'.join(tampered)):
+            with self.subTest(token=token[:8]):
                 response = self.client.post('/api/auth/refresh/', {'refresh': token})
                 self.assertEqual(response.status_code, 401)
                 self.assertNotIn('access', response.data)
-        self.assertEqual(self.client.post('/api/auth/refresh/', {}).status_code, 400)
+        for data in ({}, {'refresh': ''}, {'refresh': None}, {'refresh': []}):
+            with self.subTest(data=data):
+                self.assertEqual(self.client.post('/api/auth/refresh/', data, format='json').status_code, 400)
 
-    def test_inactive_or_deleted_account_cannot_refresh(self):
-        self.user.is_active = False
-        self.user.save()
-        self.assertEqual(self.client.post('/api/auth/refresh/', {'refresh': str(self.refresh)}).status_code, 401)
-        self.user.delete()
-        self.assertEqual(self.client.post('/api/auth/refresh/', {'refresh': str(self.refresh)}).status_code, 401)
+    def test_deleted_account_cannot_refresh(self):
+        get_users().delete_one({'_id': self.user['_id']})
+        response = self.client.post('/api/auth/refresh/', {'refresh': str(self.refresh)})
+        self.assertEqual(response.status_code, 401)
+        self.assertNotIn('access', response.data)
+
+    def test_missing_and_malformed_user_ids_are_rejected(self):
+        for user_id in (None, '', 'invalid', 123, {'$ne': ''}, str(ObjectId())):
+            with self.subTest(user_id=user_id):
+                refresh = RefreshToken()
+                if user_id is not None:
+                    refresh['user_id'] = user_id
+                response = self.client.post('/api/auth/refresh/', {'refresh': str(refresh)})
+                self.assertEqual(response.status_code, 401)
+                self.assertNotIn('access', response.data)
 
 
-class CeleryScaffoldTests(TestCase):
-    """Celery wiring checks. lms_project is not a Django app, so they live here."""
+class StatelessSessionTests(MongoTestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = create_user(f'session_{uuid4().hex}', role='it')
+        self.access = issue_refresh_token(self.user).access_token
 
-    def test_beat_schedule_runs_the_onboarding_scan(self):
-        entry = settings.CELERY_BEAT_SCHEDULE['scan-onboarding-deadlines']
-        self.assertEqual(entry['task'], 'onboarding.tasks.scan_overdue')
+    def test_me_requires_a_valid_access_token(self):
+        self.assertEqual(self.client.get('/api/auth/me/').status_code, 401)
+        expired = issue_refresh_token(self.user).access_token
+        expired.set_exp(lifetime=timedelta(seconds=-1))
+        for token in ('invalid', str(expired), str(issue_refresh_token(self.user))):
+            with self.subTest(token=token[:8]):
+                self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+                self.assertEqual(self.client.get('/api/auth/me/').status_code, 401)
 
-    def test_celery_broker_and_result_backend_point_at_redis_url(self):
-        self.assertEqual(settings.CELERY_BROKER_URL, settings.REDIS_URL)
-        self.assertEqual(settings.CELERY_RESULT_BACKEND, settings.REDIS_URL)
+    def test_me_and_actor_are_backed_by_token_claims(self):
+        # Deleting the account does not revoke a previously issued access token.
+        get_users().delete_one({'_id': self.user['_id']})
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access}')
+        response = self.client.get('/api/auth/me/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {
+            'id': str(self.user['_id']), 'username': self.user['username'], 'email': '', 'role': 'it',
+        })
+        request = APIRequestFactory().get('/api/auth/me/', HTTP_AUTHORIZATION=f'Bearer {self.access}')
+        request.user, request.auth = JWTStatelessUserAuthentication().authenticate(request)
+        self.assertIsInstance(request.user, TokenUser)
+        self.assertEqual(get_actor(request), {
+            'id': str(self.user['_id']), 'username': self.user['username'], 'role': 'it',
+        })
+
+    def test_malformed_actor_claims_are_rejected(self):
+        for claim, value in (
+            ('user_id', 'invalid'), ('user_id', 123), ('username', ''),
+            ('username', None), ('role', 'superuser'), ('role', None),
+        ):
+            with self.subTest(claim=claim, value=value):
+                access = issue_refresh_token(self.user).access_token
+                access[claim] = value
+                self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access}')
+                self.assertEqual(self.client.get('/api/auth/me/').status_code, 401)
+
+    def test_old_onboarding_routes_are_unavailable(self):
+        self.assertEqual(self.client.get('/api/onboarding/workflows/').status_code, 404)
+
+
+class MongoFoundationTests(MongoTestCase):
+    def test_usernames_are_unique(self):
+        create_user('unique_username')
+        with self.assertRaises(DuplicateKeyError):
+            create_user('unique_username')
+
+    def test_mongo_datetimes_are_aware_utc(self):
+        now = datetime.now(UTC)
+        collection = get_db()['clock_test']
+        document_id = collection.insert_one({'at': now}).inserted_id
+        stored = collection.find_one({'_id': document_id})['at']
+        self.assertEqual(stored.tzinfo, UTC)
+        self.assertEqual(stored, now.replace(microsecond=now.microsecond // 1000 * 1000))
+
+    def test_get_db_honors_database_setting(self):
+        database = get_db()
+        self.assertEqual(database.name, self.database_name)
+        self.assertNotEqual(database.name, 'launchops')
+        with override_settings(MONGO_DB=f'{self.database_name}_other'):
+            self.assertEqual(get_db().name, f'{self.database_name}_other')
+            self.assertIs(get_db().client, database.client)
+        self.assertEqual(get_db().name, self.database_name)
+
+    def test_test_database_is_dropped_after_class_cleanup(self):
+        class IsolatedMongoTests(MongoTestCase):
+            pass
+
+        database = get_db()
+        IsolatedMongoTests.setUpClass()
+        try:
+            isolated = get_db()
+            self.assertNotEqual(isolated.name, database.name)
+            isolated['sentinel'].insert_one({'marker': True})
+            self.assertIn(isolated.name, database.client.list_database_names())
+        finally:
+            IsolatedMongoTests.doClassCleanups()
+        self.assertEqual(get_db().name, database.name)
+        self.assertNotIn(isolated.name, database.client.list_database_names())
