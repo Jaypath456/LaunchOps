@@ -37,26 +37,26 @@ var (
 )
 
 type Payload struct {
-	Username    string `bson:"username"`
-	DisplayName string `bson:"display_name"`
-	Department  string `bson:"department"`
+	Username    string `bson:"username" json:"username"`
+	DisplayName string `bson:"display_name" json:"display_name"`
+	Department  string `bson:"department" json:"department"`
 }
 
 // Job is one element of workflow_instances.provisioning (spec section 4).
 type Job struct {
-	Connector      string     `bson:"connector"`
-	IdempotencyKey string     `bson:"idempotency_key"`
-	Payload        Payload    `bson:"payload"`
-	Status         Status     `bson:"status"`
-	Attempts       int        `bson:"attempts"`
-	Fence          int64      `bson:"fence"`
-	LeaseOwner     *string    `bson:"lease_owner"`
-	LeaseUntil     *time.Time `bson:"lease_until"`
-	NextAttemptAt  *time.Time `bson:"next_attempt_at"`
-	LastError      *string    `bson:"last_error"`
-	ExternalRef    *string    `bson:"external_ref"`
-	OverrideReason *string    `bson:"override_reason"`
-	UpdatedAt      time.Time  `bson:"updated_at"`
+	Connector      string     `bson:"connector" json:"connector"`
+	IdempotencyKey string     `bson:"idempotency_key" json:"idempotency_key"`
+	Payload        Payload    `bson:"payload" json:"payload"`
+	Status         Status     `bson:"status" json:"status"`
+	Attempts       int        `bson:"attempts" json:"attempts"`
+	Fence          int64      `bson:"fence" json:"fence"`
+	LeaseOwner     *string    `bson:"lease_owner" json:"lease_owner"`
+	LeaseUntil     *time.Time `bson:"lease_until" json:"lease_until"`
+	NextAttemptAt  *time.Time `bson:"next_attempt_at" json:"next_attempt_at"`
+	LastError      *string    `bson:"last_error" json:"last_error"`
+	ExternalRef    *string    `bson:"external_ref" json:"external_ref"`
+	OverrideReason *string    `bson:"override_reason" json:"override_reason"`
+	UpdatedAt      time.Time  `bson:"updated_at" json:"updated_at"`
 }
 
 // Candidate is a job that looked claimable when read. Claim re-checks everything it saw.

@@ -31,7 +31,7 @@ func TestProvisioningFixturesRoundTrip(t *testing.T) {
 			if err := decoder.Decode(&job); err != nil {
 				t.Fatal(err)
 			}
-			if job.Status != status {
+			if string(job.Status) != status {
 				t.Fatalf("fixture %s has status %s", status, job.Status)
 			}
 			encoded, err := json.Marshal(job)
