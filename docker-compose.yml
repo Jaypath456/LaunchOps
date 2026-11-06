@@ -12,6 +12,54 @@ services:
       timeout: 5s
       retries: 10
 
+  mock-saas:
+    build:
+      context: ./provisioner
+      dockerfile: Dockerfile.mocksaas
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+      MOCKSAAS_DB: mocksaas
+      MOCKSAAS_ADDR: :8080
+      ERROR_RATE: ${ERROR_RATE:-0}
+      HANG_RATE: ${HANG_RATE:-0}
+      DROP_AFTER_COMMIT_RATE: ${DROP_AFTER_COMMIT_RATE:-0}
+    ports:
+      - "${MOCKSAAS_PORT:-18080}:8080"
+    healthcheck:
+      test: ["CMD", "/mocksaas", "-healthcheck"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  provisioner:
+    build:
+      context: ./provisioner
+      dockerfile: Dockerfile.provisioner
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+    depends_on:
+      mongo:
+        condition: service_healthy
+      mock-saas:
+        condition: service_healthy
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB: launchops
+      MOCKSAAS_URL: http://mock-saas:8080
+      WORKERS: "4"
+      HEALTH_ADDR: :8081
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "/provisioner", "-healthcheck"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   backend:
     build:
       context: ./backend

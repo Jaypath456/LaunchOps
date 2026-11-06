@@ -5,6 +5,7 @@ package main
 import (
 	"context"
 	"errors"
+	"flag"
 	"fmt"
 	"log/slog"
 	"net"
@@ -33,6 +34,20 @@ const (
 
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	flags := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	check := flags.Bool("healthcheck", false, "GET /healthz and exit")
+	flags.Parse(os.Args[1:])
+	if *check {
+		address := os.Getenv("HEALTH_ADDR")
+		if address == "" {
+			address = ":8081"
+		}
+		if err := healthcheck(address); err != nil {
+			logger.Error("healthcheck failed", "error", err.Error())
+			os.Exit(1)
+		}
+		return
+	}
 	cfg, err := loadConfig(os.LookupEnv, os.Hostname)
 	if err != nil {
 		logger.Error("invalid configuration", "error", err.Error())

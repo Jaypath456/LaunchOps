@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log/slog"
 	"net"
@@ -17,6 +18,20 @@ import (
 
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	flags := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	check := flags.Bool("healthcheck", false, "GET /healthz and exit")
+	flags.Parse(os.Args[1:])
+	if *check {
+		address := os.Getenv("MOCKSAAS_ADDR")
+		if address == "" {
+			address = ":8080"
+		}
+		if err := healthcheck(address); err != nil {
+			logger.Error("healthcheck failed", "error", err.Error())
+			os.Exit(1)
+		}
+		return
+	}
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 	if err := run(ctx, logger); err != nil {
