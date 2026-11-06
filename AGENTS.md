@@ -3,8 +3,7 @@
 Onboarding workflow app (roles hr, it, manager, employee). Work happens on `v2-*` branches; `main` stays v1 until v2 is merged
 (v1 is tagged `v1-postgres`). Spec: `docs/V2_SPEC.md` — read only the sections your task names.
 
-**Status line (owner edits):** Phase 1 (tasks t01-t03): still PostgreSQL + Django ORM + Celery/Redis while the LMS is stripped.
-[mongo] and [go] rules apply from t04.
+**Status line (owner edits):** Phase 2. LMS removed; backend on MongoDB + PyMongo (t01-t05). Go provisioner code merged (job store, worker, mock-saas). Next: hardening, compose wiring, then c07 (repository and compare-and-set). [mongo] and [go] rules apply.
 
 Target: Django 6 + DRF + simplejwt over PyMongo (no ORM) and MongoDB 8 standalone; Go `provisioner` (3 replicas) and Go `mock-saas`;
 React + TypeScript + Vite. No Celery, Redis, PostgreSQL or broker.
