@@ -2,8 +2,9 @@ from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 from bson import ObjectId
+from django.conf import settings
 from django.contrib.auth.hashers import check_password, make_password
-from django.test import override_settings
+from django.test import SimpleTestCase, override_settings
 from pymongo.errors import DuplicateKeyError
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
@@ -88,6 +89,24 @@ class RoleLoginTests(MongoTestCase):
             'username': 'hire', 'password': password.strip(),
         }).status_code, 401)
 
+    def test_malformed_user_documents_are_rejected(self):
+        for field, value in (
+            ('password', None), ('password', ''), ('password', 123), ('password', {}),
+            ('role', None), ('role', ''), ('role', 'superuser'), ('role', {}),
+        ):
+            with self.subTest(field=field, value=value):
+                user = create_user(f'malformed_{uuid4().hex}')
+                update = {'$unset': {field: ''}} if value is None else {'$set': {field: value}}
+                get_users().update_one({'_id': user['_id']}, update)
+                for role in (None, 'employee'):
+                    data = {'username': user['username'], 'password': 'test password'}
+                    if role is not None:
+                        data['role'] = role
+                    response = self.client.post('/api/auth/login/', data, format='json')
+                    self.assertEqual(response.status_code, 401)
+                    self.assertNotIn('access', response.data)
+                    self.assertNotIn('refresh', response.data)
+
     def test_login_and_refresh_allow_an_expired_bearer_header(self):
         user = create_user('expired_header')
         refresh = issue_refresh_token(user)
@@ -142,7 +161,14 @@ class TokenRefreshTests(MongoTestCase):
             with self.subTest(data=data):
                 self.assertEqual(self.client.post('/api/auth/refresh/', data, format='json').status_code, 400)
 
-    def test_deleted_account_cannot_refresh(self):
+    def test_deleted_account_cannot_refresh_and_access_lifetime_is_configured(self):
+        access = self.refresh.access_token
+        self.assertEqual(settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'], timedelta(minutes=15))
+        self.assertEqual(
+            access['exp'] - access['iat'],
+            settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'].total_seconds(),
+        )
+        self.assertEqual(settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'], timedelta(days=7))
         get_users().delete_one({'_id': self.user['_id']})
         response = self.client.post('/api/auth/refresh/', {'refresh': str(self.refresh)})
         self.assertEqual(response.status_code, 401)
@@ -175,8 +201,6 @@ class StatelessSessionTests(MongoTestCase):
                 self.assertEqual(self.client.get('/api/auth/me/').status_code, 401)
 
     def test_me_and_actor_are_backed_by_token_claims(self):
-        # Deleting the account does not revoke a previously issued access token.
-        get_users().delete_one({'_id': self.user['_id']})
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access}')
         response = self.client.get('/api/auth/me/')
         self.assertEqual(response.status_code, 200)
@@ -205,6 +229,15 @@ class StatelessSessionTests(MongoTestCase):
         self.assertEqual(self.client.get('/api/onboarding/workflows/').status_code, 404)
 
 
+class UnscopedMongoAccessTests(SimpleTestCase):
+    def test_unscoped_database_and_users_access_are_rejected(self):
+        with override_settings(MONGO_DB='launchops'):
+            for accessor in (get_db, get_users):
+                with self.subTest(accessor=accessor.__name__):
+                    with self.assertRaisesRegex(RuntimeError, 'MongoTestCase database scope'):
+                        accessor()
+
+
 class MongoFoundationTests(MongoTestCase):
     def test_usernames_are_unique(self):
         create_user('unique_username')
@@ -219,12 +252,12 @@ class MongoFoundationTests(MongoTestCase):
         self.assertEqual(stored.tzinfo, UTC)
         self.assertEqual(stored, now.replace(microsecond=now.microsecond // 1000 * 1000))
 
-    def test_get_db_honors_database_setting(self):
+    def test_get_db_stays_in_the_test_scope_despite_database_setting(self):
         database = get_db()
         self.assertEqual(database.name, self.database_name)
         self.assertNotEqual(database.name, 'launchops')
-        with override_settings(MONGO_DB=f'{self.database_name}_other'):
-            self.assertEqual(get_db().name, f'{self.database_name}_other')
+        with override_settings(MONGO_DB='launchops'):
+            self.assertEqual(get_db().name, self.database_name)
             self.assertIs(get_db().client, database.client)
         self.assertEqual(get_db().name, self.database_name)
 

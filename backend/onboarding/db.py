@@ -1,6 +1,7 @@
 """Shared MongoDB connection and timezone-aware collection access."""
 
 from datetime import UTC
+import sys
 
 from django.conf import settings
 from pymongo import MongoClient
@@ -15,14 +16,16 @@ _client = MongoClient(
     connectTimeoutMS=5000,
     socketTimeoutMS=5000,
 )
+_test_database_name = None
 
 
 def get_db():
-    # Read the setting on each call so tests can isolate each class's database.
+    if _test_database_name is not None:
+        return _client[_test_database_name]
+    if 'test' in sys.argv[1:]:
+        raise RuntimeError('MongoDB access during tests requires a MongoTestCase database scope.')
     return _client[settings.MONGO_DB]
 
 
 def get_users():
-    users = get_db()['users']
-    users.create_index('username', unique=True)
-    return users
+    return get_db()['users']

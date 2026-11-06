@@ -92,18 +92,21 @@ def login(request):
     user = None
     if isinstance(username, str) and isinstance(password, str) and username and password:
         user = get_users().find_one({'username': username})
-    if user is None:
+    encoded_password = user.get('password') if user is not None else None
+    user_role = user.get('role') if user is not None else None
+    if not isinstance(encoded_password, str) or not encoded_password or user_role not in ROLES:
         # Match Django's missing-user password hashing cost.
         make_password(password if isinstance(password, str) else '')
-    if user is None or not check_password(password, user['password']):
+        valid_credentials = False
+    else:
+        valid_credentials = check_password(password, encoded_password)
+    if not valid_credentials:
         return Response(
             {'error': 'Invalid username or password'},
             status=status.HTTP_401_UNAUTHORIZED,
         )
-    if role is not None and user['role'] != role:
+    if role is not None and user_role != role:
         return Response({'error': 'This account does not belong to the selected role.'}, status=403)
-    if user.get('role') not in ROLES:
-        return Response({'error': 'Choose a valid onboarding role.'}, status=403)
 
     refresh = issue_refresh_token(user)
     return Response({

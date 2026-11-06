@@ -31,6 +31,7 @@ DEBUG = _get_bool_env('DEBUG', default=False)
 ALLOWED_HOSTS = _get_list_env('ALLOWED_HOSTS', default='localhost,127.0.0.1')
 
 INSTALLED_APPS = [
+    # SimpleJWT's TokenUser needs Django's auth and contenttypes apps.
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
@@ -66,15 +67,10 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'lms_project.wsgi.application'
-ASGI_APPLICATION = 'lms_project.asgi.application'
 
 DATABASES = {}
 MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017')
 MONGO_DB = os.getenv('MONGO_DB', 'launchops')
-
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-]
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -93,16 +89,9 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
 CORS_ALLOWED_ORIGINS = _get_list_env('CORS_ALLOWED_ORIGINS', default='http://localhost:3000')
-CORS_ALLOW_CREDENTIALS = True
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    }
-}
 
