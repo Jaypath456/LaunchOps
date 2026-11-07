@@ -55,6 +55,22 @@ def workflow_validator():
     }}
 
 
+EMPLOYEE_INDEX = 'employee_id_1'
+
+
+def _ensure_unique_employee_index(instances):
+    """One workflow per employee (v1 OneToOneField). Only documents with an ObjectId employee_id take part."""
+    options = {'name': EMPLOYEE_INDEX, 'unique': True,
+               'partialFilterExpression': {'employee_id': {'$type': 'objectId'}}}
+    try:
+        instances.create_index('employee_id', **options)
+    except OperationFailure as exc:
+        if exc.code not in (85, 86):  # IndexOptionsConflict / IndexKeySpecsConflict: an older non-unique index.
+            raise
+        instances.drop_index(EMPLOYEE_INDEX)
+        instances.create_index('employee_id', **options)
+
+
 def ensure_indexes():
     database = get_db()
     options = {
@@ -75,7 +91,7 @@ def ensure_indexes():
 
     database['users'].create_index('username', unique=True)
     instances = database['workflow_instances']
-    instances.create_index('employee_id')
+    _ensure_unique_employee_index(instances)
     instances.create_index('manager_id')
     instances.create_index([('created_at', -1)])
     instances.create_index([('provisioning.status', 1), ('provisioning.next_attempt_at', 1)])

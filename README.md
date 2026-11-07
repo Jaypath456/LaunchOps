@@ -9,7 +9,7 @@ DEBUG=True docker compose up mongo backend --build --wait -d
 docker compose exec backend python manage.py test --noinput
 ```
 
-This foundation exposes `/api/auth/login/`, `/api/auth/refresh/` and `/api/auth/me/` using MongoDB users and JWT sessions. The onboarding API, seed command and frontend workflow will return in later tasks. The previous onboarding code is preserved under `backend/_v1_reference/onboarding/` and is excluded from test discovery. Preserve existing Docker volumes.
+The backend exposes `/api/auth/login/`, `/api/auth/refresh/` and `/api/auth/me/` using MongoDB users and JWT sessions, and the onboarding workflow API under `/api/onboarding/` (see `docs/V2_SPEC.md` section 8). The frontend workflow returns in a later task. Preserve existing Docker volumes.
 
 ## Origins
 

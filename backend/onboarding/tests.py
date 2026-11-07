@@ -145,6 +145,16 @@ class IndexAndValidatorTests(MongoTestCase):
             (('created_at', -1),), (('provisioning.status', 1), ('provisioning.next_attempt_at', 1)),
         })
 
+    def test_employee_index_is_unique_and_upgrades_an_old_plain_index(self):
+        self.assertTrue(self.instances.index_information()['employee_id_1']['unique'])
+        self.instances.drop_index('employee_id_1')
+        self.instances.create_index('employee_id')
+        self.assertNotIn('unique', self.instances.index_information()['employee_id_1'])
+        ensure_indexes()
+        info = self.instances.index_information()['employee_id_1']
+        self.assertTrue(info['unique'])
+        self.assertEqual(info['partialFilterExpression'], {'employee_id': {'$type': 'objectId'}})
+
     def test_ensure_indexes_updates_existing_validator(self):
         get_db().command('collMod', 'workflow_instances', validator={})
         ensure_indexes()

@@ -225,8 +225,10 @@ class StatelessSessionTests(MongoTestCase):
                 self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access}')
                 self.assertEqual(self.client.get('/api/auth/me/').status_code, 401)
 
-    def test_old_onboarding_routes_are_unavailable(self):
-        self.assertEqual(self.client.get('/api/onboarding/workflows/').status_code, 404)
+    def test_onboarding_routes_require_authentication(self):
+        # c07 wired the MongoDB workflow API; v1 integer routes stay gone.
+        self.assertEqual(self.client.get('/api/onboarding/workflows/').status_code, 401)
+        self.assertEqual(self.client.get('/api/onboarding/steps/1/').status_code, 404)
 
 
 class UnscopedMongoAccessTests(SimpleTestCase):
