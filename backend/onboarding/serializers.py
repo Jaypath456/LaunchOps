@@ -164,7 +164,8 @@ def issue_data(issue):
 def provisioning_data(job):
     return {'connector': job['connector'], 'status': job['status'], 'attempts': job['attempts'],
             'last_error': job['last_error'], 'lease_owner': job['lease_owner'],
-            'external_ref': job['external_ref'], 'updated_at': iso(job['updated_at'])}
+            'external_ref': job['external_ref'], 'override_reason': job['override_reason'],
+            'updated_at': iso(job['updated_at'])}
 
 
 def step_detail_data(doc, key, users, now):
@@ -183,7 +184,6 @@ def step_detail_data(doc, key, users, now):
         'review': [task_step_data(other, steps, users, now) for other in review],
         'handbook': handbook_data() if key in ('policy', 'handbook') else None,
         'issues': [issue_data(issue) for issue in doc['issues']] if key == 'ready' else [],
-        # Read-only panel data; IT retry/override arrive with the access gate (t10).
         'provisioning': [provisioning_data(job) for job in doc['provisioning']] if key == 'access' else None,
         'workflow': {
             'id': str(doc['_id']), 'employee': username(users, doc['employee_id']),

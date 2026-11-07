@@ -18,7 +18,7 @@ from . import db, domain, repository
 from .blueprint import BLUEPRINT, CONNECTORS, TRAINING_POLICY_VERSION
 from .indexes import load_provisioning_schema
 from .testing import (
-    WorkflowTestCase, actor_of, events, instances, make_user, mark_done, stored_step,
+    WorkflowTestCase, actor_of, events, instances, make_user, mark_done, stored_step, succeed_jobs,
 )
 
 
@@ -84,6 +84,7 @@ class OnboardingFlowTests(WorkflowTestCase):
         self.assertEqual(replay.data, first.data)
         self.assertEqual(len(events(self.wid, 'completed', 'profile')), 1)
         self.as_role('it')
+        succeed_jobs(self.wid)
         self.assertEqual(self.complete('access').status_code, 200)
         self.as_role('employee')
         self.assertEqual(self.complete('training', {'confirmed': False}).status_code, 400)
@@ -142,6 +143,7 @@ class OnboardingFlowTests(WorkflowTestCase):
         self.as_role('manager')
         self.assertEqual(self.complete('mentor', {**self.evidence('mentor'), 'extra': 'true'}).status_code, 400)
         self.assertEqual(self.complete('mentor').status_code, 200)
+        succeed_jobs(self.wid)
         for key, _, _, role, _, _, _ in BLUEPRINT:
             if key in ('profile', 'mentor'):
                 continue

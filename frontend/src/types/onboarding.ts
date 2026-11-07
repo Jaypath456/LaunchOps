@@ -99,8 +99,22 @@ export interface EvidenceProof {
   reviewed_tasks?: string[];
 }
 
+export interface ProvisioningResult {
+  connector: string;
+  status: 'pending' | 'running' | 'retry' | 'succeeded' | 'dead' | 'overridden';
+  external_ref: string | null;
+  override_reason: string | null;
+}
+
+export interface ProvisioningJob extends ProvisioningResult {
+  attempts: number;
+  last_error: string | null;
+  lease_owner: string | null;
+  updated_at: string | null;
+}
+
 export type TaskStep = Step & {
-  evidence: { [key: string]: unknown; _proof?: EvidenceProof };
+  evidence: { [key: string]: unknown; _proof?: EvidenceProof; provisioning?: ProvisioningResult[] };
   form_fields: FormField[];
 };
 
@@ -111,15 +125,7 @@ export interface TaskDetailResponse {
   review: TaskStep[];
   handbook: { version: string; sections: string[] } | null;
   issues: { id: string; detail: string; resolution: string; resolved_at: string | null }[];
-  provisioning: {
-    connector: string;
-    status: string;
-    attempts: number;
-    last_error: string | null;
-    lease_owner: string | null;
-    external_ref: string | null;
-    updated_at: string | null;
-  }[] | null;
+  provisioning: ProvisioningJob[] | null;
 }
 
 export interface CompletionResponse {

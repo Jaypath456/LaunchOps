@@ -68,6 +68,15 @@ def mark_done(instance_id, keys, evidence=None, proof=None, by=None):
         assert result.matched_count == 1
 
 
+def succeed_jobs(instance_id):
+    """Stand in for the provisioner; leave version and events untouched."""
+    result = instances().update_one({'_id': instance_id}, {'$set': {
+        'provisioning.$[].status': 'succeeded',
+        'provisioning.$[].external_ref': 'simulated-test-account',
+    }})
+    assert result.matched_count == 1
+
+
 def reset_steps(instance_id):
     instances().update_one({'_id': instance_id}, {
         '$set': {'steps.$[].status': 'open', 'steps.$[].completion': None, 'issues': [], 'status': 'active'},

@@ -16,7 +16,7 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 
 from . import repository
-from .testing import WorkflowTestCase, actor_of, bearer, events, instances, mark_done, valid_evidence
+from .testing import WorkflowTestCase, actor_of, bearer, events, instances, mark_done, succeed_jobs, valid_evidence
 
 
 def drop_all_guards(doc, plan):
@@ -106,6 +106,7 @@ class CompareAndSetTests(ConcurrencyTestCase):
     # 3) N threads, N different steps.
     def test_threads_on_different_steps_all_succeed(self):
         mark_done(self.wid, ['profile'])
+        succeed_jobs(self.wid)
         start = self.doc()['version']
         owners = {'contract': 'hr', 'policy': 'hr', 'equipment': 'it', 'access': 'it', 'mentor': 'manager'}
         # N <= retries (5): each failed attempt of a thread consumes a distinct success of another thread.

@@ -14,8 +14,13 @@ interface EvidenceProps {
 function Evidence({ step }: EvidenceProps): React.JSX.Element {
   const proof = step.evidence?._proof;
   return <><p>{proof ? `${proof.mode}: ${proof.result}` : 'Historical evidence: preserved as recorded; not independently verified.'}</p>
-    <dl className="task-evidence">{Object.entries(step.evidence || {}).filter(([key]) => key !== '_proof').map(([key, value]) =>
+    <dl className="task-evidence">{Object.entries(step.evidence || {}).filter(([key]) => key !== '_proof' && key !== 'provisioning').map(([key, value]) =>
       <React.Fragment key={key}><dt>{step.form_fields.find(f => f.name === key)?.label || key}</dt><dd>{value === true ? 'Acknowledged' : String(value)}</dd></React.Fragment>)}</dl>
+    {step.evidence?.provisioning?.map(job => <div className="task-callout" key={job.connector}>
+      <strong>{job.connector} — {job.status}</strong>
+      <p>External reference: {job.external_ref || 'None'}</p>
+      {job.override_reason && <p>Override reason: {job.override_reason}</p>}
+    </div>)}
     {proof && <dl className="task-evidence">
       {proof.reference && <><dt>Demo reference</dt><dd>{proof.reference}</dd></>}
       {proof.asset && <><dt>Simulated device</dt><dd>{proof.asset}</dd></>}
@@ -37,6 +42,7 @@ function TaskPage({ workflowId, stepKey }: { workflowId: string; stepKey: string
   const [task, setTask] = useState<TaskDetailResponse | null>(null);
   const [values, setValues] = useState<Record<string, string | boolean>>({});
   const [resolutions, setResolutions] = useState<Record<string, string>>({});
+  const [overrideReasons, setOverrideReasons] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -91,10 +97,26 @@ function TaskPage({ workflowId, stepKey }: { workflowId: string; stepKey: string
     } catch (err) { setError(mutationError(err)); }
     finally { inFlight.current = false; setBusy(false); }
   }
+  async function changeJob(connector: string, action: 'retry' | 'override') {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    setBusy(true); setError(''); setNotice('');
+    try {
+      await api.post(`/onboarding/workflows/${workflowId}/provisioning/${connector}/${action}/`,
+        action === 'override' ? { reason: overrideReasons[connector]?.trim() || '' } : {});
+      setNotice(action === 'retry' ? `${connector}: retry requested.` : `${connector}: override recorded.`);
+      setOverrideReasons(reasons => ({ ...reasons, [connector]: '' }));
+      await load();
+    } catch (err) {
+      setError(mutationError(err));
+      if (errorResponse(err)?.status === 409) await load();
+    } finally { inFlight.current = false; setBusy(false); }
+  }
   // A step is only rendered from a loaded response containing its workflow.
   // The step guard below also guarantees task exists for the detail sections.
   const step = task?.step, workflow = task?.workflow!;
   const mine = step && isMine(step, workflow, user);
+  const provisioningPending = stepKey === 'access' && task?.provisioning?.some(job => !['succeeded', 'overridden'].includes(job.status));
   return <div className="ops-shell task-page">
     <Link className="learning-link" to="/workspace">← Back to workspace</Link>
     {error && <p className="ops-alert error" role="alert">{error}</p>}
@@ -109,11 +131,33 @@ function TaskPage({ workflowId, stepKey }: { workflowId: string; stepKey: string
         {step.state !== 'done' && <p>{step.state === 'ready' ? 'Prerequisites satisfied.' : 'Prerequisites are not yet satisfied.'} {mine ? 'This task is assigned to you.' : `Assigned ${ownerLabel(step.owner_role)} must complete this task from their workspace’s Ready for you list.`}</p>}
         {!!task!.dependencies.length && <ul>{task!.dependencies.map(p => <li key={p.key}><Link to={`/workspace/workflows/${workflow.id}/tasks/${p.key}`}>{p.title}</Link> — {p.completed ? 'Completed' : 'Waiting'}</li>)}</ul>}
         {step.key === 'profile' && <p>Employee: {workflow.employee} · {workflow.job_title} · {workflow.department} · Starts {formatDate(workflow.start_date)}</p>}
+        {step.key === 'access' && task!.provisioning && <section aria-label="Provisioning" className="provisioning-panel">
+          <h3>Provisioning</h3>
+          {provisioningPending && <p role="status">Waiting for every job to succeed or be overridden before access can be completed.</p>}
+          {task!.provisioning.map(job => <article className="task-callout" key={job.connector} aria-label={`${job.connector} provisioning`}>
+            <h4>{job.connector}</h4>
+            <dl className="task-evidence">
+              <dt>Status</dt><dd>{job.status}</dd><dt>Attempts</dt><dd>{job.attempts}</dd>
+              <dt>Last error</dt><dd>{job.last_error || 'None'}</dd>
+              <dt>Lease owner</dt><dd>{job.lease_owner || 'None'}</dd>
+              <dt>External reference</dt><dd>{job.external_ref || 'None'}</dd>
+              {job.override_reason && <><dt>Override reason</dt><dd>{job.override_reason}</dd></>}
+            </dl>
+            {user.role === 'it' && <div className="task-form">
+              <button type="button" disabled={busy || job.status !== 'dead'} onClick={() => changeJob(job.connector, 'retry')}>Retry {job.connector}</button>
+              <label>Override reason for {job.connector}<input value={overrideReasons[job.connector] || ''}
+                disabled={busy || !['pending', 'retry', 'dead'].includes(job.status)}
+                onChange={event => setOverrideReasons({ ...overrideReasons, [job.connector]: event.target.value })} /></label>
+              <button type="button" disabled={busy || !['pending', 'retry', 'dead'].includes(job.status) || !overrideReasons[job.connector]?.trim()}
+                onClick={() => changeJob(job.connector, 'override')}>Override {job.connector}</button>
+            </div>}
+          </article>)}
+        </section>}
         {task!.handbook && <article className="task-callout"><h3>{task!.handbook.version}</h3>{task!.handbook.sections.map(text => <p key={text}>{text}</p>)}</article>}
         {!!task!.review.length && <section><h3>Records to review</h3>{task!.review.map(item => <details key={item.key}><summary>{item.title} — {item.state} ({item.completion_mode})</summary><Evidence step={item} /></details>)}</section>}
         {task!.issues.map(issue => <div className="task-callout" key={issue.id}><strong>{issue.resolved_at ? 'Resolved (HR self-report)' : 'Unresolved blocker'}</strong><p>{issue.detail}</p>{issue.resolved_at ? <p>{issue.resolution}</p> : user.role === 'hr' && <><label>Resolution (no sensitive details)<input maxLength={240} value={resolutions[issue.id] || ''} onChange={e => setResolutions({ ...resolutions, [issue.id]: e.target.value })} /></label><button type="button" disabled={busy} onClick={() => resolve(issue.id)}>Record resolution</button></>}</div>)}
         {step.state === 'done' ? <><p>Completed by {step.completed_by} on {new Date(step.completed_at).toLocaleString()}.</p><Evidence step={step} /></> : mine && <form className="task-form" onSubmit={submit}>
-          <fieldset disabled={busy || step.state !== 'ready'}>
+          <fieldset disabled={busy || step.state !== 'ready' || !!provisioningPending}>
           {step.form_fields.map(field => <label key={field.name}>{field.type === 'checkbox' ? <span className="task-check"><input required type="checkbox" checked={!!values[field.name]} onChange={e => setValues({ ...values, [field.name]: e.target.checked })} />{field.label}</span> : <>{field.label}{field.type === 'select' ? <select aria-label={field.label} required value={(values[field.name] || '') as string} onChange={e => setValues({ ...values, [field.name]: e.target.value })}><option value="">Choose an option</option>{field.options.map(option => <option key={option}>{option}</option>)}</select> : <input aria-label={field.label} required type={field.type === 'date' ? 'date' : 'text'} maxLength={240} value={(values[field.name] || '') as string} onChange={e => setValues({ ...values, [field.name]: e.target.value })} />}</>}</label>)}
           <button className="ops-primary">{busy ? 'Saving…' : step.state === 'blocked' ? 'Waiting for prerequisites' : step.completion_mode === 'simulation' ? 'Run simulation and save result →' : 'Save record and complete task →'}</button></fieldset>
         </form>}

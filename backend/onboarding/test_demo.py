@@ -9,7 +9,7 @@ from rest_framework.test import APIClient
 
 from .blueprint import BLUEPRINT, FORMS, TRAINING_POLICY_VERSION
 from .db import get_users
-from .testing import MongoTestCase, bearer, events, instances, valid_evidence
+from .testing import MongoTestCase, bearer, events, instances, succeed_jobs, valid_evidence
 
 
 class SeedTestCase(MongoTestCase):
@@ -85,6 +85,7 @@ class SeededDemoTests(SeedTestCase):
         call_command('seed_launchops', stdout=StringIO())
         users = {role: get_users().find_one({'username': 'demo_' + role}) for role in ('hr', 'it', 'manager', 'employee')}
         record = instances().find_one({'employee_id': users['employee']['_id']})
+        succeed_jobs(record['_id'])
         base = f'/api/onboarding/workflows/{record["_id"]}'
         client = APIClient()
         for key, _, _, role, _, _, _ in BLUEPRINT:

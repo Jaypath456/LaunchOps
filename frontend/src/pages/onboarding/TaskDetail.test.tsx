@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { vi } from 'vitest';
 import api from '../../api/axios';
@@ -33,8 +33,8 @@ const completion: CompletionResponse = {
     evidence: { confirmed: true }, proof: null, request_id: 'request-key',
   },
 };
-function renderTask() {
-  return render(<MemoryRouter initialEntries={[`/workspace/workflows/${workflowId}/tasks/training`]}>
+function renderTask(key = 'training') {
+  return render(<MemoryRouter initialEntries={[`/workspace/workflows/${workflowId}/tasks/${key}`]}>
     <Routes><Route path="/workspace/workflows/:id/tasks/:key" element={<TaskDetail />} /></Routes>
   </MemoryRouter>);
 }
@@ -174,4 +174,129 @@ test('issue resolution conflicts give the refresh message', async () => {
   renderTask();
   fireEvent.click(await screen.findByRole('button', { name: 'Record resolution' }));
   expect(await screen.findByRole('alert')).toHaveTextContent('Someone else changed this workflow; refresh and try again.');
+});
+
+function accessTask(): TaskDetailResponse {
+  const response = task();
+  response.step = {
+    ...response.step, key: 'access', title: 'Provision work access', owner_role: 'it',
+    form_fields: [{ name: 'ticket', label: 'Access request ticket', type: 'text' }],
+  };
+  response.provisioning = [{
+    connector: 'workspace', status: 'dead', attempts: 5, last_error: 'Simulated timeout',
+    lease_owner: 'simulated-worker', external_ref: null, override_reason: null, updated_at: '2026-11-05T17:00:00Z',
+  }];
+  return response;
+}
+
+test('access panel shows provisioning details and IT retry refreshes the job', async () => {
+  user.role = 'it';
+  const response = accessTask();
+  vi.mocked(api.get).mockResolvedValue({ data: response });
+  vi.mocked(api.post).mockImplementation(async () => {
+    vi.mocked(api.get).mockResolvedValue({ data: {
+      ...response, provisioning: [{ ...response.provisioning![0], status: 'pending', attempts: 0 }],
+    } });
+    return { data: { connector: 'workspace', status: 'pending' } };
+  });
+  renderTask('access');
+  const panel = await screen.findByRole('region', { name: 'Provisioning' });
+  expect(within(panel).getByText('dead')).toBeInTheDocument();
+  expect(within(panel).getByText('5')).toBeInTheDocument();
+  expect(within(panel).getByText('Simulated timeout')).toBeInTheDocument();
+  expect(within(panel).getByText('simulated-worker')).toBeInTheDocument();
+  expect(within(panel).getByText('External reference')).toBeInTheDocument();
+  expect(screen.getByLabelText('Access request ticket')).toBeDisabled();
+  fireEvent.click(within(panel).getByRole('button', { name: 'Retry workspace' }));
+  await waitFor(() => expect(api.post).toHaveBeenCalledWith(
+    `/onboarding/workflows/${workflowId}/provisioning/workspace/retry/`, {},
+  ));
+  expect(await within(panel).findByText('pending')).toBeInTheDocument();
+  expect(within(panel).getByRole('button', { name: 'Retry workspace' })).toBeDisabled();
+});
+
+test('IT override requires a reason, submits it, and unlocks access after refresh', async () => {
+  user.role = 'it';
+  const response = accessTask();
+  vi.mocked(api.get).mockResolvedValue({ data: response });
+  vi.mocked(api.post).mockImplementation(async () => {
+    vi.mocked(api.get).mockResolvedValue({ data: {
+      ...response, provisioning: [{ ...response.provisioning![0], status: 'overridden', override_reason: 'IT approved' }],
+    } });
+    return { data: { connector: 'workspace', status: 'overridden' } };
+  });
+  renderTask('access');
+  const button = await screen.findByRole('button', { name: 'Override workspace' });
+  expect(button).toBeDisabled();
+  const reason = screen.getByLabelText('Override reason for workspace');
+  fireEvent.change(reason, { target: { value: '   ' } });
+  expect(button).toBeDisabled();
+  fireEvent.change(reason, { target: { value: '  IT approved  ' } });
+  fireEvent.click(button);
+  await waitFor(() => expect(api.post).toHaveBeenCalledWith(
+    `/onboarding/workflows/${workflowId}/provisioning/workspace/override/`, { reason: 'IT approved' },
+  ));
+  expect(await screen.findByText('overridden')).toBeInTheDocument();
+  expect(screen.getByText('IT approved')).toBeInTheDocument();
+  expect(screen.getByLabelText('Access request ticket')).toBeEnabled();
+  expect(button).toBeDisabled();
+});
+
+test.each(['pending', 'retry', 'running', 'succeeded', 'overridden'] as const)('IT controls follow the job guard for %s', async status => {
+  user.role = 'it';
+  const response = accessTask();
+  response.provisioning![0].status = status;
+  vi.mocked(api.get).mockResolvedValue({ data: response });
+  renderTask('access');
+  expect(await screen.findByRole('button', { name: 'Retry workspace' })).toBeDisabled();
+  const input = screen.getByLabelText('Override reason for workspace');
+  const button = screen.getByRole('button', { name: 'Override workspace' });
+  if (status === 'pending' || status === 'retry') {
+    expect(input).toBeEnabled();
+    fireEvent.change(input, { target: { value: 'IT approved' } });
+    expect(button).toBeEnabled();
+  } else {
+    expect(input).toBeDisabled();
+    expect(button).toBeDisabled();
+  }
+});
+
+test.each(['hr', 'manager', 'employee'] as const)('%s can see the access panel without IT controls', async role => {
+  user.role = role;
+  const response = accessTask();
+  response.provisioning![0].external_ref = 'simulated-account';
+  vi.mocked(api.get).mockResolvedValue({ data: response });
+  renderTask('access');
+  const panel = await screen.findByRole('region', { name: 'Provisioning' });
+  expect(within(panel).getByText('simulated-account')).toBeInTheDocument();
+  expect(within(panel).queryByRole('button')).not.toBeInTheDocument();
+  expect(within(panel).queryByRole('textbox')).not.toBeInTheDocument();
+});
+
+test('job conflict displays refresh guidance and loads the competing running state', async () => {
+  user.role = 'it';
+  const response = accessTask();
+  vi.mocked(api.get).mockResolvedValueOnce({ data: response }).mockResolvedValue({ data: {
+    ...response, provisioning: [{ ...response.provisioning![0], status: 'running' }],
+  } });
+  vi.mocked(api.post).mockRejectedValue({ response: { status: 409 } });
+  renderTask('access');
+  fireEvent.change(await screen.findByLabelText('Override reason for workspace'), { target: { value: 'IT approved' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Override workspace' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('Someone else changed this workflow; refresh and try again.');
+  expect(await screen.findByText('running')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Override workspace' })).toBeDisabled();
+});
+
+test('completed access evidence displays saved job results', async () => {
+  const response = accessTask();
+  response.step = { ...response.step, state: 'done', completed_at: completion.completion.at,
+    evidence: { provisioning: [{ connector: 'workspace', status: 'overridden', external_ref: null,
+      override_reason: 'Saved IT approval' }, { connector: 'slack', status: 'succeeded',
+      external_ref: 'simulated-slack-account', override_reason: null }] } };
+  vi.mocked(api.get).mockResolvedValue({ data: response });
+  renderTask('access');
+  expect(await screen.findByText('workspace — overridden')).toBeInTheDocument();
+  expect(screen.getByText('Override reason: Saved IT approval')).toBeInTheDocument();
+  expect(screen.getByText('External reference: simulated-slack-account')).toBeInTheDocument();
 });

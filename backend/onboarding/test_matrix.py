@@ -5,7 +5,7 @@ from collections import Counter, deque
 from django.test import SimpleTestCase
 
 from .blueprint import BLUEPRINT, FORMS
-from .testing import WorkflowTestCase, events, mark_done, reset_steps
+from .testing import WorkflowTestCase, events, mark_done, reset_steps, succeed_jobs
 
 
 class BlueprintIntegrityTests(SimpleTestCase):
@@ -39,6 +39,10 @@ class BlueprintIntegrityTests(SimpleTestCase):
 
 
 class MatrixHelpers(WorkflowTestCase):
+    def setUp(self):
+        super().setUp()
+        succeed_jobs(self.wid)
+
     def complete_others(self, key):
         reset_steps(self.wid)
         mark_done(self.wid, [other for other in FORMS if other != key])

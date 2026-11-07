@@ -101,6 +101,19 @@ def resolve_issue(request, workflow_id, issue_id):
     return Response(outcome.result)
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def retry_job(request, workflow_id, connector):
+    return Response(repository.retry_job(workflow_id, connector, get_actor(request)))
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def override_job(request, workflow_id, connector):
+    reason = request.data.get('reason') if hasattr(request.data, 'get') else None
+    return Response(repository.override_job(workflow_id, connector, get_actor(request), reason))
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def timeline(request, workflow_id):

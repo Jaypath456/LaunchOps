@@ -34,5 +34,7 @@ urlpatterns = [
     path('workflows/<oid:workflow_id>/steps/<stepkey:key>/complete/', views.complete),
     path('workflows/<oid:workflow_id>/issues/<oid:issue_id>/resolve/', views.resolve_issue),
     path('workflows/<oid:workflow_id>/timeline/', views.timeline),
+    path('workflows/<oid:workflow_id>/provisioning/<str:connector>/retry/', views.retry_job),
+    path('workflows/<oid:workflow_id>/provisioning/<str:connector>/override/', views.override_job),
     path('directory/', views.directory),
 ]

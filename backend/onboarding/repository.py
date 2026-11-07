@@ -3,6 +3,7 @@
 Every business mutation is a compare-and-set: read the document, build a pure plan, then one
 conditional update_one guarded by `version` (and an `$elemMatch` on the touched array element).
 Events are $pushed in the same write. Success is `matched_count == 1`; otherwise re-read and retry.
+Provisioning job transitions use their own element status guard and never change the workflow version.
 """
 
 from dataclasses import dataclass, field
@@ -12,7 +13,7 @@ from bson import Int64, ObjectId
 from pymongo import WriteConcern
 from pymongo.errors import DuplicateKeyError
 from rest_framework import status
-from rest_framework.exceptions import APIException, NotFound, ValidationError
+from rest_framework.exceptions import APIException, NotFound, PermissionDenied, ValidationError
 
 from . import domain
 from .blueprint import BLUEPRINT_VERSION, CONNECTORS
@@ -239,6 +240,15 @@ def complete_step(instance_id, key, actor, evidence, request_id=None):
         )
         if decision.replay:
             return Plan(result=decision.completion, noop=True)
+        if key == 'access':
+            # Jobs do not bump version. Terminal job states cannot regress, so this
+            # snapshot can only reject conservatively while provisioning finishes.
+            if any(job['status'] not in ('succeeded', 'overridden') for job in doc['provisioning']):
+                raise ValidationError({'provisioning': 'Every job must succeed or be overridden before completing access.'})
+            decision.completion['evidence']['provisioning'] = [
+                {field: job[field] for field in ('connector', 'status', 'external_ref', 'override_reason')}
+                for job in doc['provisioning']
+            ]
         update = {
             '$set': {'steps.$[s].status': 'done', 'steps.$[s].completion': decision.completion},
             '$push': {'events': decision.event},
@@ -252,6 +262,44 @@ def complete_step(instance_id, key, actor, evidence, request_id=None):
                     guard={'steps': {'$elemMatch': {'key': key, 'status': 'open'}}})
 
     return mutate(instance_id, build)
+
+
+def _change_job(instance_id, connector, actor, allowed, changes, event_type, now):
+    if actor['role'] != 'it':
+        raise PermissionDenied('Only IT can retry or override provisioning jobs.')
+    event = {'type': event_type, 'step_key': 'access', 'connector': connector,
+             'actor': actor['id'], 'at': now, 'detail': f'{connector}: IT requested a manual retry'}
+    if 'override_reason' in changes:
+        event['detail'] = f"{connector}: overridden — {changes['override_reason']}"
+    collection = instances()
+    result = collection.update_one(
+        {'_id': instance_id, 'provisioning': {'$elemMatch': {'connector': connector, 'status': allowed}}},
+        {'$set': {f'provisioning.$[j].{key}': value for key, value in {**changes, 'updated_at': now}.items()},
+         '$push': {'events': event}},
+        array_filters=[{'j.connector': connector}],
+    )
+    if result.matched_count != 1:
+        if collection.find_one({'_id': instance_id}, {'_id': 1}) is None:
+            raise NotFound()
+        raise Conflict('This provisioning job cannot make that transition; refresh and try again.')
+    return {'connector': connector, 'status': changes['status']}
+
+
+def retry_job(instance_id, connector, actor):
+    now = now_ms()
+    return _change_job(instance_id, connector, actor, 'dead',
+                       {'status': 'pending', 'attempts': 0, 'next_attempt_at': now},
+                       'provisioning.manual_retry', now)
+
+
+def override_job(instance_id, connector, actor, reason):
+    if actor['role'] != 'it':
+        raise PermissionDenied('Only IT can retry or override provisioning jobs.')
+    if not isinstance(reason, str) or not reason.strip():
+        raise ValidationError({'reason': 'A non-empty override reason is required.'})
+    return _change_job(instance_id, connector, actor, {'$in': ['pending', 'retry', 'dead']},
+                       {'status': 'overridden', 'override_reason': reason.strip()},
+                       'provisioning.overridden', now_ms())
 
 
 def reschedule(instance_id, actor, start_date):

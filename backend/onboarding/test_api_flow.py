@@ -2,12 +2,13 @@
 
 from datetime import timedelta
 
+from bson import ObjectId
 from django.utils import timezone
 from rest_framework.test import APIClient
 
 from .db import get_users
 from .graph import validate_blueprint
-from .testing import MongoTestCase, instances, make_user, valid_evidence
+from .testing import MongoTestCase, instances, make_user, succeed_jobs, valid_evidence
 
 
 PASSWORD = 'flow test password'
@@ -38,6 +39,10 @@ class TwentyStepApiFlowTests(MongoTestCase):
         self.assertEqual((created.data['employee'], created.data['manager'], created.data['status']),
                          ('flow_employee', 'flow_manager', 'active'))
         base = f'/api/onboarding/workflows/{created.data["id"]}'
+        instance_id = ObjectId(created.data['id'])
+        initial = instances().find_one({'_id': instance_id})
+        self.assertEqual([job['status'] for job in initial['provisioning']], ['pending'] * 3)
+        succeed_jobs(instance_id)
         owners = {step['key']: step['owner_role'] for step in created.data['steps']}
         order = validate_blueprint()
 
@@ -69,6 +74,6 @@ class TwentyStepApiFlowTests(MongoTestCase):
         doc = instances().find_one({})
         self.assertEqual(doc['version'], 21)
         self.assertEqual(doc['issues'], [])
-        self.assertEqual([job['status'] for job in doc['provisioning']], ['pending'] * 3)
+        self.assertEqual([job['status'] for job in doc['provisioning']], ['succeeded'] * 3)
         ready = self.clients['hr'].get(f'{base}/steps/ready/').data
         self.assertEqual(sorted(ready['step']['evidence']['_proof']['reviewed_tasks']), sorted(set(order) - {'ready'}))
