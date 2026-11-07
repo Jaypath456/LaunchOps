@@ -3,7 +3,7 @@ import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { clearSession, sessionGeneration } from './session';
 
 const api: AxiosInstance = axios.create({
-  baseURL: (import.meta.env.REACT_APP_API_URL as string | undefined) || 'http://127.0.0.1:8000/api',
+  baseURL: import.meta.env.DEV ? '/api' : (import.meta.env.REACT_APP_API_URL as string | undefined) || '/api',
 });
 
 interface SessionRequest extends InternalAxiosRequestConfig {

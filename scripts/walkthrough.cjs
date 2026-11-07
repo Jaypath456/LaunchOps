@@ -21,11 +21,11 @@ const report = { started: new Date().toISOString(), pages: [], actions: [], atta
     await page.goto(base); await page.locator(`a[href="/login/${role}"]`).click(); await page.locator('[name=username]').fill(username); await page.locator('[name=password]').fill(accountPassword);
     await page.getByRole('button', { name: 'Sign In', exact: true }).click(); await page.waitForURL('**/workspace'); await page.locator('.ops-hero').waitFor();
     report.actions.push({ action: 'role login through landing page', role, username, path: '/login/' + role });
-    const request = async (method, path, data) => {
+    const request = async (method, path, data, headers = {}) => {
       const token = await page.evaluate(() => sessionStorage.access_token);
-      const start = Date.now(); const res = await context.request.fetch(api + path, { method, headers: { Authorization: 'Bearer ' + token }, data });
+      const start = Date.now(); const res = await context.request.fetch(api + path, { method, headers: { Authorization: 'Bearer ' + token, ...headers }, data });
       report.timings.push({ method, path, ms: Date.now() - start, status: res.status() });
-      return { status: res.status(), data: await res.json() };
+      return { status: res.status(), data: await res.json(), headers: res.headers() };
     };
     return { context, page, request, username, role };
   }
@@ -45,9 +45,9 @@ const report = { started: new Date().toISOString(), pages: [], actions: [], atta
     // Read every demo task visible to each role, without changing the user's workflow.
     for (const role of process.env.SKIP_INSPECTION ? [] : Object.keys(clients)) {
       const c = clients[role]; const visible = await workflowsFor(c);
-      for (const w of visible.filter(w => w.id <= 2)) for (const s of w.steps) {
-        await c.page.goto(`${base}/workspace/tasks/${s.id}`); await c.page.locator('h1').waitFor();
-        report.pages.push({ role, workflow: w.id, task: s.key, heading: await c.page.locator('h1').innerText(), status: await c.page.locator('.ops-hero .status').innerText() });
+      for (const w of visible.filter(w => w.employee === 'demo_employee')) for (const s of w.steps) {
+        await c.page.goto(`${base}/workspace/workflows/${w.id}/tasks/${s.key}`); await c.page.locator('h1').waitFor();
+        report.pages.push({ role, workflow: w.id, task: s.key, heading: await c.page.locator('h1').innerText(), status: await c.page.locator('.ops-hero .status:not(.overdue)').innerText() });
       }
       console.log('Inspected tasks for', role);
     }
@@ -69,29 +69,29 @@ const report = { started: new Date().toISOString(), pages: [], actions: [], atta
       const r = await client.request(method, path, data); assert.equal(r.status, status, label + JSON.stringify(r.data)); report.attacks.push({ label, status });
     };
     await attack(fresh, 'GET', `/onboarding/workflows/${demo.id}/`, undefined, 404, 'Other employee workflow');
-    await attack(clients.employee, 'POST', `/onboarding/steps/${newWorkflow.steps.find(s=>s.key==='contact').id}/complete/`, { evidence: {} }, 403, 'Other employee completion');
-    if (newWorkflow.steps.find(s=>s.key==='profile').state !== 'completed') await attack(it, 'POST', `/onboarding/steps/${newWorkflow.steps.find(s=>s.key==='equipment').id}/complete/`, { evidence: { device:'Demo laptop',delivery_date:'2026-09-27' } }, 400, 'Skipped prerequisites');
-    await attack(fresh, 'POST', `/onboarding/steps/${newWorkflow.steps.find(s=>s.key==='equipment').id}/complete/`, { evidence:{} }, 403, 'Employee cannot complete IT work');
-    if (newWorkflow.steps.find(s=>s.key==='profile').state !== 'completed') await attack(hr, 'POST', `/onboarding/steps/${newWorkflow.steps.find(s=>s.key==='profile').id}/complete/`, { evidence:{review:'Match demo profile',_proof:{mode:'verified'}} }, 400, 'Forged simulation proof');
+    await attack(clients.employee, 'POST', `/onboarding/workflows/${newWorkflow.id}/steps/contact/complete/`, { evidence: {} }, 403, 'Other employee completion');
+    if (newWorkflow.steps.find(s=>s.key==='profile').state !== 'done') await attack(it, 'POST', `/onboarding/workflows/${newWorkflow.id}/steps/equipment/complete/`, { evidence: { device:'Demo laptop',delivery_date:'2026-09-27' } }, 400, 'Skipped prerequisites');
+    await attack(fresh, 'POST', `/onboarding/workflows/${newWorkflow.id}/steps/equipment/complete/`, { evidence:{} }, 403, 'Employee cannot complete IT work');
+    if (newWorkflow.steps.find(s=>s.key==='profile').state !== 'done') await attack(hr, 'POST', `/onboarding/workflows/${newWorkflow.id}/steps/profile/complete/`, { evidence:{review:'Match demo profile',_proof:{mode:'verified'}} }, 400, 'Forged simulation proof');
     // Complete all tasks from their role-specific browser forms, including policy attestation.
     for (const initial of [newWorkflow]) {
       const employee = fresh;
       let w = (await hr.request('GET', `/onboarding/workflows/${initial.id}/`)).data;
       // Repeatedly select ready tasks to respect prerequisites.
-      while (w.steps.some(s => s.state !== 'completed')) {
+      while (w.steps.some(s => s.state !== 'done')) {
         const s = w.steps.find(s => s.state === 'ready'); assert(s, 'No ready task: deadlock');
         const c = s.owner_role === 'employee' ? employee : clients[s.owner_role];
-        await c.page.goto(`${base}/workspace/tasks/${s.id}`); await c.page.locator('h1').waitFor();
-        const task = (await c.request('GET', `/onboarding/steps/${s.id}/`)).data;
+        await c.page.goto(`${base}/workspace/workflows/${w.id}/tasks/${s.key}`); await c.page.locator('h1').waitFor();
+        const task = (await c.request('GET', `/onboarding/workflows/${w.id}/steps/${s.key}/`)).data;
         if (s.key === 'equipment') {
-          await employee.page.goto(`${base}/workspace/tasks/${s.id}`); await employee.page.getByText('Waiting for IT', { exact:true }).waitFor();
+          await employee.page.goto(`${base}/workspace/workflows/${w.id}/tasks/${s.key}`); await employee.page.getByText('Waiting for IT', { exact:true }).waitFor();
           assert.equal(await employee.page.locator('form.task-form').count(),0);
           await employee.page.screenshot({path:reportDir + '/employee-waiting.png',fullPage:true});
         }
         if (s.key === 'ready') {
           assert(task.issues.some(issue => !issue.resolved_at), 'Expected a reported blocker');
           const blockedEvidence = Object.fromEntries(task.step.form_fields.map(field => [field.name, field.type === 'checkbox' ? true : 'Audit review']));
-          await attack(hr, 'POST', `/onboarding/steps/${s.id}/complete/`, { evidence: blockedEvidence }, 400, 'Final signoff blocked by unresolved issue');
+          await attack(hr, 'POST', `/onboarding/workflows/${w.id}/steps/${s.key}/complete/`, { evidence: blockedEvidence }, 400, 'Final signoff blocked by unresolved issue');
           await c.page.getByLabel('Resolution (no sensitive details)', {exact:true}).fill('Demo support discussion completed with the employee.');
           await c.page.getByRole('button', {name:'Record resolution',exact:true}).click();
           await c.page.getByText('Resolved (HR self-report)',{exact:true}).waitFor();
@@ -104,23 +104,36 @@ const report = { started: new Date().toISOString(), pages: [], actions: [], atta
           values[field.name] = value;
           if (field.type === 'checkbox') await input.check(); else if (field.type === 'select') await input.selectOption(value); else await input.fill(value);
         }
-        await c.page.locator('.task-form button').click(); await c.page.getByRole('status').filter({hasText:'Task completed'}).waitFor();
-        const retry = await c.request('POST', `/onboarding/steps/${s.id}/complete/`, { evidence: values }); assert.equal(retry.status,200); assert.equal(retry.data.changed,false);
-        const saved = (await c.request('GET', `/onboarding/steps/${s.id}/`)).data; assert(saved.step.evidence._proof); assert.equal(saved.step.completed_by,c.username);
+        const completionPath = `/onboarding/workflows/${w.id}/steps/${s.key}/complete/`;
+        const completed = c.page.waitForResponse(response => new URL(response.url()).pathname.endsWith('/api' + completionPath) && response.request().method() === 'POST');
+        await c.page.getByRole('button', {name: /Run simulation and save result|Save record and complete task/}).click();
+        const winner = await completed;
+        assert.equal(winner.status(), 200);
+        const requestKey = winner.request().headers()['idempotency-key'];
+        assert(requestKey, 'UI completion must send an Idempotency-Key');
+        await c.page.getByRole('status').filter({hasText:'Task completed'}).waitFor();
+        const retry = await c.request('POST', completionPath, { evidence: values }, { 'Idempotency-Key': requestKey });
+        assert.equal(retry.status, 200);
+        assert.equal(retry.data.key, s.key);
+        assert.equal(retry.data.state, 'done');
+        assert.deepEqual(retry.data, await winner.json());
+        assert.equal(retry.headers['idempotent-replayed'], 'true');
+        const saved = (await c.request('GET', `/onboarding/workflows/${w.id}/steps/${s.key}/`)).data; assert(saved.step.evidence._proof); assert.equal(saved.step.completed_by,c.username);
         w = (await hr.request('GET', `/onboarding/workflows/${w.id}/`)).data;
         assert.equal(w.events.filter(e=>e.step===s.key && e.action==='completed').length,1);
         report.actions.push({workflow:w.id,task:s.key,actor:c.username,mode:saved.step.evidence._proof.mode,action:'UI → API → persisted evidence + single event'});
         console.log('Completed',w.id,s.key);
       }
-      await hr.page.goto(base+'/workspace'); await hr.page.locator('.person').filter({hasText:w.employee}).click(); await hr.page.getByText('20/20 complete',{exact:true}).waitFor();
+      await hr.page.goto(base+'/workspace'); await hr.page.locator('.person').filter({hasText:w.employee}).click(); await hr.page.getByText(`${w.steps.length}/${w.steps.length} complete`,{exact:true}).waitFor();
+      await hr.page.getByRole('region', {name: 'Timeline'}).locator('.event-list').waitFor();
     }
     // Logout and login in the same browser must replace identity and view.
     await clients.employee.page.getByRole('button',{name:'Logout'}).click(); await clients.employee.page.locator('[name=username]').fill('demo_it'); await clients.employee.page.locator('[name=password]').fill(password); await clients.employee.page.getByRole('button',{name:'Sign In',exact:true}).click(); await clients.employee.page.waitForURL('**/workspace'); await clients.employee.page.getByText('demo_it',{exact:true}).waitFor();
     await hr.page.goto(base+'/does-not-exist'); await hr.page.getByRole('heading',{name:'Page not found'}).waitFor();
     const final = (await hr.request('GET', `/onboarding/workflows/${newWorkflow.id}/`)).data;
-    assert.equal(final.steps.filter(step => step.state === 'completed').length,20);
-    assert.equal(final.events.filter(event => event.action === 'completed').length,20);
-    report.completedTasks=20; report.completionEvents=20;
+    assert(final.steps.every(step => step.state === 'done'));
+    assert.equal(final.events.filter(event => event.action === 'completed').length, final.steps.length);
+    report.completedTasks = final.steps.length; report.completionEvents = final.steps.length;
     assert.deepEqual(report.errors,[]); report.result='PASS';
   } catch(e) { report.result='FAIL'; report.failure=e.stack; console.error(e); for (const [role,c] of Object.entries(clients)) { await c.page.screenshot({path:`${reportDir}/failure-${role}.png`,fullPage:true}).catch(()=>{}); } process.exitCode=1; }
   finally { report.finished=new Date().toISOString();fs.writeFileSync(reportDir + '/walkthrough.json',JSON.stringify(report,null,2));console.log('Report:',reportDir + '/walkthrough.json');await browser.close(); }

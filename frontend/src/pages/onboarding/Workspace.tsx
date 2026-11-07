@@ -4,9 +4,10 @@ import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import type { User } from '../../types/auth';
 import type { Directory, Workflow, WorkflowForm, WorkflowPage } from '../../types/onboarding';
-import { errorResponse, errorField } from '../../types/api';
+import { errorResponse, errorField, mutationError } from '../../types/api';
 import './workspace.css';
 import { isMine, stateLabel, formatDate } from './taskState';
+import Timeline from './Timeline';
 
 const LABELS: Partial<Record<User['role'], string>> = { hr: 'People operations', it: 'IT operations', manager: 'Team manager', employee: 'New hire' };
 const fmt = formatDate;
@@ -22,7 +23,7 @@ export default function Workspace(): React.JSX.Element {
   const [pagination, setPagination] = useState({ count: 0, total_pages: 1 });
   const requestId = useRef(0);
   const [directory, setDirectory] = useState<Directory>({ users: [] });
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [busy, setBusy] = useState<'date' | 'launch' | null>(null);
   const [error, setError] = useState<string>('');
@@ -60,8 +61,8 @@ export default function Workspace(): React.JSX.Element {
   const selected = useMemo(() => workflows.find(w => w.id === selectedId), [workflows, selectedId]);
   const allSteps = workflows.flatMap(w => w.steps.map(s => ({ ...s, workflow: w })));
   const actionable = allSteps.filter(s => isMine(s, s.workflow, user) && s.state === 'ready');
-  const overdue = allSteps.filter(s => s.state === 'ready' && new Date(s.due_at) < new Date());
-  const done = allSteps.filter(s => s.state === 'completed').length;
+  const overdue = allSteps.filter(s => s.overdue);
+  const done = allSteps.filter(s => s.state === 'done').length;
 
   async function saveDate(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy('date'); setError(''); setNotice('');
@@ -70,7 +71,7 @@ export default function Workspace(): React.JSX.Element {
       await api.patch<Workflow>(`/onboarding/workflows/${selected!.id}/`, { start_date: revisedDate });
       await refresh(); setEditingDate(false); setNotice('Start date and task due dates updated.');
     } catch (err) {
-      setError(Object.values(errorResponse(err)?.data || {}).flat().join(' ') || 'Could not change the date.');
+      setError(mutationError(err));
     } finally { setBusy(null); }
   }
 
@@ -83,8 +84,7 @@ export default function Workspace(): React.JSX.Element {
       setShowForm(false);
       setNotice(`Onboarding started for ${result.data.employee}.`);
     } catch (err) {
-      const detail = errorResponse(err)?.data;
-      setError(typeof detail === 'object' && detail !== null ? Object.values(detail).flat().join(' ') : 'Could not launch onboarding.');
+      setError(mutationError(err));
     } finally { setBusy(null); }
   }
 
@@ -119,31 +119,31 @@ export default function Workspace(): React.JSX.Element {
       {error && page > 1 && <button onClick={() => setParams({ page: '1' })}>Back to first page</button>}
     </nav>
     <div className="ops-metrics">
-      <div><span>ACTIVE WORKFLOWS</span><strong>{workflows.filter(w => !w.steps.some(s => s.key === 'ready' && s.state === 'completed')).length}</strong><small>On this page</small></div>
+      <div><span>ACTIVE WORKFLOWS</span><strong>{workflows.filter(w => !w.steps.some(s => s.key === 'ready' && s.state === 'done')).length}</strong><small>On this page</small></div>
       <div><span>READY FOR YOU</span><strong>{actionable.length}</strong><small>Steps you can take now</small></div>
       <div><span>COMPLETED STEPS</span><strong>{done}</strong><small>Progress made so far</small></div>
       <div><span>PAST DUE</span><strong>{overdue.length}</strong><small>Ready steps requiring attention</small></div>
     </div>
 
-    {!!actionable.length && <section className="ops-panel ready-list" aria-label="Ready for you"><strong>Ready for you</strong>{actionable.map(s => <Link key={s.id} to={`/workspace/tasks/${s.id}`}>{s.workflow.employee}: {s.title} →</Link>)}</section>}
+    {!!actionable.length && <section className="ops-panel ready-list" aria-label="Ready for you"><strong>Ready for you</strong>{actionable.map(s => <Link key={`${s.workflow.id}/${s.key}`} to={`/workspace/workflows/${s.workflow.id}/tasks/${s.key}`}>{s.workflow.employee}: {s.title} →</Link>)}</section>}
     {loading ? <div className="ops-empty">Loading workspace…</div> : !workflows.length ? <div className="ops-empty"><h2>No workflows yet</h2><p>{user.role === 'hr' ? 'Start the first onboarding using the button above.' : 'Your onboarding activity will appear here once HR starts a workflow.'}</p></div> : <div className="ops-layout">
       <aside className="ops-panel workflow-list"><div className="panel-title"><span className="eyebrow">PEOPLE</span><h2>Onboarding</h2></div>
-        {workflows.map(w => { const count = w.steps.filter(s => s.state === 'completed').length;
+        {workflows.map(w => { const count = w.steps.filter(s => s.state === 'done').length;
           return <button key={w.id} className={`person ${selectedId === w.id ? 'selected' : ''}`} onClick={() => { setSelectedId(w.id); setEditingDate(false); }}>
             <span className="avatar">{w.employee.slice(0, 2).toUpperCase()}</span><span className="person-text"><strong>{w.employee}</strong><small>{w.job_title} · {w.department}</small><span className="mini-progress"><i style={{ width: `${count / w.steps.length * 100}%` }} /></span><small>{count} of {w.steps.length} complete</small></span>
           </button>; })}
       </aside>
       {selected && <div className="ops-main">
-        <section className="ops-panel summary-panel"><div className="section-heading"><div><span className="eyebrow">WORKFLOW #{selected.id} · {selected.department.toUpperCase()}</span><h2>{selected.employee}'s first chapter</h2><p>{selected.job_title} · Starts {fmt(selected.start_date)} · Manager {selected.manager}</p>{selected.date_needs_correction && <p role="alert">Start date needs HR correction; existing records are preserved.</p>}{user.role === 'hr' && <>{editingDate ? <form className="date-form" onSubmit={saveDate}><label>Correct start date <input required type="date" value={revisedDate} onChange={e => setRevisedDate(e.target.value)} /></label><button className="complete-btn" disabled={busy === 'date'}>Save date</button><button type="button" className="learning-link" onClick={() => setEditingDate(false)}>Cancel</button></form> : <button className="learning-link link-button" onClick={() => { setRevisedDate(selected.start_date); setEditingDate(true); }}>Correct start date</button>}</>}</div><span className="completion-ring">{Math.round(selected.steps.filter(s => s.state === 'completed').length / selected.steps.length * 100)}%</span></div></section>
-        <section className="ops-panel"><div className="section-heading"><div><span className="eyebrow">DEPENDENCY-AWARE</span><h2>Launch checklist</h2>{selected.steps.some(s => s.key === 'ready' && s.state === 'completed') && <p>Workflow signed off. Any unfinished tasks added after historical signoff are shown for transparency; the original completion is preserved.</p>}</div><span className="muted">{selected.steps.filter(s => s.state === 'completed').length}/{selected.steps.length} complete</span></div>
+        <section className="ops-panel summary-panel"><div className="section-heading"><div><span className="eyebrow">WORKFLOW #{selected.id} · {selected.department.toUpperCase()}</span><h2>{selected.employee}'s first chapter</h2><p>{selected.job_title} · Starts {fmt(selected.start_date)} · Manager {selected.manager}</p>{selected.date_needs_correction && <p role="alert">Start date needs HR correction; existing records are preserved.</p>}{user.role === 'hr' && <>{editingDate ? <form className="date-form" onSubmit={saveDate}><label>Correct start date <input required type="date" value={revisedDate} onChange={e => setRevisedDate(e.target.value)} /></label><button className="complete-btn" disabled={busy === 'date'}>Save date</button><button type="button" className="learning-link" onClick={() => setEditingDate(false)}>Cancel</button></form> : <button className="learning-link link-button" onClick={() => { setRevisedDate(selected.start_date); setEditingDate(true); }}>Correct start date</button>}</>}</div><span className="completion-ring">{Math.round(selected.steps.filter(s => s.state === 'done').length / selected.steps.length * 100)}%</span></div></section>
+        <section className="ops-panel"><div className="section-heading"><div><span className="eyebrow">DEPENDENCY-AWARE</span><h2>Launch checklist</h2>{selected.steps.some(s => s.key === 'ready' && s.state === 'done') && <p>Workflow signed off. Any unfinished tasks added after historical signoff are shown for transparency; the original completion is preserved.</p>}</div><span className="muted">{selected.steps.filter(s => s.state === 'done').length}/{selected.steps.length} complete</span></div>
           <div className="step-list">{selected.steps.map((step, index) => {
             const mine = step.owner_role === user.role && (user.role !== 'manager' || selected.manager === user.username) && (user.role !== 'employee' || selected.employee === user.username);
-            return <article key={step.id} className={`step ${step.state}`}><span className="step-icon">{step.state === 'completed' ? '✓' : String(index + 1).padStart(2, '0')}</span><div className="step-body"><div className="step-head"><h3><Link to={`/workspace/tasks/${step.id}`}>{step.title}</Link></h3><span className={`status ${step.state}`}>{stateLabel(step, selected, user)}</span></div><p>{step.description}</p><div className="step-meta"><span>{step.owner_role.toUpperCase()}</span><span>Due {fmt(step.due_at)}</span>{step.prerequisites.length > 0 && <span>After {step.prerequisites.join(', ')}</span>}</div>
-              <Link className="complete-btn task-open" to={`/workspace/tasks/${step.id}`}>{step.state === 'ready' && mine ? 'Open and complete task →' : 'View task details →'}</Link>
+            return <article key={step.key} className={`step ${step.state}`}><span className="step-icon">{step.state === 'done' ? '✓' : String(index + 1).padStart(2, '0')}</span><div className="step-body"><div className="step-head"><h3><Link to={`/workspace/workflows/${selected.id}/tasks/${step.key}`}>{step.title}</Link></h3><span className={`status ${step.state}`}>{stateLabel(step, selected, user)}</span>{step.overdue && <span className="status overdue">Overdue</span>}</div><p>{step.description}</p><div className="step-meta"><span>{step.owner_role.toUpperCase()}</span><span>Due {fmt(step.due_at)}</span>{step.prerequisites.length > 0 && <span>After {step.prerequisites.join(', ')}</span>}</div>
+              <Link className="complete-btn task-open" to={`/workspace/workflows/${selected.id}/tasks/${step.key}`}>{step.state === 'ready' && mine ? 'Open and complete task →' : 'View task details →'}</Link>
               {step.completed_by && <small className="completed-by">Confirmed by {step.completed_by}</small>}
             </div></article>; })}</div>
         </section>
-        <section className="ops-panel"><div className="section-heading"><div><span className="eyebrow">ACCOUNTABILITY</span><h2>Activity log</h2></div></div><div className="event-list">{selected.events.map(event => <div key={event.id}><span className="event-marker"/><div><strong>{event.detail}</strong><small>{event.actor || 'System'} · {fmt(event.created_at)} · {event.action}</small></div></div>)}</div></section>
+        <Timeline key={selected.id} workflowId={selected.id} />
       </div>}
     </div>}
   </div>;

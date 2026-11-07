@@ -19,7 +19,7 @@ function AppRoutes(): React.JSX.Element {
       <Route path="/login" element={<Login />} />
       <Route path="/login/:role" element={<Login />} />
       <Route path="/workspace" element={<ProtectedRoute><Workspace /></ProtectedRoute>} />
-      <Route path="/workspace/tasks/:stepId" element={<ProtectedRoute><TaskDetail /></ProtectedRoute>} />
+      <Route path="/workspace/workflows/:id/tasks/:key" element={<ProtectedRoute><TaskDetail /></ProtectedRoute>} />
 
       <Route path="*" element={<div className="page-container"><h1>Page not found</h1><a href="/">Return to your workspace</a></div>} />
     </Routes>
