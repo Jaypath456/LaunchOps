@@ -237,6 +237,9 @@ def create_workflow(*, actor, employee_id, manager_id, job_title, department, st
             for connector in CONNECTORS
         ],
     }
+    connectors = [job['connector'] for job in doc['provisioning']]
+    if len(connectors) != len(set(connectors)):
+        raise ValidationError({'provisioning': 'Connectors must be unique within a workflow.'})
     # The workflow and its pending provisioning jobs are one write: nothing is lost between saved and enqueued.
     try:
         collection.insert_one(doc)
@@ -301,7 +304,7 @@ def _change_job(instance_id, connector, actor, allowed, changes, event_type, now
         {'_id': instance_id, 'provisioning': {'$elemMatch': {'connector': connector, 'status': allowed}}},
         {'$set': {f'provisioning.$[j].{key}': value for key, value in {**changes, 'updated_at': now}.items()},
          '$push': {'events': event}},
-        array_filters=[{'j.connector': connector}],
+        array_filters=[{'j.connector': connector, 'j.status': allowed}],
     )
     if result.matched_count != 1:
         if collection.find_one({'_id': instance_id}, {'_id': 1}) is None:

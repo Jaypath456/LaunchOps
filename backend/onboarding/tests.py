@@ -2,6 +2,7 @@ from copy import deepcopy
 from datetime import UTC, datetime
 from io import StringIO
 import json
+from unittest import mock
 
 from bson import ObjectId
 from django.contrib.auth.hashers import check_password, make_password
@@ -11,12 +12,13 @@ from django.test import override_settings
 from jsonschema import Draft7Validator, FormatChecker, ValidationError
 from pymongo.errors import DuplicateKeyError, WriteError
 
+from . import repository
 from .blueprint import BLUEPRINT, BLUEPRINT_VERSION, CONNECTORS, FORMS
 from .db import get_db, get_users
 from .graph import validate_blueprint
 from .indexes import CONTRACT_PATH, ensure_indexes, load_provisioning_schema
 from .management.commands.seed_launchops import PASSWORD
-from .testing import MongoTestCase
+from .testing import MongoTestCase, actor_of, make_user
 
 
 def fixtures():
@@ -105,6 +107,22 @@ class ProvisioningContractTests(MongoTestCase):
             with self.subTest(status=status):
                 self.assertEqual(job['status'], status)
                 self.validator.validate(job)
+
+    def test_create_workflow_rejects_fixture_with_duplicate_connectors(self):
+        document = json.loads((CONTRACT_PATH.parent / 'invalid_workflow_duplicate_connectors.json').read_text())
+        for job in document['provisioning']:
+            self.validator.validate(job)
+        employee = make_user('duplicate_contract_employee', 'employee')
+        manager = make_user('duplicate_contract_manager', 'manager')
+        hr = make_user('duplicate_contract_hr', 'hr')
+        connectors = [job['connector'] for job in document['provisioning']]
+        before = get_db()['workflow_instances'].count_documents({})
+        with mock.patch.object(repository, 'CONNECTORS', connectors):
+            with self.assertRaises(repository.ValidationError) as caught:
+                repository.create_workflow(actor=actor_of(hr), employee_id=employee['_id'], manager_id=manager['_id'],
+                                           job_title='Engineer', department='Engineering', start_date=datetime.now(UTC).date())
+        self.assertIn('provisioning', caught.exception.detail)
+        self.assertEqual(get_db()['workflow_instances'].count_documents({}), before)
 
     def test_contract_rejects_missing_unknown_and_malformed_fields(self):
         pending = fixtures()['pending']

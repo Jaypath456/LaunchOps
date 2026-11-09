@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "LaunchOps provisioning job",
+  "description": "Each workflow must have unique provisioning connectors, enforced by create_workflow. Every transition array filter must repeat its query element guards.",
   "type": "object",
   "additionalProperties": false,
   "required": [

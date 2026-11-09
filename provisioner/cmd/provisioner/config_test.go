@@ -25,7 +25,7 @@ func TestConfigDefaults(t *testing.T) {
 	}
 	want := Config{
 		MongoURI: "mongodb://localhost:27017", MongoDB: "launchops", Workers: 4, WorkerID: "prov-1",
-		Policy:       jobs.Policy{MaxAttempts: 5, Base: time.Second, Cap: 60 * time.Second, Lease: 30 * time.Second, CallTimeout: 5 * time.Second},
+		Policy:       jobs.Policy{MaxAttempts: 5, Base: time.Second, Cap: 60 * time.Second, Lease: 30 * time.Second, CallTimeout: 5 * time.Second, StoreOpTimeout: 5 * time.Second, FinishTimeout: 5 * time.Second},
 		DrainTimeout: 20 * time.Second, MockSaaSURL: "http://localhost:8080", HealthAddr: ":8081",
 	}
 	if c != want {
@@ -44,7 +44,7 @@ func TestConfigOverrides(t *testing.T) {
 	}
 	want := Config{
 		MongoURI: "mongodb://mongo:27017", MongoDB: "other", Workers: 8, WorkerID: "w-9",
-		Policy:       jobs.Policy{MaxAttempts: 3, Base: 2 * time.Second, Cap: 30 * time.Second, Lease: 45 * time.Second, CallTimeout: 10 * time.Second},
+		Policy:       jobs.Policy{MaxAttempts: 3, Base: 2 * time.Second, Cap: 30 * time.Second, Lease: 45 * time.Second, CallTimeout: 10 * time.Second, StoreOpTimeout: 5 * time.Second, FinishTimeout: 5 * time.Second},
 		DrainTimeout: 0, MockSaaSURL: "http://mock-saas:8080", HealthAddr: ":9000",
 	}
 	if c != want {
@@ -58,6 +58,8 @@ func TestConfigValidation(t *testing.T) {
 		vars map[string]string
 		want string
 	}{
+		{"lease equals full budget", map[string]string{"LEASE": "20s"}, "lease"},
+		{"lease below full budget", map[string]string{"LEASE": "19.999999999s"}, "lease"},
 		{"lease equals call timeout + margin", map[string]string{"LEASE": "10s", "CALL_TIMEOUT": "5s"}, "lease"},
 		{"lease below call timeout + margin", map[string]string{"LEASE": "10s", "CALL_TIMEOUT": "6s"}, "lease"},
 		{"lease below call timeout", map[string]string{"LEASE": "3s", "CALL_TIMEOUT": "5s"}, "lease"},
@@ -79,8 +81,8 @@ func TestConfigValidation(t *testing.T) {
 			}
 		})
 	}
-	if _, err := loadConfig(env(map[string]string{"LEASE": "11s", "CALL_TIMEOUT": "5s"}), host); err != nil {
-		t.Fatalf("lease just above call timeout + margin rejected: %v", err)
+	if _, err := loadConfig(env(map[string]string{"LEASE": "20.000000001s", "CALL_TIMEOUT": "5s"}), host); err != nil {
+		t.Fatalf("lease just above full budget rejected: %v", err)
 	}
 	if _, err := loadConfig(env(nil), func() (string, error) { return "", errors.New("no hostname") }); err == nil ||
 		!strings.Contains(err.Error(), "WORKER_ID") {

@@ -77,7 +77,7 @@ func run(ctx context.Context, cfg Config, logger *slog.Logger) error {
 		}
 	}()
 	store, err := jobs.NewStore(client, cfg.MongoDB, collection, jobs.StoreConfig{
-		Policy: cfg.Policy, OpTimeout: opTimeout, Logger: logger.With("component", "store"),
+		Policy: cfg.Policy, OpTimeout: cfg.Policy.StoreOpTimeout, Logger: logger.With("component", "store"),
 	})
 	if err != nil {
 		return err
@@ -102,7 +102,7 @@ func run(ctx context.Context, cfg Config, logger *slog.Logger) error {
 
 	pool := &worker.Pool{
 		Store: store, Connector: conn, Policy: cfg.Policy, WorkerID: cfg.WorkerID, Workers: cfg.Workers,
-		Logger: logger.With("component", "worker"), DrainTimeout: cfg.DrainTimeout,
+		Logger: logger.With("component", "worker"), DrainTimeout: cfg.DrainTimeout, FinishTimeout: cfg.Policy.FinishTimeout,
 	}
 	logger.Info("provisioner started", "worker_id", cfg.WorkerID, "workers", cfg.Workers, "lease", cfg.Policy.Lease.String(),
 		"call_timeout", cfg.Policy.CallTimeout.String(), "max_attempts", cfg.Policy.MaxAttempts, "health_addr", listener.Addr().String())

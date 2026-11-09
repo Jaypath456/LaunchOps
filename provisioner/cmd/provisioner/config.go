@@ -24,7 +24,7 @@ type Config struct {
 }
 
 // loadConfig reads the environment through lookup and applies defaults. Any unparsable value or a
-// policy that fails jobs.Policy.Validate (Lease must exceed CallTimeout + LeaseMargin) is an error.
+// policy that fails jobs.Policy.Validate (Lease must cover claim, call, finish and margin) is an error.
 func loadConfig(lookup func(string) (string, bool), hostname func() (string, error)) (Config, error) {
 	var errs []error
 	str := func(name, def string) string {
@@ -62,11 +62,13 @@ func loadConfig(lookup func(string) (string, bool), hostname func() (string, err
 		Workers:  integer("WORKERS", 4),
 		WorkerID: str("WORKER_ID", ""),
 		Policy: jobs.Policy{
-			MaxAttempts: integer("MAX_ATTEMPTS", 5),
-			Base:        duration("BACKOFF_BASE", time.Second),
-			Cap:         duration("BACKOFF_CAP", 60*time.Second),
-			Lease:       duration("LEASE", 30*time.Second),
-			CallTimeout: duration("CALL_TIMEOUT", 5*time.Second),
+			MaxAttempts:    integer("MAX_ATTEMPTS", 5),
+			Base:           duration("BACKOFF_BASE", time.Second),
+			Cap:            duration("BACKOFF_CAP", 60*time.Second),
+			Lease:          duration("LEASE", 30*time.Second),
+			CallTimeout:    duration("CALL_TIMEOUT", 5*time.Second),
+			StoreOpTimeout: opTimeout,
+			FinishTimeout:  worker.DefaultFinishTimeout,
 		},
 		DrainTimeout: duration("DRAIN_TIMEOUT", worker.DefaultDrainTimeout),
 		MockSaaSURL:  str("MOCKSAAS_URL", "http://localhost:8080"),

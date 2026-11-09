@@ -9,7 +9,7 @@ import (
 )
 
 func validPolicy() Policy {
-	return Policy{MaxAttempts: 5, Base: time.Second, Cap: time.Minute, Lease: 30 * time.Second, CallTimeout: 5 * time.Second}
+	return Policy{MaxAttempts: 5, Base: time.Second, Cap: time.Minute, Lease: 30 * time.Second, CallTimeout: 5 * time.Second, StoreOpTimeout: 5 * time.Second, FinishTimeout: 5 * time.Second}
 }
 
 func TestPolicyValidate(t *testing.T) {
@@ -17,9 +17,17 @@ func TestPolicyValidate(t *testing.T) {
 		t.Fatalf("valid policy rejected: %v", err)
 	}
 	for name, mutate := range map[string]func(*Policy){
-		"zero max attempts":         func(p *Policy) { p.MaxAttempts = 0 },
-		"zero base":                 func(p *Policy) { p.Base = 0 },
-		"cap below base":            func(p *Policy) { p.Cap = p.Base / 2 },
+		"zero max attempts":        func(p *Policy) { p.MaxAttempts = 0 },
+		"zero base":                func(p *Policy) { p.Base = 0 },
+		"cap below base":           func(p *Policy) { p.Cap = p.Base / 2 },
+		"zero store timeout":       func(p *Policy) { p.StoreOpTimeout = 0 },
+		"negative store timeout":   func(p *Policy) { p.StoreOpTimeout = -time.Second },
+		"zero finish timeout":      func(p *Policy) { p.FinishTimeout = 0 },
+		"negative finish timeout":  func(p *Policy) { p.FinishTimeout = -time.Second },
+		"lease equals full budget": func(p *Policy) { p.Lease = p.StoreOpTimeout + p.CallTimeout + p.FinishTimeout + LeaseMargin },
+		"lease below full budget": func(p *Policy) {
+			p.Lease = p.StoreOpTimeout + p.CallTimeout + p.FinishTimeout + LeaseMargin - time.Nanosecond
+		},
 		"zero call timeout":         func(p *Policy) { p.CallTimeout = 0 },
 		"lease equals call timeout": func(p *Policy) { p.Lease = p.CallTimeout },
 		"lease equals call+margin":  func(p *Policy) { p.Lease = p.CallTimeout + LeaseMargin },
@@ -32,9 +40,9 @@ func TestPolicyValidate(t *testing.T) {
 		}
 	}
 	p := validPolicy()
-	p.Lease = p.CallTimeout + LeaseMargin + time.Millisecond
+	p.Lease = p.StoreOpTimeout + p.CallTimeout + p.FinishTimeout + LeaseMargin + time.Nanosecond
 	if err := p.Validate(); err != nil {
-		t.Fatalf("lease just above call+margin rejected: %v", err)
+		t.Fatalf("lease just above full budget rejected: %v", err)
 	}
 }
 

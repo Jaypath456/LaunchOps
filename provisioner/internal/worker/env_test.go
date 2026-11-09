@@ -28,11 +28,12 @@ import (
 
 const collName = "workflow_instances"
 
-// testPolicy keeps backoff tiny. Lease must exceed CallTimeout + jobs.LeaseMargin (5s), so lease-expiry
+// testPolicy keeps backoff tiny. Lease covers claim, call, finish and margin, so lease-expiry
 // tests shift a pool's clock instead of waiting.
 func testPolicy(callTimeout time.Duration) jobs.Policy {
 	return jobs.Policy{MaxAttempts: 5, Base: 10 * time.Millisecond, Cap: 50 * time.Millisecond,
-		CallTimeout: callTimeout, Lease: callTimeout + jobs.LeaseMargin + time.Second}
+		CallTimeout: callTimeout, StoreOpTimeout: 5 * time.Second, FinishTimeout: DefaultFinishTimeout,
+		Lease: 5*time.Second + callTimeout + DefaultFinishTimeout + jobs.LeaseMargin + time.Second}
 }
 
 // interceptor sits in front of the mock-saas handler. It sees every request; next is mock-saas.

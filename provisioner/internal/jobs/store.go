@@ -16,8 +16,8 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/writeconcern"
 )
 
-// elem is the arrayFilters identifier; every write targets provisioning.$[j] where j.connector matches.
-// arrayFilters only select the element to write; the $elemMatch in each query filter is the guard.
+// Every write targets provisioning.$[j]. The array filter repeats the query element guard
+// so a malformed document with duplicate connectors cannot update an unrelated element.
 const elem = "provisioning.$[j]."
 
 type StoreConfig struct {
@@ -44,6 +44,7 @@ func NewStore(client *mongo.Client, database, collection string, cfg StoreConfig
 	if database == "" || collection == "" {
 		return nil, errors.New("database and collection names are required")
 	}
+	cfg.Policy.StoreOpTimeout = cfg.OpTimeout
 	if err := cfg.Policy.Validate(); err != nil {
 		return nil, err
 	}
@@ -151,8 +152,17 @@ func finishFilter(c Claim) bson.D {
 	return bson.D{{Key: "_id", Value: c.InstanceID}, {Key: "provisioning", Value: bson.D{{Key: "$elemMatch", Value: match}}}}
 }
 
-func arrayFilters(connector string) []any {
-	return []any{bson.D{{Key: "j.connector", Value: connector}}}
+// transitionMatch extracts the same element guard used by the query.
+func transitionMatch(filter bson.D) bson.D {
+	return filter[1].Value.(bson.D)[0].Value.(bson.D)
+}
+
+func arrayFilters(filter bson.D) []any {
+	var match bson.D
+	for _, field := range transitionMatch(filter) {
+		match = append(match, bson.E{Key: "j." + field.Key, Value: field.Value})
+	}
+	return []any{match}
 }
 
 // Claim takes the job with compare-and-set: running, fence+1, attempts+1, a lease for workerID.
@@ -180,10 +190,13 @@ func (s *Store) Claim(ctx context.Context, cand Candidate, workerID string, now 
 	var doc struct {
 		Provisioning []Job `bson:"provisioning"`
 	}
+	returnedMatch := transitionMatch(finishFilter(Claim{Connector: cand.Connector, Fence: cand.SeenFence + 1}))
+	returnedMatch = append(returnedMatch, bson.E{Key: "lease_owner", Value: workerID},
+		bson.E{Key: "lease_until", Value: now.Add(s.cfg.Policy.Lease)})
 	err := s.coll.FindOneAndUpdate(ctx, filter, update, options.FindOneAndUpdate().
-		SetArrayFilters(arrayFilters(cand.Connector)).
+		SetArrayFilters(arrayFilters(filter)).
 		SetReturnDocument(options.After).
-		SetProjection(bson.D{{Key: "provisioning", Value: bson.D{{Key: "$elemMatch", Value: bson.D{{Key: "connector", Value: cand.Connector}}}}}}),
+		SetProjection(bson.D{{Key: "provisioning", Value: bson.D{{Key: "$elemMatch", Value: returnedMatch}}}}),
 	).Decode(&doc)
 	if errors.Is(err, mongo.ErrNoDocuments) {
 		return Claim{}, ErrClaimLost
@@ -238,9 +251,10 @@ func (s *Store) RecordFailure(ctx context.Context, claim Claim, cause string, re
 func (s *Store) finish(ctx context.Context, claim Claim, set bson.D, ev bson.D, outcome string) error {
 	ctx, cancel := context.WithTimeout(ctx, s.cfg.OpTimeout)
 	defer cancel()
-	res, err := s.coll.UpdateOne(ctx, finishFilter(claim),
+	filter := finishFilter(claim)
+	res, err := s.coll.UpdateOne(ctx, filter,
 		bson.D{{Key: "$set", Value: set}, {Key: "$push", Value: bson.D{{Key: "events", Value: ev}}}},
-		options.UpdateOne().SetArrayFilters(arrayFilters(claim.Connector)))
+		options.UpdateOne().SetArrayFilters(arrayFilters(filter)))
 	if err != nil {
 		return fmt.Errorf("finish %s:%s: %w", claim.InstanceID.Hex(), claim.Connector, err)
 	}

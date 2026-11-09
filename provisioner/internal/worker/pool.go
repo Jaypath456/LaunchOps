@@ -76,9 +76,6 @@ func (p Pool) withDefaults() (Pool, error) {
 	case p.Batch < 0 || p.PollMin < 0 || p.PollMax < 0 || p.FinishTimeout < 0:
 		return p, errors.New("worker pool: batch, poll and finish settings must not be negative")
 	}
-	if err := p.Policy.Validate(); err != nil {
-		return p, fmt.Errorf("worker pool: %w", err)
-	}
 	if p.Logger == nil {
 		p.Logger = slog.New(slog.NewJSONHandler(io.Discard, nil))
 	}
@@ -97,6 +94,10 @@ func (p Pool) withDefaults() (Pool, error) {
 	if p.FinishTimeout == 0 {
 		p.FinishTimeout = DefaultFinishTimeout
 	}
+	p.Policy.FinishTimeout = p.FinishTimeout
+	if err := p.Policy.Validate(); err != nil {
+		return p, fmt.Errorf("worker pool: %w", err)
+	}
 	if p.Now == nil {
 		p.Now = time.Now
 	}
@@ -104,14 +105,15 @@ func (p Pool) withDefaults() (Pool, error) {
 }
 
 // Run processes jobs until ctx is cancelled, then stops claiming and waits up to DrainTimeout for
-// in-flight jobs. After that it cancels the in-flight calls, waits for every goroutine to exit and
+// in-flight jobs. At that absolute shutdown cutoff it cancels all calls, claims and finishes, then
 // returns ErrDrainTimeout. A clean drain returns nil.
 func (p *Pool) Run(ctx context.Context) error {
 	cfg, err := p.withDefaults()
 	if err != nil {
 		return err
 	}
-	// Calls derive from Background, not from ctx: shutdown must not cut a call that can still finish.
+	// All in-flight operations share the drain cutoff. They may complete during the drain,
+	// but no claim or finish gets a fresh budget after it expires.
 	callCtx, abortCalls := context.WithCancel(context.Background())
 	defer abortCalls()
 
@@ -140,7 +142,7 @@ func (p *Pool) Run(ctx context.Context) error {
 		return nil
 	case <-timer.C:
 	}
-	cfg.Logger.Warn("shutdown: drain timeout, cancelling in-flight calls", "worker_id", cfg.WorkerID)
+	cfg.Logger.Warn("shutdown: drain timeout, cancelling in-flight operations", "worker_id", cfg.WorkerID)
 	abortCalls()
 	<-done
 	return ErrDrainTimeout
@@ -187,13 +189,25 @@ func (w *worker) claimNext() (jobs.Claim, bool) {
 		if w.runCtx.Err() != nil {
 			return jobs.Claim{}, false
 		}
-		// A claim already sent is completed (bounded by the store's op timeout), so its result is known.
-		claim, err := w.cfg.Store.Claim(context.WithoutCancel(w.runCtx), cand, w.id, w.cfg.Now())
+		// Claims may finish during the drain, but share its absolute cutoff.
+		claimAt := w.cfg.Now()
+		ctx, cancel := context.WithTimeout(w.callCtx, w.cfg.Policy.StoreOpTimeout)
+		claim, err := w.cfg.Store.Claim(ctx, cand, w.id, claimAt)
+		cancel()
 		if errors.Is(err, jobs.ErrClaimLost) {
 			continue
 		}
 		if err != nil {
 			w.cfg.Logger.Error("claim failed", "worker_id", w.id, "connector", cand.Connector, "error", err.Error())
+			return jobs.Claim{}, false
+		}
+		if claimAt.Add(w.cfg.Policy.Lease).Sub(w.cfg.Now()) < w.cfg.Policy.CallTimeout+w.cfg.FinishTimeout {
+			w.cfg.Logger.Warn("job attempt", "worker_id", w.id, "job_key", claim.IdempotencyKey,
+				"connector", claim.Connector, "fence", claim.Fence, "attempt", claim.Attempt,
+				"outcome", "abandoned_late_claim")
+			return jobs.Claim{}, false
+		}
+		if w.callCtx.Err() != nil {
 			return jobs.Claim{}, false
 		}
 		return claim, true
@@ -226,15 +240,15 @@ func (w *worker) process(claim jobs.Claim) {
 	attrs := []any{"worker_id", w.id, "job_key", claim.IdempotencyKey, "connector", claim.Connector,
 		"fence", claim.Fence, "attempt", claim.Attempt}
 
-	if callErr != nil && w.callCtx.Err() != nil {
+	if w.callCtx.Err() != nil {
 		// Aborted after the drain timeout: write nothing; the job stays running and is reclaimed after the lease.
-		w.cfg.Logger.Warn("job attempt", append(attrs, "outcome", "abandoned", "error", callErr.Error(),
+		w.cfg.Logger.Warn("job attempt", append(attrs, "outcome", "abandoned", "error", w.callCtx.Err().Error(),
 			"duration_ms", time.Since(start).Milliseconds())...)
 		return
 	}
 
-	// The finish outlives shutdown so a completed call is still recorded.
-	fctx, fcancel := context.WithTimeout(context.WithoutCancel(w.runCtx), w.cfg.FinishTimeout)
+	// A finish can outlive the shutdown signal, but never the shared drain cutoff.
+	fctx, fcancel := context.WithTimeout(w.callCtx, w.cfg.FinishTimeout)
 	defer fcancel()
 	var outcome string
 	var finishErr error

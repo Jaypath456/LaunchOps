@@ -1,5 +1,6 @@
 """Django IT transitions and the access gate against real MongoDB."""
 
+from copy import deepcopy
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, timedelta
 from unittest import mock
@@ -78,6 +79,24 @@ class ProvisioningTests(WorkflowTestCase):
                 event = after['events'][-1]
                 self.assertEqual(event['type'], 'provisioning.overridden')
                 self.assertIn(self.job()['override_reason'], event['detail'])
+
+    def test_duplicate_connector_does_not_modify_unguarded_element(self):
+        for action in ('retry', 'override'):
+            with self.subTest(action=action):
+                first = {**self.record['provisioning'][0], 'status': 'dead', 'fence': Int64(7), 'attempts': 5}
+                second = {**deepcopy(first), 'status': 'running', 'fence': Int64(9)}
+                # Direct insert deliberately bypasses create_workflow uniqueness validation.
+                document = {**self.record, '_id': ObjectId(), 'employee_id': ObjectId(),
+                            'provisioning': [first, second]}
+                instances().insert_one(document)
+                before = instances().find_one({'_id': document['_id']})
+                response = self.action(action, {'reason': 'IT approved'}, workflow_id=document['_id'])
+                self.assertEqual(response.status_code, 200, response.data)
+                after = instances().find_one({'_id': document['_id']})
+                self.assertEqual(after['provisioning'][0]['status'], 'pending' if action == 'retry' else 'overridden')
+                self.assertEqual(after['provisioning'][1], before['provisioning'][1])
+                self.assertEqual(after['version'], before['version'])
+                self.assertEqual(len(after['events']), len(before['events']) + 1)
 
     def test_override_requires_a_nonempty_string_reason_without_writing(self):
         before = self.doc()

@@ -78,18 +78,20 @@ type Claim struct {
 	WorkerID       string
 }
 
-// LeaseMargin is the minimum slack between the call timeout and the lease, covering the finish write.
+// LeaseMargin is the minimum slack beyond the claim, connector call and finish budgets.
 const LeaseMargin = 5 * time.Second
 
 type Policy struct {
-	MaxAttempts int
-	Base        time.Duration
-	Cap         time.Duration
-	Lease       time.Duration
-	CallTimeout time.Duration
+	MaxAttempts    int
+	Base           time.Duration
+	Cap            time.Duration
+	Lease          time.Duration
+	CallTimeout    time.Duration
+	StoreOpTimeout time.Duration
+	FinishTimeout  time.Duration
 }
 
-// Validate enforces Lease > CallTimeout + LeaseMargin, so no lease renewal is needed.
+// Validate budgets the claim write, connector call, finish write and margin within the lease.
 func (p Policy) Validate() error {
 	switch {
 	case p.MaxAttempts < 1:
@@ -100,8 +102,12 @@ func (p Policy) Validate() error {
 		return fmt.Errorf("backoff cap %v must be at least base %v", p.Cap, p.Base)
 	case p.CallTimeout <= 0:
 		return fmt.Errorf("call timeout must be positive, got %v", p.CallTimeout)
-	case p.Lease <= p.CallTimeout+LeaseMargin:
-		return fmt.Errorf("lease %v must exceed call timeout %v + margin %v", p.Lease, p.CallTimeout, LeaseMargin)
+	case p.StoreOpTimeout <= 0:
+		return fmt.Errorf("store operation timeout must be positive, got %v", p.StoreOpTimeout)
+	case p.FinishTimeout <= 0:
+		return fmt.Errorf("finish timeout must be positive, got %v", p.FinishTimeout)
+	case p.Lease <= p.StoreOpTimeout+p.CallTimeout+p.FinishTimeout+LeaseMargin:
+		return fmt.Errorf("lease %v must exceed claim timeout %v + call timeout %v + finish timeout %v + margin %v", p.Lease, p.StoreOpTimeout, p.CallTimeout, p.FinishTimeout, LeaseMargin)
 	}
 	return nil
 }

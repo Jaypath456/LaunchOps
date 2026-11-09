@@ -7,6 +7,7 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"reflect"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -719,5 +720,58 @@ func TestCandidatesUsesIndex(t *testing.T) {
 	plan := res.Lookup("queryPlanner", "winningPlan").String()
 	if !strings.Contains(plan, "IXSCAN") || !strings.Contains(plan, indexName) || strings.Contains(plan, "COLLSCAN") {
 		t.Fatalf("winning plan does not use %s: %s", indexName, plan)
+	}
+}
+
+func TestClaimDuplicateConnectorGuards(t *testing.T) {
+	e := newEnv(t, validPolicy())
+	for name, change := range map[string]func(*Job){
+		"status": func(j *Job) { j.Status = StatusRetry },
+		"fence":  func(j *Job) { j.Fence++ },
+		"due":    func(j *Job) { future := t0.Add(time.Hour); j.NextAttemptAt = &future },
+	} {
+		t.Run(name, func(t *testing.T) {
+			seed := e.seed(t)
+			first := e.job(t, seed, google)
+			second := first
+			change(&second)
+			id := bson.NewObjectID()
+			if _, err := e.coll.InsertOne(testContext(t), bson.D{
+				{Key: "_id", Value: id}, {Key: "provisioning", Value: []Job{first, second}},
+				{Key: "events", Value: bson.A{}},
+			}); err != nil {
+				t.Fatal(err)
+			}
+			before := e.load(t, id)
+			claim := e.claim(t, Candidate{InstanceID: id, Connector: google,
+				SeenStatus: first.Status, SeenFence: first.Fence}, "worker", t0)
+			after := e.load(t, id)
+			if !reflect.DeepEqual(after.Provisioning[1], before.Provisioning[1]) {
+				t.Fatal("claim modified duplicate outside its status/fence/due guards")
+			}
+			if claim.Fence != first.Fence+1 || after.Provisioning[0].Status != StatusRunning {
+				t.Fatalf("claim did not transition first element: %+v", after)
+			}
+		})
+	}
+}
+
+func TestFinishDuplicateConnectorStatusGuard(t *testing.T) {
+	e := newEnv(t, validPolicy())
+	id := e.seed(t)
+	claim := e.claim(t, e.candidate(t, id, google, t0), "worker", t0)
+	second := e.job(t, id, google)
+	second.Status = StatusPending // Same connector and fence; only status distinguishes it.
+	if _, err := e.coll.UpdateOne(testContext(t), bson.D{{Key: "_id", Value: id}},
+		bson.D{{Key: "$push", Value: bson.D{{Key: "provisioning", Value: second}}}}); err != nil {
+		t.Fatal(err)
+	}
+	before := e.load(t, id)
+	if err := e.store.Succeed(testContext(t), claim, "account"); err != nil {
+		t.Fatal(err)
+	}
+	after := e.load(t, id)
+	if !reflect.DeepEqual(after.Provisioning[2], before.Provisioning[2]) {
+		t.Fatal("finish modified duplicate outside its status guard")
 	}
 }

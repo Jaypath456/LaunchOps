@@ -427,19 +427,144 @@ func TestPoolValidation(t *testing.T) {
 		return Pool{Store: &recordingStore{}, Connector: conn, Policy: policy, WorkerID: "w", Workers: 1}
 	}
 	for name, mutate := range map[string]func(*Pool){
-		"no store":          func(p *Pool) { p.Store = nil },
-		"no connector":      func(p *Pool) { p.Connector = nil },
-		"no worker id":      func(p *Pool) { p.WorkerID = "" },
-		"zero workers":      func(p *Pool) { p.Workers = 0 },
-		"negative drain":    func(p *Pool) { p.DrainTimeout = -time.Second },
-		"poll max < min":    func(p *Pool) { p.PollMin, p.PollMax = time.Second, time.Millisecond },
-		"lease too short":   func(p *Pool) { p.Policy.Lease = p.Policy.CallTimeout + jobs.LeaseMargin },
-		"zero max attempts": func(p *Pool) { p.Policy.MaxAttempts = 0 },
+		"no store":                func(p *Pool) { p.Store = nil },
+		"no connector":            func(p *Pool) { p.Connector = nil },
+		"no worker id":            func(p *Pool) { p.WorkerID = "" },
+		"zero workers":            func(p *Pool) { p.Workers = 0 },
+		"negative drain":          func(p *Pool) { p.DrainTimeout = -time.Second },
+		"poll max < min":          func(p *Pool) { p.PollMin, p.PollMax = time.Second, time.Millisecond },
+		"lease too short":         func(p *Pool) { p.Policy.Lease = p.Policy.CallTimeout + jobs.LeaseMargin },
+		"finish budget too large": func(p *Pool) { p.FinishTimeout = p.Policy.Lease },
+		"zero store timeout":      func(p *Pool) { p.Policy.StoreOpTimeout = 0 },
+		"zero max attempts":       func(p *Pool) { p.Policy.MaxAttempts = 0 },
 	} {
 		p := valid()
 		mutate(&p)
 		if err := p.Run(context.Background()); err == nil {
 			t.Errorf("%s: Run = nil, want a validation error", name)
 		}
+	}
+}
+
+// lateClaimStore simulates a claim response arriving after most of the lease
+// elapsed, using the pool clock so the test does not wait out a production lease.
+type lateClaimStore struct {
+	Store
+	offset *atomic.Int64
+	delay  time.Duration
+}
+
+func (s *lateClaimStore) Claim(ctx context.Context, cand jobs.Candidate, workerID string, now time.Time) (jobs.Claim, error) {
+	claim, err := s.Store.Claim(ctx, cand, workerID, now)
+	if err == nil {
+		s.offset.Store(int64(s.delay))
+	}
+	return claim, err
+}
+
+func TestLateClaimAbandonedWithoutConnectorCall(t *testing.T) {
+	policy := testPolicy(time.Second)
+	e := newEnv(t, policy)
+	id := e.seed(t, jobSpec{google, "ada"})
+	var calls atomic.Int32
+	e.setIntercept(func(w http.ResponseWriter, r *http.Request, next http.Handler) {
+		if r.Method == http.MethodPost && strings.HasPrefix(r.URL.Path, "/v1/") {
+			calls.Add(1)
+		}
+		next.ServeHTTP(w, r)
+	})
+	var offset atomic.Int64
+	store := &lateClaimStore{Store: e.store, offset: &offset,
+		delay: policy.Lease - policy.CallTimeout - DefaultFinishTimeout + time.Millisecond}
+	p := e.pool("late", 1, policy, store)
+	p.Now = func() time.Time { return time.Now().Add(time.Duration(offset.Load())) }
+	r := start(t, p)
+	waitFor(t, time.Second, "abandoned late claim", func() bool {
+		return len(e.logs.attempts(t, "abandoned_late_claim")) == 1
+	})
+	if err, _ := r.stop(t, time.Second); err != nil {
+		t.Fatal(err)
+	}
+	j := e.job(t, id, google)
+	if j.Status != jobs.StatusRunning || j.Attempts != 1 || j.Fence != 1 {
+		t.Fatalf("late claim = %+v, want running for lease reclaim", j)
+	}
+	if calls.Load() != 0 || len(e.accounts(t)) != 0 || len(e.jobEvents(t, id, google)) != 0 {
+		t.Fatal("late claim called the connector or wrote a finish")
+	}
+	assertNoLeak(t, e.conn)
+}
+
+// slowWriteStore delays the claim response after it commits, or the success write
+// before it commits. Each delay honors the operation context, like MongoDB does.
+type slowWriteStore struct {
+	Store
+	phase   string
+	entered chan struct{}
+}
+
+func (s *slowWriteStore) delay(ctx context.Context) error {
+	close(s.entered)
+	timer := time.NewTimer(3 * time.Second)
+	defer timer.Stop()
+	select {
+	case <-timer.C:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+
+func (s *slowWriteStore) Claim(ctx context.Context, cand jobs.Candidate, workerID string, now time.Time) (jobs.Claim, error) {
+	claim, err := s.Store.Claim(ctx, cand, workerID, now)
+	if err == nil && s.phase == "claim" {
+		err = s.delay(ctx)
+	}
+	return claim, err
+}
+
+func (s *slowWriteStore) Succeed(ctx context.Context, claim jobs.Claim, ref string) error {
+	if s.phase == "finish" {
+		if err := s.delay(ctx); err != nil {
+			return err
+		}
+	}
+	return s.Store.Succeed(ctx, claim, ref)
+}
+
+func TestShutdownCutsOffSlowClaimAndFinish(t *testing.T) {
+	for _, phase := range []string{"claim", "finish"} {
+		t.Run(phase, func(t *testing.T) {
+			policy := testPolicy(time.Second)
+			e := newEnv(t, policy)
+			id := e.seed(t, jobSpec{google, "ada"})
+			store := &slowWriteStore{Store: e.store, phase: phase, entered: make(chan struct{})}
+			p := e.pool("slow", 1, policy, store)
+			p.DrainTimeout = 25 * time.Millisecond
+			p.FinishTimeout = time.Second
+			r := start(t, p)
+			select {
+			case <-store.entered:
+			case <-time.After(5 * time.Second):
+				t.Fatal("write did not reach delay")
+			}
+			err, elapsed := r.stop(t, p.DrainTimeout+p.FinishTimeout)
+			if !errors.Is(err, ErrDrainTimeout) {
+				t.Fatalf("Run = %v, want ErrDrainTimeout", err)
+			}
+			// The same cutoff cancels all operations; no new finish timeout is
+			// granted after draining. Allow scheduling slack under -race.
+			if elapsed > p.DrainTimeout+250*time.Millisecond {
+				t.Fatalf("shutdown took %v, want the shared drain cutoff", elapsed)
+			}
+			j := e.job(t, id, google)
+			if j.Status != jobs.StatusRunning || j.Fence != 1 || len(e.jobEvents(t, id, google)) != 0 {
+				t.Fatalf("unfinished write should leave job running for lease reclaim: %+v", j)
+			}
+			if phase == "claim" && len(e.accounts(t)) != 0 {
+				t.Fatal("connector called after the claim was cancelled")
+			}
+			assertNoLeak(t, e.conn)
+		})
 	}
 }
