@@ -8,13 +8,6 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
-    services:
-      mongo:
-        image: mongo:8
-        ports: ["27017:27017"]
-        options: >-
-          --health-cmd "mongosh --quiet --eval 'db.adminCommand({ping:1}).ok'"
-          --health-interval 5s --health-timeout 5s --health-retries 10
     env:
       MONGO_URI: mongodb://localhost:27017
       MONGO_DB: launchops_ci
@@ -25,6 +18,16 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
+      - name: Start MongoDB
+        working-directory: .
+        run: |
+          docker run -d --name mongo -p 27017:27017 mongo:8
+          for i in $(seq 1 30); do
+            if docker exec mongo mongosh --quiet --eval 'db.adminCommand({ping:1}).ok' | grep -q 1; then exit 0; fi
+            sleep 2
+          done
+          docker logs mongo
+          exit 1
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -37,13 +40,6 @@ jobs:
 
   provisioner:
     runs-on: ubuntu-latest
-    services:
-      mongo:
-        image: mongo:8
-        ports: ["27017:27017"]
-        options: >-
-          --health-cmd "mongosh --quiet --eval 'db.adminCommand({ping:1}).ok'"
-          --health-interval 5s --health-timeout 5s --health-retries 10
     env:
       MONGO_URI: mongodb://localhost:27017
     defaults:
@@ -51,6 +47,16 @@ jobs:
         working-directory: provisioner
     steps:
       - uses: actions/checkout@v4
+      - name: Start MongoDB
+        working-directory: .
+        run: |
+          docker run -d --name mongo -p 27017:27017 mongo:8
+          for i in $(seq 1 30); do
+            if docker exec mongo mongosh --quiet --eval 'db.adminCommand({ping:1}).ok' | grep -q 1; then exit 0; fi
+            sleep 2
+          done
+          docker logs mongo
+          exit 1
       - uses: actions/setup-go@v5
         with:
           go-version-file: provisioner/go.mod
