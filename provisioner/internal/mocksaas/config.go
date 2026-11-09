@@ -24,6 +24,15 @@ func (f Faults) validate() error {
 	return nil
 }
 
+// Hooks are test seams; they are nil in production.
+type Hooks struct {
+	// CrashAt is asked at the stages "after_claim" and "after_account_insert". Returning true aborts the
+	// handler with no further writes and no response, leaving the database as a crash would.
+	CrashAt func(stage string) bool
+	// BeforeTakeover runs after a stale claim was read and before the takeover compare-and-set.
+	BeforeTakeover func()
+}
+
 type Config struct {
 	MongoURI         string
 	Database         string
@@ -32,6 +41,11 @@ type Config struct {
 	HangDuration     time.Duration
 	OperationTimeout time.Duration
 	ShutdownTimeout  time.Duration
+	// ProcessingTimeout is how long a `processing` request row is respected before a request with the same
+	// key and body may take it over. It should exceed OperationTimeout so a live original has hit its own
+	// deadline; correctness does not depend on it (the fixed account id and unique indexes do).
+	ProcessingTimeout time.Duration
+	Hooks             Hooks
 }
 
 func (c Config) defaults() Config {
@@ -53,11 +67,14 @@ func (c Config) defaults() Config {
 	if c.ShutdownTimeout == 0 {
 		c.ShutdownTimeout = 10 * time.Second
 	}
+	if c.ProcessingTimeout == 0 {
+		c.ProcessingTimeout = 10 * time.Second
+	}
 	return c
 }
 
 func (c Config) validate() error {
-	if c.HangDuration <= 0 || c.OperationTimeout <= 0 || c.ShutdownTimeout <= 0 {
+	if c.HangDuration <= 0 || c.OperationTimeout <= 0 || c.ShutdownTimeout <= 0 || c.ProcessingTimeout <= 0 {
 		return fmt.Errorf("timeouts must be positive")
 	}
 	return c.Faults.validate()
@@ -83,6 +100,7 @@ func ConfigFromEnv() (Config, error) {
 		"MOCKSAAS_HANG_DURATION":     &c.HangDuration,
 		"MOCKSAAS_OPERATION_TIMEOUT": &c.OperationTimeout,
 		"MOCKSAAS_SHUTDOWN_TIMEOUT":  &c.ShutdownTimeout,
+		"PROCESSING_TIMEOUT":         &c.ProcessingTimeout,
 	} {
 		if value, ok := os.LookupEnv(name); ok {
 			parsed, err := time.ParseDuration(value)

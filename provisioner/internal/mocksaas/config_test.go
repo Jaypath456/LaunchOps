@@ -7,7 +7,7 @@ import (
 )
 
 func TestConfigFromEnv(t *testing.T) {
-	for _, name := range []string{"MONGO_URI", "MOCKSAAS_DB", "MOCKSAAS_ADDR", "ERROR_RATE", "HANG_RATE", "DROP_AFTER_COMMIT_RATE", "MOCKSAAS_HANG_DURATION", "MOCKSAAS_OPERATION_TIMEOUT", "MOCKSAAS_SHUTDOWN_TIMEOUT"} {
+	for _, name := range []string{"MONGO_URI", "MOCKSAAS_DB", "MOCKSAAS_ADDR", "ERROR_RATE", "HANG_RATE", "DROP_AFTER_COMMIT_RATE", "MOCKSAAS_HANG_DURATION", "MOCKSAAS_OPERATION_TIMEOUT", "MOCKSAAS_SHUTDOWN_TIMEOUT", "PROCESSING_TIMEOUT"} {
 		t.Setenv(name, "")
 	}
 	// Empty numeric/duration variables are invalid rather than silently defaulted.
@@ -23,11 +23,12 @@ func TestConfigFromEnv(t *testing.T) {
 	t.Setenv("MOCKSAAS_HANG_DURATION", "2m")
 	t.Setenv("MOCKSAAS_OPERATION_TIMEOUT", "3s")
 	t.Setenv("MOCKSAAS_SHUTDOWN_TIMEOUT", "4s")
+	t.Setenv("PROCESSING_TIMEOUT", "7s")
 	cfg, err := ConfigFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
-	if cfg.MongoURI != "mongodb://example:27017" || cfg.Database != "custom" || cfg.Address != ":9090" || cfg.Faults != (Faults{HangRate: 0.25, DropAfterCommitRate: 1}) || cfg.HangDuration != 2*time.Minute || cfg.OperationTimeout != 3*time.Second || cfg.ShutdownTimeout != 4*time.Second {
+	if cfg.MongoURI != "mongodb://example:27017" || cfg.Database != "custom" || cfg.Address != ":9090" || cfg.Faults != (Faults{HangRate: 0.25, DropAfterCommitRate: 1}) || cfg.HangDuration != 2*time.Minute || cfg.OperationTimeout != 3*time.Second || cfg.ShutdownTimeout != 4*time.Second || cfg.ProcessingTimeout != 7*time.Second {
 		t.Fatalf("config = %+v", cfg)
 	}
 	for _, value := range []string{"-1", "1.01", "NaN", "+Inf", "bad"} {
@@ -37,11 +38,14 @@ func TestConfigFromEnv(t *testing.T) {
 		}
 	}
 	t.Setenv("ERROR_RATE", "0")
-	for _, value := range []string{"bad", "0s", "-1s"} {
-		t.Setenv("MOCKSAAS_HANG_DURATION", value)
-		if _, err := ConfigFromEnv(); err == nil {
-			t.Fatalf("accepted duration %s", value)
+	for _, name := range []string{"MOCKSAAS_HANG_DURATION", "PROCESSING_TIMEOUT"} {
+		for _, value := range []string{"bad", "0s", "-1s"} {
+			t.Setenv(name, value)
+			if _, err := ConfigFromEnv(); err == nil {
+				t.Fatalf("accepted %s=%s", name, value)
+			}
 		}
+		t.Setenv(name, "5s")
 	}
 }
 
@@ -50,7 +54,7 @@ func TestConfigDefaultsAndValidation(t *testing.T) {
 	if err := cfg.validate(); err != nil {
 		t.Fatal(err)
 	}
-	if cfg.Database != "mocksaas" || cfg.MongoURI == "" || cfg.Address == "" || cfg.HangDuration <= 0 || cfg.OperationTimeout <= 0 || cfg.ShutdownTimeout <= 0 {
+	if cfg.Database != "mocksaas" || cfg.MongoURI == "" || cfg.Address == "" || cfg.HangDuration <= 0 || cfg.OperationTimeout <= 0 || cfg.ShutdownTimeout <= 0 || cfg.ProcessingTimeout != 10*time.Second {
 		t.Fatalf("defaults = %+v", cfg)
 	}
 	for _, rate := range []float64{-1, 2, math.NaN(), math.Inf(1)} {

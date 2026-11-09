@@ -1,0 +1,11 @@
+--- /tmp/c12-service.go.orig	2026-11-08 23:19:23
++++ internal/mocksaas/service.go	2026-11-08 23:19:26
+@@ -287,7 +287,7 @@
+ 		s.fail(w, errors.New("invalid stored request state"))
+ 		return stored, false
+ 	}
+-	if stored.AccountID == "" || time.Since(stored.StartedAt) < s.cfg.ProcessingTimeout {
++	if stored.AccountID == "" {
+ 		return stored, s.inProgress(ctx, w)
+ 	}
+ 	if s.cfg.Hooks.BeforeTakeover != nil {

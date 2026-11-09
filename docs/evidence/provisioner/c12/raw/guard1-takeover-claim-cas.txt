@@ -1,0 +1,55 @@
+=== RUN   TestConfigFromEnv
+--- PASS: TestConfigFromEnv (0.00s)
+=== RUN   TestConfigDefaultsAndValidation
+--- PASS: TestConfigDefaultsAndValidation (0.00s)
+=== RUN   TestConcurrentSameKey
+--- PASS: TestConcurrentSameKey (0.14s)
+=== RUN   TestSameKeyDifferentBody
+--- PASS: TestSameKeyDifferentBody (0.05s)
+=== RUN   TestReplayIdenticalAndPersistent
+--- PASS: TestReplayIdenticalAndPersistent (0.04s)
+=== RUN   TestProcessingReturnsConflict
+--- PASS: TestProcessingReturnsConflict (0.04s)
+=== RUN   TestAccountUniquenessAndConflictReplay
+--- PASS: TestAccountUniquenessAndConflictReplay (0.04s)
+=== RUN   TestConcurrentDifferentKeysSameAccount
+--- PASS: TestConcurrentDifferentKeysSameAccount (0.07s)
+=== RUN   TestDropAfterCommit
+--- PASS: TestDropAfterCommit (0.04s)
+=== RUN   TestFaultRatesZero
+--- PASS: TestFaultRatesZero (0.03s)
+=== RUN   TestErrorRateOneAndRuntimeReset
+--- PASS: TestErrorRateOneAndRuntimeReset (0.04s)
+=== RUN   TestHangRateOneAndRuntimeReset
+--- PASS: TestHangRateOneAndRuntimeReset (0.24s)
+=== RUN   TestFaultSettingsPersistAndValidate
+--- PASS: TestFaultSettingsPersistAndValidate (0.04s)
+=== RUN   TestValidationAndAdminEndpoints
+--- PASS: TestValidationAndAdminEndpoints (0.05s)
+=== RUN   TestGracefulShutdown
+--- PASS: TestGracefulShutdown (0.32s)
+=== RUN   TestShutdownBoundsInjectedHang
+--- PASS: TestShutdownBoundsInjectedHang (0.09s)
+=== RUN   TestCrashAfterClaimBeforeAccountInsert
+--- PASS: TestCrashAfterClaimBeforeAccountInsert (0.06s)
+=== RUN   TestCrashAfterAccountInsertBeforeResponseStored
+--- PASS: TestCrashAfterAccountInsertBeforeResponseStored (0.05s)
+=== RUN   TestProcessingTimeoutBoundary
+--- PASS: TestProcessingTimeoutBoundary (0.05s)
+=== RUN   TestStuckClaimConcurrentRequestsCreateOneAccount
+    takeover_test.go:203: unexpected 503 {"error":"storage unavailable"}
+--- FAIL: TestStuckClaimConcurrentRequestsCreateOneAccount (0.16s)
+=== RUN   TestConcurrentTakeoversOneWins
+    takeover_test.go:243: unexpected 503 {"error":"storage unavailable"}
+--- FAIL: TestConcurrentTakeoversOneWins (0.05s)
+=== RUN   TestStuckClaimDifferentBodyStill422
+--- PASS: TestStuckClaimDifferentBodyStill422 (0.04s)
+=== RUN   TestStuckClaimWithAccountUnderAnotherKeyIsConflict
+--- PASS: TestStuckClaimWithAccountUnderAnotherKeyIsConflict (0.05s)
+=== RUN   TestTakeoverDoesNotTouchCompletedRow
+--- PASS: TestTakeoverDoesNotTouchCompletedRow (0.04s)
+=== RUN   TestStalledOriginalCannotOverwriteTakeover
+--- PASS: TestStalledOriginalCannotOverwriteTakeover (0.04s)
+FAIL
+FAIL	launchops/provisioner/internal/mocksaas	2.037s
+FAIL

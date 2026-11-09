@@ -13,6 +13,7 @@ import (
 
 	"launchops/provisioner/internal/connectors"
 	"launchops/provisioner/internal/jobs"
+	"launchops/provisioner/internal/mocksaas"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
@@ -134,6 +135,50 @@ func TestDropAfterCommitRetriesToOriginalRef(t *testing.T) {
 	retries := errorsOf(evs, jobs.EventRetry)
 	if len(retries) != 1 || !strings.Contains(retries[0], "EOF") {
 		t.Fatalf("retry events = %q, want one connection-closed (EOF) error", retries)
+	}
+	if countEvents(evs, jobs.EventSucceeded) != 1 {
+		t.Fatalf("events = %+v, want one succeeded", evs)
+	}
+}
+
+// The first attempt is interrupted after mock-saas committed the account but before it stored the response, leaving
+// the key `processing`. Retries get 409 "in progress" until the claim is stale, then mock-saas reconciles it:
+// the job succeeds with the one account that was already created.
+func TestInterruptedClaimRecoveredThroughRetries(t *testing.T) {
+	policy := testPolicy(2 * time.Second)
+	policy.MaxAttempts = 20
+	var crashed atomic.Bool
+	e := newEnvMock(t, policy, mocksaas.Config{
+		ProcessingTimeout: 150 * time.Millisecond,
+		Hooks: mocksaas.Hooks{CrashAt: func(stage string) bool {
+			return stage == "after_account_insert" && crashed.CompareAndSwap(false, true)
+		}},
+	})
+	id := e.seed(t, jobSpec{google, "ada"})
+	r := start(t, e.pool("A", 1, policy, nil))
+	j := e.waitStatus(t, id, google, jobs.StatusSucceeded, 15*time.Second)
+	if err, _ := r.stop(t, 10*time.Second); err != nil {
+		t.Fatal(err)
+	}
+	assertNoLeak(t, e.conn)
+
+	accounts := e.accounts(t)
+	if len(accounts) != 1 {
+		t.Fatalf("accounts = %d, want 1", len(accounts))
+	}
+	if j.ExternalRef == nil || *j.ExternalRef != accounts[0].ExternalRef {
+		t.Fatalf("external_ref = %v, want the account created on the interrupted attempt %q", j.ExternalRef, accounts[0].ExternalRef)
+	}
+	if j.Attempts < 2 {
+		t.Fatalf("attempts = %d, want at least 2", j.Attempts)
+	}
+	evs := e.jobEvents(t, id, google)
+	retries := errorsOf(evs, jobs.EventRetry)
+	if len(retries) < 1 || !strings.Contains(retries[0], "EOF") {
+		t.Fatalf("retry events = %q, want the first to be the dropped connection (EOF)", retries)
+	}
+	if s := e.stats(t); s.Takeovers != 1 {
+		t.Fatalf("takeovers = %d, want 1", s.Takeovers)
 	}
 	if countEvents(evs, jobs.EventSucceeded) != 1 {
 		t.Fatalf("events = %+v, want one succeeded", evs)

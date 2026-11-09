@@ -127,6 +127,10 @@ Django: completing `access` requires every job `succeeded` or `overridden`; job 
 - `POST /v1/{connector}/accounts`, header `Idempotency-Key` (required), body `{username, display_name, department}`:
   new key -> insert a `requests` row `processing` (unique key; this is the atomic claim), create the account (unique `(connector, username)`), store
   the response, mark `done`, respond. Same key + same body + `done` -> replay stored status and body. Same key + `processing` -> 409 "in progress".
+  Each claim row also stores the intended account id, `started_at` and a `claim` counter. A `processing` row older than `PROCESSING_TIMEOUT`
+  (default 10 s) with the same key and body is taken over by a compare-and-set on `claim` (one winner; others get 409 "in progress"), then
+  reconciled: the account is inserted with the stored id, or found if it already exists, and the response is stored. Rows without an intended id
+  are never taken over.
   Same key + different body -> 422. Account exists under another key -> 409 conflict.
 - `GET /admin/accounts`, `GET /admin/stats` (created, replayed, in-progress conflicts, each fault fired), `POST /admin/faults`, `GET /healthz`.
 - Faults (env defaults, runtime-adjustable): `error_rate` (503 before doing anything), `hang_rate` (sleep past the client timeout),
