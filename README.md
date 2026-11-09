@@ -135,4 +135,4 @@ LaunchOps started as a learning-management system I built (courses, chapters, qu
 
 ## AI tools used
 
-I built this project with help from AI tools, including GitHub Copilot, Cursor, Claude Code and Codex. I directed the design and reviewed the changes. I ran the test suites and the chaos campaigns myself. The raw outputs are committed under [docs/evidence](docs/evidence/).
+I built this project with help from AI tools, including GitHub Copilot, Cursor, Claude Code and Codex. I directed the design. I ran the test suites and the chaos campaigns myself. The raw outputs are committed under [docs/evidence](docs/evidence/).
