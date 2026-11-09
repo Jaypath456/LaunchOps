@@ -72,7 +72,7 @@ npm test
 npm run build
 ```
 
-CI runs Django, Go and frontend checks as separate jobs. The Go job uses a MongoDB service and the module's Go version. Chaos campaigns are separate from CI.
+CI runs Django, Go and frontend checks as separate jobs. The Django and Go jobs start MongoDB 7.0 in a container, because MongoDB 8.x refuses to start on the Linux kernels (6.19 and newer) that GitHub's current runners use ([SERVER-121912](https://jira.mongodb.org/browse/SERVER-121912)). Local development and the recorded evidence used MongoDB 8.x, and the suites were also run locally against MongoDB 7.0. On a host with such a kernel, start the stack with `MONGO_IMAGE=mongo:7.0 docker compose -p launchops-v2 up --build`. The Go job uses the module's Go version. Chaos campaigns are separate from CI.
 
 ## Concurrency design
 

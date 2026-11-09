@@ -21,7 +21,8 @@ jobs:
       - name: Start MongoDB
         working-directory: .
         run: |
-          out=$(docker run -d --name mongo -p 27017:27017 mongo:8.0 2>&1) || { echo "::error title=docker run failed::$(echo "$out" | tr '\n' ' ' | cut -c1-900)"; exit 1; }
+          # MongoDB 8.x refuses to start on Linux kernel 6.19 or newer (SERVER-121912), which GitHub's runners now use.
+          out=$(docker run -d --name mongo -p 27017:27017 mongo:7.0 2>&1) || { echo "::error title=docker run failed::$(echo "$out" | tr '\n' ' ' | cut -c1-900)"; exit 1; }
           for i in $(seq 1 30); do
             if docker exec mongo mongosh --quiet --eval 'db.adminCommand({ping:1}).ok' | grep -q 1; then exit 0; fi
             sleep 2
@@ -51,7 +52,8 @@ jobs:
       - name: Start MongoDB
         working-directory: .
         run: |
-          out=$(docker run -d --name mongo -p 27017:27017 mongo:8.0 2>&1) || { echo "::error title=docker run failed::$(echo "$out" | tr '\n' ' ' | cut -c1-900)"; exit 1; }
+          # MongoDB 8.x refuses to start on Linux kernel 6.19 or newer (SERVER-121912), which GitHub's runners now use.
+          out=$(docker run -d --name mongo -p 27017:27017 mongo:7.0 2>&1) || { echo "::error title=docker run failed::$(echo "$out" | tr '\n' ' ' | cut -c1-900)"; exit 1; }
           for i in $(seq 1 30); do
             if docker exec mongo mongosh --quiet --eval 'db.adminCommand({ping:1}).ok' | grep -q 1; then exit 0; fi
             sleep 2
