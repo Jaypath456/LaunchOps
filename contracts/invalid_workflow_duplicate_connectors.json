@@ -1,0 +1,42 @@
+{
+  "provisioning": [
+    {
+      "connector": "workspace",
+      "idempotency_key": "507f1f77bcf86cd799439011:workspace",
+      "payload": {
+        "username": "demo_employee",
+        "display_name": "Demo Employee",
+        "department": "Engineering"
+      },
+      "status": "pending",
+      "attempts": 0,
+      "fence": 0,
+      "lease_owner": null,
+      "lease_until": null,
+      "next_attempt_at": "2026-01-01T00:00:00Z",
+      "last_error": null,
+      "external_ref": null,
+      "override_reason": null,
+      "updated_at": "2026-01-01T00:00:00Z"
+    },
+    {
+      "connector": "workspace",
+      "idempotency_key": "507f1f77bcf86cd799439011:workspace",
+      "payload": {
+        "username": "demo_employee",
+        "display_name": "Demo Employee",
+        "department": "Engineering"
+      },
+      "status": "running",
+      "attempts": 1,
+      "fence": 9,
+      "lease_owner": "provisioner-demo",
+      "lease_until": "2026-01-01T00:01:00Z",
+      "next_attempt_at": null,
+      "last_error": null,
+      "external_ref": null,
+      "override_reason": null,
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  ]
+}

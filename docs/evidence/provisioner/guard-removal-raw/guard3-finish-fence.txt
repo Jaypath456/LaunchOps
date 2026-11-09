@@ -1,0 +1,40 @@
+=== RUN   TestPolicyValidate
+--- PASS: TestPolicyValidate (0.00s)
+=== RUN   TestNextState
+--- PASS: TestNextState (0.00s)
+=== RUN   TestNewStoreRejectsInvalidConfig
+--- PASS: TestNewStoreRejectsInvalidConfig (0.00s)
+=== RUN   TestClaimConcurrentOneWinner
+--- PASS: TestClaimConcurrentOneWinner (0.09s)
+=== RUN   TestStaleWorkerFenceRejected
+    store_test.go:316: stale Succeed = <nil>, want ErrFenceRejected
+--- FAIL: TestStaleWorkerFenceRejected (0.05s)
+=== RUN   TestLiveLeaseNotReclaimable
+--- PASS: TestLiveLeaseNotReclaimable (0.04s)
+=== RUN   TestExpiredLeaseReclaimable
+--- PASS: TestExpiredLeaseReclaimable (0.04s)
+=== RUN   TestRetryNotDueNotClaimable
+--- PASS: TestRetryNotDueNotClaimable (0.06s)
+=== RUN   TestManualRetryKeepsFence
+--- PASS: TestManualRetryKeepsFence (0.05s)
+=== RUN   TestStaleCandidateAfterManualRetry
+--- PASS: TestStaleCandidateAfterManualRetry (0.04s)
+=== RUN   TestOverriddenNotClaimable
+--- PASS: TestOverriddenNotClaimable (0.04s)
+=== RUN   TestSucceededNotClaimable
+--- PASS: TestSucceededNotClaimable (0.04s)
+=== RUN   TestMaxAttemptsDead
+--- PASS: TestMaxAttemptsDead (0.05s)
+=== RUN   TestNonRetryableDeadImmediately
+--- PASS: TestNonRetryableDeadImmediately (0.03s)
+=== RUN   TestEventsPushed
+--- PASS: TestEventsPushed (0.06s)
+=== RUN   TestOwnership
+--- PASS: TestOwnership (0.10s)
+=== RUN   TestCandidatesFlattenAndLimit
+--- PASS: TestCandidatesFlattenAndLimit (0.07s)
+=== RUN   TestCandidatesUsesIndex
+--- PASS: TestCandidatesUsesIndex (0.05s)
+FAIL
+FAIL	launchops/provisioner/internal/jobs	1.158s
+FAIL

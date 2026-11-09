@@ -16,48 +16,55 @@ export interface TaskState {
 }
 
 export interface WorkflowSummary extends WorkflowOwners {
-  id: number;
+  id: string;
   job_title: string;
   department: string;
   start_date: string;
-  training_course_id: number | null;
   date_needs_correction: boolean;
 }
 
 interface StepFields {
-  id: number;
   key: string;
   title: string;
   description: string;
   owner_role: UserRole;
   kind: string;
   due_at: string;
+  overdue: boolean;
   completed_by?: string | null;
   prerequisites: string[];
   completion_mode: string;
 }
 
 export type Step = StepFields & (
-  | { state: 'completed'; completed_at: string }
+  | { state: 'done'; completed_at: string }
   | { state: 'ready' | 'blocked'; completed_at: null }
 );
 
 export interface Workflow extends WorkflowSummary {
   created_at: string;
+  status: string;
   steps: Step[];
-  events: {
-    id: number;
-    actor?: string | null;
-    step?: string | null;
-    action: string;
-    detail: string;
-    created_at: string;
-  }[];
+  events: WorkflowEvent[];
+}
+
+export interface WorkflowEvent {
+  // The API uses the event's array index, rather than an ObjectId.
+  id: number;
+  actor: string | null;
+  step: string | null;
+  action: string;
+  detail: string | null;
+  created_at: string;
+}
+
+export interface TimelineResponse {
+  id: string;
+  events: WorkflowEvent[];
 }
 
 export interface Directory {
-  users: { id: number; username: string; role: UserRole }[];
-  tracks: { id: number; title: string }[];
+  users: { id: string; username: string; role: UserRole }[];
 }
 
 export interface WorkflowPage {
@@ -72,7 +79,6 @@ export interface WorkflowPage {
 export interface WorkflowForm {
   employee_id: string;
   manager_id: string;
-  training_course_id: string;
   job_title: string;
   department: string;
   start_date: string;
@@ -90,30 +96,48 @@ export interface EvidenceProof {
   asset?: string;
   version?: string;
   profile?: Pick<WorkflowSummary, 'employee' | 'job_title' | 'department' | 'start_date'>;
-  assessments?: { score: number; max_score: number }[];
-  reviewed_tasks?: unknown[];
+  reviewed_tasks?: string[];
+}
+
+export interface ProvisioningResult {
+  connector: string;
+  status: 'pending' | 'running' | 'retry' | 'succeeded' | 'dead' | 'overridden';
+  external_ref: string | null;
+  override_reason: string | null;
+}
+
+export interface ProvisioningJob extends ProvisioningResult {
+  attempts: number;
+  last_error: string | null;
+  lease_owner: string | null;
+  updated_at: string | null;
 }
 
 export type TaskStep = Step & {
-  evidence: { [key: string]: unknown; _proof?: EvidenceProof };
+  evidence: { [key: string]: unknown; _proof?: EvidenceProof; provisioning?: ProvisioningResult[] };
   form_fields: FormField[];
 };
 
 export interface TaskDetailResponse {
   step: TaskStep;
   workflow: WorkflowSummary;
-  dependencies: { id: number; title: string; completed: boolean }[];
+  dependencies: { key: string; title: string; completed: boolean }[];
   review: TaskStep[];
   handbook: { version: string; sections: string[] } | null;
-  issues: { id: number; detail: string; resolution: string; resolved_at: string | null }[];
-  lessons: { id: number; title: string; reviewed: boolean }[];
-  assessments: { id: number; title: string; score: number | null; max_score: number | null; passed: boolean }[];
+  issues: { id: string; detail: string; resolution: string; resolved_at: string | null }[];
+  provisioning: ProvisioningJob[] | null;
 }
 
 export interface CompletionResponse {
-  id: number;
-  changed: boolean;
-  state: 'completed';
+  key: string;
+  state: 'done';
+  completion: {
+    by: string | null;
+    at: string;
+    evidence: Record<string, unknown> | null;
+    proof: EvidenceProof | null;
+    request_id: string | null;
+  };
 }
 
 export interface ResolutionResponse {

@@ -1,0 +1,11 @@
+# Throwaway MongoDB (stopped afterwards)
+docker run -d --rm --name cc-c12-mongo -p 47040:27017 mongo:8
+
+# Full passing run (output.txt), from provisioner/
+cd provisioner
+go vet ./...
+MONGO_URI=mongodb://localhost:47040 go test -race -count=1 -v ./...
+
+# Guard-removal runs (one per guard; service.go restored and sha256-checked after each; raw/<name>.diff and raw/<name>.txt)
+#   remove one guard from internal/mocksaas/service.go, then
+MONGO_URI=mongodb://localhost:47040 go test -race -count=1 -v ./internal/mocksaas/

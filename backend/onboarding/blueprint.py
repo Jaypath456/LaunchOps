@@ -2,6 +2,9 @@
 
 Fields deliberately collect references and confirmations, never passwords or ID numbers.
 """
+BLUEPRINT_VERSION = 1
+CONNECTORS = ["workspace", "slack", "github"]
+
 BLUEPRINT = [
     ('profile', 'Verify employee profile', 'Confirm the employee, start date and team.', 'hr', 'approval', -7, []),
     ('contract', 'Confirm paperwork', 'Record the signed paperwork reference and review date.', 'hr', 'approval', -6, ['profile']),
@@ -19,7 +22,7 @@ BLUEPRINT = [
     ('manager_signoff', 'Manager check-in', 'Confirm goals and check-ins have been discussed.', 'manager', 'approval', 4, ['goals', 'calendar']),
     ('contact', 'Confirm contact preferences', 'Tell the team how to reach you at work.', 'employee', 'orientation', 1, ['profile']),
     ('handbook', 'Review team handbook', 'Read the handbook and confirm the version.', 'employee', 'training', 2, ['policy']),
-    ('training', 'Complete security training', 'Read the linked track and pass every published assessment.', 'employee', 'training', 3, ['access']),
+    ('training', 'Acknowledge security policy', 'Read and acknowledge the security policy.', 'employee', 'training', 3, ['access']),
     ('receipt', 'Acknowledge equipment receipt', 'Confirm the device arrived and report its condition.', 'employee', 'provisioning', 3, ['it_handoff']),
     ('feedback', 'Share first-week feedback', 'Report any blockers or confirm you have none.', 'employee', 'orientation', 4, ['handbook', 'training']),
     ('ready', 'Confirm onboarding readiness', 'Review the completed tasks before closing onboarding.', 'hr', 'approval', 5,
@@ -48,7 +51,7 @@ FORMS = {
     'manager_signoff': [field('notes', 'Summary of the check-in'), field('confirmed', 'Goals and check-ins reviewed with the employee', 'checkbox')],
     'contact': [field('channel', 'Preferred work channel', 'select', options=['Work email', 'Team chat', 'Phone']), field('availability', 'Typical working hours or timezone')],
     'handbook': [field('version', 'Handbook version or link reference'), field('read', 'I reviewed the team handbook', 'checkbox')],
-    'training': [field('confirmed', 'I completed the linked lessons and assessments', 'checkbox')],
+    'training': [field('confirmed', 'I read and acknowledge the security policy', 'checkbox')],
     'receipt': [field('asset_tag', 'Device asset tag'), field('condition', 'Condition on receipt', 'select', options=['Good', 'Needs support'])],
     'feedback': [field('feedback', 'Feedback or blockers (write “None” if all is well)')],
     'ready': [field('summary', 'Final review summary'), field('confirmed', 'I checked all required tasks', 'checkbox')],
@@ -58,6 +61,7 @@ FORMS = {
 # services.py generates the result rather than trusting a user-supplied ticket.
 SIMULATIONS = {'profile', 'contract', 'payroll', 'equipment', 'access', 'mfa', 'endpoint', 'it_handoff', 'receipt'}
 HANDBOOK_VERSION = 'LaunchOps demo handbook v1'
+TRAINING_POLICY_VERSION = 'LaunchOps demo security policy v1'
 HANDBOOK = [
     'Work communication: use the work channel and availability saved in your contact preferences.',
     'Support: report access, equipment and security problems to the IT team. Never share passwords, recovery codes, identity numbers or financial details here.',
@@ -100,6 +104,7 @@ DESCRIPTIONS = {
     'calendar': 'Save a check-in plan. This does not create a calendar event.',
     'manager_signoff': 'Review saved plans and attest to a discussion; attendance is not independently verified.',
     'handbook': 'Read the displayed demo handbook and record your acknowledgment.',
+    'training': 'Read and acknowledge the security policy. Acknowledgment is not proof of reading or identity.',
     'receipt': 'Report the condition of the assigned simulated device; problems block final signoff.',
     'feedback': 'Save feedback and explicitly report blockers for HR to resolve.',
     'ready': 'Review all 19 tasks and resolved blockers, then close this demo workflow.',

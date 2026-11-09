@@ -1,12 +1,11 @@
-import { fireEvent, render, screen, cleanup, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, cleanup } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { vi } from 'vitest';
 import Login from './Login';
-import Register from './Register';
 import Landing from './Landing';
 
-const { login, register } = vi.hoisted(() => ({ login: vi.fn(), register: vi.fn() }));
-vi.mock('../../context/AuthContext', () => ({ useAuth: () => ({ login, register }) }));
+const { login } = vi.hoisted(() => ({ login: vi.fn() }));
+vi.mock('../../context/AuthContext', () => ({ useAuth: () => ({ login }) }));
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 
 test('landing exposes all four role login paths', () => {
@@ -24,15 +23,4 @@ test('role login preserves password whitespace and submits the chosen role', asy
   fireEvent.click(screen.getByRole('button', { name: 'Sign In' }));
   expect(await screen.findByText('Workspace')).toBeInTheDocument();
   expect(login).toHaveBeenCalledWith('demo_hr', '  exact password  ', 'hr');
-});
-
-test('registration preserves password whitespace', async () => {
-  register.mockResolvedValue({ role: 'employee' });
-  render(<MemoryRouter><Register /></MemoryRouter>);
-  fireEvent.change(screen.getByLabelText('Username'), { target: { value: 'new_hire' } });
-  fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'hire@example.test' } });
-  fireEvent.change(screen.getByLabelText('Password'), { target: { value: '  exact password  ' } });
-  fireEvent.click(screen.getByRole('button', { name: 'Create Account' }));
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Create Account' })).toBeEnabled());
-  expect(register).toHaveBeenCalledWith(expect.objectContaining({ password: '  exact password  ' }));
 });

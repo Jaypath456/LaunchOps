@@ -1,0 +1,11 @@
+--- /tmp/c12-service.go.orig	2026-11-08 23:19:23
++++ internal/mocksaas/service.go	2026-11-08 23:19:32
+@@ -346,7 +346,7 @@
+ 		body = []byte(`{"error":"account exists"}`)
+ 	}
+ 	result, err := s.db.Collection("requests").UpdateOne(ctx,
+-		bson.M{"key": claim.Key, "state": "processing", "claim": claim.Claim},
++		bson.M{"key": claim.Key},
+ 		bson.M{"$set": bson.M{"state": "done", "status": status, "body": body}})
+ 	if err != nil {
+ 		s.fail(w, err)

@@ -77,7 +77,7 @@ test.each([403, 500, 0])('status %s is never refreshed or replayed', async statu
   expect(sessionStorage.getItem('access_token')).toBe('old');
 });
 
-test.each(['/auth/login/', '/auth/register/', '/auth/refresh/'])('%s failure does not trigger refresh', async url => {
+test.each(['/auth/login/', '/auth/refresh/'])('%s failure does not trigger refresh', async url => {
   adapter.mockImplementation(config => denied(config));
   await expect(api.post(url, {})).rejects.toBeDefined();
   expect(adapter).toHaveBeenCalledTimes(1);

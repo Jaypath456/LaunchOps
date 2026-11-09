@@ -1,0 +1,10 @@
+--- a/provisioner/internal/jobs/store.go	2026-11-05 15:57:16
++++ b/provisioner/internal/jobs/store.go	2026-11-05 15:57:16
+@@ -134,7 +134,6 @@
+ 	}
+ 	match := bson.D{
+ 		{Key: "connector", Value: c.Connector},
+-		{Key: "status", Value: c.SeenStatus},
+ 		{Key: "fence", Value: c.SeenFence},
+ 	}
+ 	match = append(match, due)

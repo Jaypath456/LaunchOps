@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Blocks pushes from unattended runs and any commit that is not cleanly Jay's.
+set -euo pipefail
+if [ "${NIGHT_RUN:-}" = "1" ]; then echo "pre-push: pushes are disabled during night runs" >&2; exit 1; fi
+allowed="jaypathare123@gmail.com|84195294\+Jaypath456@users\.noreply\.github\.com|noreply@github\.com"
+zero=0000000000000000000000000000000000000000
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$local_sha" = "$zero" ] && continue
+  if [ "$remote_sha" = "$zero" ]; then range="$local_sha --not --remotes"; else range="$remote_sha..$local_sha"; fi
+  bad_ident=$(git log --format='%h %ae %ce' $range | grep -Ev " ($allowed) ($allowed)$" || true)
+  bad_msg=$(git log --format='%h %B' $range | grep -iE "co-authored-by:.*(claude|anthropic|codex|openai|chatgpt|copilot)|generated with .*(claude|codex)" || true)
+  if [ -n "$bad_ident$bad_msg" ]; then
+    echo "pre-push: blocked. Foreign identities or AI attribution found:" >&2; echo "$bad_ident" >&2; echo "$bad_msg" >&2; exit 1
+  fi
+done

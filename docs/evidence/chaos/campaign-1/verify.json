@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "invariants_passed": true,
+  "failures": [],
+  "dead_with_accounts": [
+    {
+      "connector": "workspace",
+      "username": "chaos-employee-0086",
+      "external_ref": "6af1599a4e951af667f6b098",
+      "reason": "Account exists although job is dead; IT override required"
+    }
+  ],
+  "fault_requirements": {
+    "fence_rejections": "required"
+  },
+  "counts": {
+    "workflows": 121,
+    "jobs": 363,
+    "accounts": 360,
+    "statuses": {
+      "succeeded": 359,
+      "dead": 4
+    },
+    "replays": 74,
+    "fence_rejections": 9,
+    "kills": 38,
+    "drops": 34,
+    "pauses": 26,
+    "latency_fired": 629
+  },
+  "mode": "campaign"
+}

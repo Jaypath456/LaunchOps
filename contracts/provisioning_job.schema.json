@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LaunchOps provisioning job",
+  "description": "Each workflow must have unique provisioning connectors, enforced by create_workflow. Every transition array filter must repeat its query element guards.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "connector", "idempotency_key", "payload", "status", "attempts", "fence",
+    "lease_owner", "lease_until", "next_attempt_at", "last_error", "external_ref",
+    "override_reason", "updated_at"
+  ],
+  "properties": {
+    "connector": {"type": "string", "enum": ["workspace", "slack", "github"]},
+    "idempotency_key": {"type": "string", "pattern": "^[0-9a-f]{24}:(workspace|slack|github)$"},
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["username", "display_name", "department"],
+      "properties": {
+        "username": {"type": "string"},
+        "display_name": {"type": "string"},
+        "department": {"type": "string"}
+      }
+    },
+    "status": {"type": "string", "enum": ["pending", "running", "retry", "succeeded", "dead", "overridden"]},
+    "attempts": {"type": "integer", "minimum": 0},
+    "fence": {"type": "integer", "minimum": 0},
+    "lease_owner": {"type": ["string", "null"]},
+    "lease_until": {"type": ["string", "null"], "format": "date-time"},
+    "next_attempt_at": {"type": ["string", "null"], "format": "date-time"},
+    "last_error": {"type": ["string", "null"]},
+    "external_ref": {"type": ["string", "null"]},
+    "override_reason": {"type": ["string", "null"]},
+    "updated_at": {"type": "string", "format": "date-time"}
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "created": 360,
+  "replayed": 74,
+  "in_progress_conflicts": 0,
+  "error_fired": 120,
+  "hang_fired": 25,
+  "drop_after_commit_fired": 34,
+  "latency_fired": 629,
+  "takeovers": 0
+}

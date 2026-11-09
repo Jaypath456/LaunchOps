@@ -1,0 +1,11 @@
+--- /tmp/c12-service.go.orig	2026-11-08 23:19:23
++++ internal/mocksaas/service.go	2026-11-08 23:19:23
+@@ -295,7 +295,7 @@
+ 	}
+ 	// Exactly one concurrent takeover matches the seen claim number; the others see it changed.
+ 	result, err := requests.UpdateOne(ctx,
+-		bson.M{"key": key, "state": "processing", "claim": stored.Claim},
++		bson.M{"key": key, "state": "processing"},
+ 		bson.M{"$set": bson.M{"started_at": time.Now().UTC().Truncate(time.Millisecond)}, "$inc": bson.M{"claim": 1}})
+ 	if err != nil {
+ 		s.fail(w, err)

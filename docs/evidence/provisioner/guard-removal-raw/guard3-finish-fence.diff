@@ -1,0 +1,10 @@
+--- a/provisioner/internal/jobs/store.go	2026-11-05 15:57:16
++++ b/provisioner/internal/jobs/store.go	2026-11-05 15:57:24
+@@ -146,7 +146,6 @@
+ 	match := bson.D{
+ 		{Key: "connector", Value: c.Connector},
+ 		{Key: "status", Value: StatusRunning},
+-		{Key: "fence", Value: c.Fence},
+ 	}
+ 	return bson.D{{Key: "_id", Value: c.InstanceID}, {Key: "provisioning", Value: bson.D{{Key: "$elemMatch", Value: match}}}}
+ }

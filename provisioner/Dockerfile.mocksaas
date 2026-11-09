@@ -1,0 +1,14 @@
+FROM golang:1.27.3-alpine AS build
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY cmd/mocksaas ./cmd/mocksaas
+COPY internal/mocksaas ./internal/mocksaas
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /mocksaas ./cmd/mocksaas
+
+FROM scratch
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=build /mocksaas /mocksaas
+USER 65532:65532
+EXPOSE 8080
+ENTRYPOINT ["/mocksaas"]

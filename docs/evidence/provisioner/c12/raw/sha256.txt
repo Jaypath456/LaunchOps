@@ -1,0 +1,20 @@
+before=91dbb107b485eb335789a0d63ad75ece4846f8c5def883ac90fac26cfaaf5d51
+guard1-takeover-claim-cas exit=1
+--- FAIL: TestStuckClaimConcurrentRequestsCreateOneAccount (0.16s)
+--- FAIL: TestConcurrentTakeoversOneWins (0.05s)
+guard1-takeover-claim-cas restored sha=91dbb107b485eb335789a0d63ad75ece4846f8c5def883ac90fac26cfaaf5d51
+guard2-timeout-check exit=1
+--- FAIL: TestConcurrentSameKey (0.14s)
+--- FAIL: TestProcessingReturnsConflict (0.04s)
+--- FAIL: TestCrashAfterClaimBeforeAccountInsert (0.05s)
+--- FAIL: TestCrashAfterAccountInsertBeforeResponseStored (0.05s)
+--- FAIL: TestProcessingTimeoutBoundary (0.04s)
+--- FAIL: TestStuckClaimConcurrentRequestsCreateOneAccount (0.12s)
+guard2-timeout-check restored sha=91dbb107b485eb335789a0d63ad75ece4846f8c5def883ac90fac26cfaaf5d51
+guard3-takeover-state exit=1
+--- FAIL: TestTakeoverDoesNotTouchCompletedRow (0.04s)
+guard3-takeover-state restored sha=91dbb107b485eb335789a0d63ad75ece4846f8c5def883ac90fac26cfaaf5d51
+guard4-completion-filter exit=1
+--- FAIL: TestStalledOriginalCannotOverwriteTakeover (0.04s)
+guard4-completion-filter restored sha=91dbb107b485eb335789a0d63ad75ece4846f8c5def883ac90fac26cfaaf5d51
+after=91dbb107b485eb335789a0d63ad75ece4846f8c5def883ac90fac26cfaaf5d51

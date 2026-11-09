@@ -1,106 +1,138 @@
 # LaunchOps
 
-A local onboarding demo built with Django REST Framework, PostgreSQL, Redis/Celery and a React frontend (Vite, with TypeScript for the API layer and onboarding pages). HR launches a 20-task workflow shared by HR, IT, a manager and an employee. Every task has an owner, prerequisites, a detail page, stored evidence and a completion event. I built this project with help from AI tools, including GitHub Copilot, Cursor, Claude Code and Codex.
+LaunchOps is a local onboarding workflow system for HR, IT, managers and employees. A Django + MongoDB API owns workflow rules, evidence forms, prerequisites, issues and final sign-off. A Go provisioner creates a new hire's accounts in external systems, simulated here by `mock-saas`. React, TypeScript and Vite provide the role-specific interface. Public registration is unavailable.
 
-**This app does not provision or verify real accounts, identities, payroll, devices, signatures or deliveries.** Those actions are explicitly labeled simulations. The server generates demo references and links the simulated device across IT and employee tasks. Planning, feedback and acknowledgments are local records; external attendance and discussions are self-reported. Do not enter passwords, recovery codes, identity numbers or financial details into task forms.
+The project explores concurrent updates and recovery from ambiguous external side effects. [DESIGN.md](docs/DESIGN.md) explains the choices and limitations; the [spec](docs/V2_SPEC.md) defines the behavior.
 
-## Start
+## Architecture
 
-```bash
-DEBUG=True docker compose up --build --wait -d
-docker compose exec backend python manage.py migrate --noinput
-docker compose exec backend python manage.py seed_launchops
+```mermaid
+flowchart LR
+    F[React frontend] --> B[Django API]
+    B --> M[(MongoDB)]
+    P1[Go provisioner A] --> M
+    P2[Go provisioner B] --> M
+    P3[Go provisioner C] --> M
+    P1 --> S[mock-saas simulator]
+    P2 --> S
+    P3 --> S
+    S --> M
 ```
 
-The default stack runs six services: `postgres`, `redis`, `backend`, `worker`, `beat` and `frontend`. Open [http://localhost:13000](http://localhost:13000). The API is at [http://localhost:18000/api/](http://localhost:18000/api/). Override `FRONTEND_PORT`, `BACKEND_PORT`, `REACT_APP_API_URL` and `CORS_ALLOWED_ORIGINS` in the root `.env` together if a port is occupied.
+Compose runs three provisioner replicas, matching the recorded [campaign configuration](docs/evidence/chaos/campaign-1/config.json). Django owns business state; workers own job transitions. The simulator uses its own database on the same MongoDB service.
 
-**Preserve existing Docker volumes and application data. Do not run `docker compose down -v` or renew volumes.**
+## Quick start
 
-The explicit `DEBUG=True` override is for this local demonstration and does not edit `.env`. The seed refuses to run with `DEBUG=False`, rolls back on account collisions, and never resets existing passwords or workflows. Do not seed or reuse demo accounts in a production database.
+Install Docker with Compose, then run from the repository root:
 
-Open the shared landing page and choose **HR**, **IT**, **Manager**, or **Employee**. Each entry has a dedicated sign-in path; the server verifies the account's assigned role before issuing tokens. Existing legacy accounts can use **Existing account**. Public registration always creates an employee.
+```bash
+docker compose -p launchops-v2 up --build
+```
 
-New demo accounts use the local-only password **LaunchOpsDemo2026!**:
+In another terminal, seed the local demo:
 
-| Username | Role | Five assigned tasks |
-| --- | --- | --- |
-| `demo_hr` | HR | Profile, paperwork, payroll, handbook publication, final signoff |
-| `demo_it` | IT | Equipment, access, MFA, device security, handoff |
-| `demo_manager` | Manager | Mentor, orientation, goals, check-ins, manager signoff |
-| `demo_employee` | Employee | Contact preferences, handbook acknowledgment, training, receipt, feedback |
+```bash
+docker compose -p launchops-v2 exec backend python manage.py seed_launchops
+```
 
-## How a workflow behaves
+The command inside the backend container is `python manage.py seed_launchops`. Seeding requires `DEBUG=True`, which is the Compose default. Open the frontend at `http://localhost:13000`; the API is at `http://localhost:18000/api` (default ports are defined in [Compose](docker-compose.yml); override them with `FRONTEND_PORT`, `BACKEND_PORT`, `MONGO_PORT` and `MOCKSAAS_PORT`; if you change `FRONTEND_PORT`, also set `CORS_ALLOWED_ORIGINS` to the new frontend origin). `GET /healthz` is unauthenticated and checks MongoDB; it returns `{"status":"ok"}` when available and an unavailable status when the ping fails.
 
-- **Ready and blocked work.** Sign in as HR and select a workflow. **Ready for you** links to tasks that have satisfied prerequisites and belong to the signed-in account. Other roles see **Waiting for ...** without a completion form. **Prerequisites needed** links to the blocking tasks.
-- **Server-side checks.** The server enforces task ownership, prerequisites and the exact evidence fields for each task. Public registration creates employees only.
-- **Duplicate requests.** A repeated completion request returns the original result. It keeps the original evidence and adds no second completion event.
-- **Final signoff.** It requires all other 19 tasks, a realistic start date and no unresolved blockers, and it displays the saved evidence for review.
-- **Training.** The employee's Learning page has five lessons with acknowledgment buttons and five three-question assessments graded on the server. A pass needs all three answers correct. Acknowledgments record a declaration, not proof of reading. A failed assessment can be retried; the failed attempt is archived.
-- **Overdue scan.** A Celery scan records at most one overdue event per ready task and sends no notifications. The legacy chat purge, which hard-deletes chat messages of courses whose term has ended, is off by default; `CHAT_PURGE_ENABLED=true` schedules it.
-- **Refresh and pagination.** The dashboard refreshes every 15 seconds and on window focus. There is one workflow per employee. Lists use numbered pages with previous/next controls; metrics and ready tasks describe the current page. The API returns `count`, `page`, `total_pages`, `next`, `previous`, and `results`, ordered by newest creation and ID. The default page size is 12; `page_size` is capped at 100 per page, with no total-record cutoff.
-- **Session renewal.** Expired access tokens use `/api/auth/refresh/`. Concurrent 401s share a refresh request, each request retries once, and a failed renewal clears the session and asks for sign-in. Login errors, permission errors and network failures are not replayed. Logout prevents a pending refresh from restoring the session.
+| Role | Username |
+|---|---|
+| HR | `demo_hr` |
+| IT | `demo_it` |
+| Manager | `demo_manager` |
+| Employee | `demo_employee` |
+
+All demo accounts use the password `LaunchOpsDemo2026!`, defined by the [seed command](backend/onboarding/management/commands/seed_launchops.py). The seeded workflow lets each role inspect its tasks. Forms record local simulations and self-reported evidence. Preserve Docker volumes.
+
+## Tests
+
+With MongoDB and the backend running:
+
+```bash
+docker compose -p launchops-v2 exec backend python manage.py test --noinput
+```
+
+For Go, install the version declared in [go.mod](provisioner/go.mod), then run against the Compose MongoDB port:
+
+```bash
+cd provisioner
+go vet ./...
+MONGO_URI=mongodb://localhost:27017 go test -race -count=1 ./...
+```
+
+Go's integration tests use real MongoDB. Keep `MONGO_URI` set so they execute. For the frontend, use the Node version configured in [CI](.github/workflows/ci.yml):
+
+```bash
+cd frontend
+npm ci
+npm run typecheck
+npm test
+npm run build
+```
+
+CI runs Django, Go and frontend checks as separate jobs. The Django and Go jobs start MongoDB 7.0 in a container, because MongoDB 8.x refuses to start on the Linux kernels (6.19 and newer) that GitHub's current runners use ([SERVER-121912](https://jira.mongodb.org/browse/SERVER-121912)). Local development and the recorded evidence used MongoDB 8.x, and the suites were also run locally against MongoDB 7.0. On a host with such a kernel, start the stack with `MONGO_IMAGE=mongo:7.0 docker compose -p launchops-v2 up --build`. The Go job uses the module's Go version. Chaos campaigns are separate from CI.
 
 ## Concurrency design
 
-`complete_step` locks the workflow row first and then the step row (`SELECT ... FOR UPDATE`) inside one transaction. This serializes concurrent completions, including different steps of the same workflow, and makes a duplicate submission a no-op. `backend/onboarding/test_concurrency.py` starts 20 threads released together by a barrier against PostgreSQL and asserts exactly one completion event. With the two `select_for_update` calls removed, the same test fails (5 of the 20 requests reported creating the completion), so the test detects the race it is meant to prevent.
+Each hire is an aggregate document with embedded steps, issues, events and provisioning jobs.  
+Django reads a snapshot and validates the requested business mutation.  
+Its conditional update matches the document's `version` and advances that version.  
+Step completion also requires `steps: {$elemMatch: {key, status: "open"}}`.  
+`arrayFilters` selects the element to change; it cannot guard the document-level event append.  
+The same write stores the completion, event and any issue or final workflow state.  
+A lost compare-and-set rebuilds the decision against a fresh snapshot.  
+When every competing writer advances `version`, either completion guard alone prevents duplicate completion; the step guard also rejects a write that does not advance `version` or whose array filter matches no element. Both are retained.  
+`Idempotency-Key` is stored with the completion, and replays return the original completion without another event.  
+Permissions are checked before replay; event array order defines history.
 
-## Tests and CI
+See [concurrency tests](backend/onboarding/test_concurrency.py): `test_twenty_threads_one_step_complete_once_with_identical_responses`, `test_version_guard_alone_gives_exactly_once`, `test_step_element_guard_alone_gives_exactly_once`, and `test_negative_control_without_guards_duplicates_are_detected`. These are test references, not a separate concurrency evidence run.
 
-```bash
-docker compose exec -e REDIS_URL=redis://redis:6379/15 backend python manage.py test --noinput
-docker compose exec backend python manage.py check
-docker compose exec backend python manage.py makemigrations --check --dry-run
-cd frontend && npm ci && npm run typecheck && npm test && npm run build
-```
+## Provisioning design
 
-Validated on October 28, 2026 with Docker Desktop: the backend suite ran **284 tests, all passing, none skipped, on PostgreSQL 16.15** in 222.916 seconds, and the host frontend ran **21 Vitest tests**, all passing. Typecheck, production build, Django checks, and migration checks passed. Exact commands, environments, browser reports and limitations are in the [delivery evidence](docs/DEMO_DELIVERY.md). Most backend tests cover the legacy learning modules. The onboarding-specific tests include:
+Pending job state is embedded in the workflow insert and acts as the durable queue.  
+Polling workers claim due jobs with compare-and-set on connector, status, fence and due condition.  
+A lease lets another worker reclaim work after a crash or stall.  
+Every claim advances the fence; stale workers cannot finish a newer claim.  
+Attempts count the current retry round; IT manual retry resets attempts while preserving the fence.  
+Workers update their job element and append provisioning events without changing the business version.  
+Transient responses and transport failures retry with capped exponential backoff and full jitter.  
+Permanent errors or exhausted attempts leave a dead job; if its external account already exists, IT reconciles it with a manual retry first and a verified override as the fallback.  
+The external idempotency key stays constant across attempts and replays the stored simulator response.  
+After drop-after-commit, a retry can recover an account that exists even though the caller received no response.
 
-- **Workflow tests** (`onboarding/tests.py`): all 20 tasks end to end with owner boundaries, invalid and forged evidence, the dependency gate, final signoff rules, idempotent overdue scan and a query budget.
-- **Matrix tests** (`onboarding/test_matrix.py`, table-driven with `subTest`): blueprint integrity (20 steps, 5 per role, unique keys, existing dependencies, acyclic graph), every step against every non-owner role, every step's prerequisites, and missing, unknown and empty evidence fields for every step.
-- **Race test** (`onboarding/test_concurrency.py`): described above.
+## Results
 
-GitHub Actions runs on every pull request and every push to `main`. The `backend` job runs `manage.py check`, `makemigrations --check` and the full suite against PostgreSQL 16 and Redis 7. The `frontend` job runs `npm ci`, the type check, the tests and the build. Tests are evidence for specific behavior; they are not a production security assessment.
+Evidence is local to the recorded environments, with commands and raw output retained. [Provisioner evidence](docs/evidence/provisioner/) and [orphaned-key recovery evidence](docs/evidence/provisioner/c12/) include passing output and targeted guard-removal experiments. The [job-store guard report](docs/evidence/provisioner/guard-removal-results.md) and [simulator guard report](docs/evidence/provisioner/c12-guard-removal.md) name the failures caused by each removal. No throughput or production-readiness claim follows from them.
 
-The browser walkthrough (installed Chrome and Node 18+ with Playwright 1.51.1) signs in through the UI under all four demo roles and completes the workflow:
+The earlier [run-1 result](docs/evidence/chaos/run-1/verify.json) records `invariants_passed: true` but `passed: false`: fence rejections were not exercised. The later campaigns recorded the following per-run results, copied directly from their verifier outputs:
 
-```bash
-npm install --prefix /tmp/launchops-browser playwright@1.51.1
-NODE_PATH=/tmp/launchops-browser/node_modules node scripts/walkthrough.cjs
-```
+| Evidence | jobs | statuses | accounts | fence_rejections | kills | pauses | replays | drops |
+|---|---:|---|---:|---:|---:|---:|---:|---:|
+| [campaign-1](docs/evidence/chaos/campaign-1/verify.json) | 363 | `{"succeeded": 359, "dead": 4}` | 360 | 9 | 38 | 26 | 74 | 34 |
+| [campaign-2](docs/evidence/chaos/campaign-2/verify.json) | 363 | `{"succeeded": 362, "dead": 1}` | 363 | 10 | 27 | 19 | 72 | 37 |
+| [campaign-3](docs/evidence/chaos/campaign-3/verify.json) | 363 | `{"succeeded": 361, "dead": 2}` | 363 | 4 | 34 | 23 | 76 | 43 |
 
-It prints its report path under `/tmp/launchops-walkthrough-*` and keeps the fresh audit employee/workflow it creates. Each run uses a new employee, completes all tasks through the correct role's forms, deliberately fails and retries an assessment, reports and resolves a blocker before final signoff, and checks duplicate completion requests. Existing workflows are only inspected. `CHROME_BIN` overrides the detected macOS/Linux Chrome path; `LAUNCHOPS_DEMO_PASSWORD` supports existing demo accounts whose passwords were changed. Both browser scripts refuse non-local hosts.
+Each campaign's configuration is recorded independently:
 
-To exercise real pagination beyond 100 workflows and signed token expiry in Chrome:
+| Configuration | hires | replicas | kill interval (s) | pause interval (s) | pause duration (s) | error_rate | hang_rate | drop_rate | latency (ms) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| [campaign-1](docs/evidence/chaos/campaign-1/config.json) | 120 | 3 | 10.0 | 15.0 | 35.0 | 0.2 | 0.05 | 0.1 | 3000 |
+| [campaign-2](docs/evidence/chaos/campaign-2/config.json) | 120 | 3 | 10.0 | 15.0 | 35.0 | 0.2 | 0.05 | 0.1 | 3000 |
+| [campaign-3](docs/evidence/chaos/campaign-3/config.json) | 120 | 3 | 10.0 | 15.0 | 35.0 | 0.2 | 0.05 | 0.1 | 3000 |
 
-```bash
-docker compose exec backend python manage.py seed_launchops --pagination-demo
-NODE_PATH=/tmp/launchops-browser/node_modules node scripts/check_session_pagination.cjs
-```
+The snapshots include the seeded demo workflow as well as campaign hires, as described in the [campaign guide](docs/evidence/chaos/README.md). `passed: true` includes explicit reporting of `dead_with_accounts`; it does not mean every job succeeded. Known dead jobs whose account already exists, which IT resolves by reconciliation (a manual retry first, since the same idempotency key makes the simulator replay the stored response, then a verified override as the fallback), are `workspace / chaos-employee-0086` in [campaign-1](docs/evidence/chaos/campaign-1/verify.json), `slack / chaos-employee-0092` in [campaign-2](docs/evidence/chaos/campaign-2/verify.json), and `github / chaos-employee-0082` plus `slack / chaos-employee-0096` in [campaign-3](docs/evidence/chaos/campaign-3/verify.json). The verifier checks account references and terminal states and reports these ambiguous side effects; it does not establish availability or behavior under host or database loss.
 
-The optional flag adds named pagination fixtures with unusable passwords and preserves existing records. The session check requires the local Compose backend with `DEBUG=True`; it creates signed expired tokens in memory without logging or saving them. It checks page navigation, concurrent refresh, refresh-only session restoration, expired refresh and missing refresh. `LAUNCHOPS_REPORT_DIR` selects either script's report directory. See [executed delivery evidence and LMS audit](docs/DEMO_DELIVERY.md). The earlier [audit report](docs/AUDIT.md) predates the current suite; its counts are historical.
+## Boundaries
 
-## Frontend
-
-The frontend uses Vite, Vitest and a strict `tsconfig.json`. The shared API layer, auth context, app shell, login and registration pages and the onboarding pages are TypeScript (`.ts` and `.tsx`, with API model types in `frontend/src/types`). The legacy learning pages (courses, quizzes, schedule, chat and live quiz) are still JavaScript and compile through `allowJs`. `npm start` runs the Vite dev server; a successful production build is not a production deployment.
-
-## Optional live quiz (Go and MongoDB)
-
-The live quiz is an experiment and is not part of the default stack or the onboarding workflow. Its Go WebSocket workers, gateway and MongoDB sit behind the `live` Compose profile:
-
-```bash
-LIVE_QUIZ_ENGINE=go docker compose --profile live up --build --wait -d
-```
-
-By default `LIVE_QUIZ_ENGINE` is `django` and live rooms use Django channels over Redis. The Go gateway uses port `19090`; override `LIVE_PORT` and `REACT_APP_LIVE_WS_URL` together if it is occupied. See [live quiz architecture and benchmark](docs/LIVE_ARCHITECTURE.md). The audit's test counts do not cover the Go path.
-
-## Existing data and dates
-
-Migrations preserve completed steps, evidence and activity. Seven-step workflows expand to 20 steps, and a historical final signoff stays signed off even if later-added tasks remain unfinished. Historical evidence is labeled unverified rather than upgraded into new simulation proof. Out-of-range start dates (for example the year 1111) are flagged for HR; use **Correct start date** with the intended date, which updates due dates and records the old and new values. New or corrected dates must fall within the past year or next three years. `seed_launchops` adds missing demo users, lessons and assessments without resetting passwords, publication settings or workflows; run it after updating.
+local demo; simulated accounts, payroll, identity and devices; external systems are a local mock with injected faults; single host;
+no production, HA or failover claim; the browser walkthrough is a local Playwright script and is not part of CI.
 
 ## Origins
 
-LaunchOps started as a learning-management system I built (courses, chapters, quizzes, scheduling, course chat and live quizzes) and that I converted into this onboarding platform. The onboarding workflow engine is the later work in this repository: the 20-task blueprint, the role and prerequisite rules, the evidence forms and checks, transactional completion with row locks, the overdue scan, the onboarding pages, and the tests, CI and frontend tooling described above. The learning modules remain for the training step and are not part of the onboarding walkthrough. This repository's history starts from a snapshot of the combined code, so it does not show that split.
+LaunchOps started as a learning-management system I built (courses, chapters, quizzes, scheduling, course chat history) and that I converted into this onboarding platform. The onboarding workflow engine was later work in this repository. The learning modules were removed when the onboarding backend moved to MongoDB; the earlier PostgreSQL version is preserved at the tag `v1-postgres`. This repository's history starts from a snapshot of the combined code, so it does not show that split.
 
-## Limits
+## AI tools used
 
-Use Python 3.12+, Node 20+, PostgreSQL and Redis for a non-Docker setup: copy `backend/.env.example` to `backend/.env`, install `backend/requirements.txt`, then migrate, seed with `DEBUG=True` for local use, and run Django, and run `npm ci` and `npm start` in `frontend/`. Docker is the recommended setup. HR and IT see all workflows in this single workspace; managers see their assigned workflows and employees see their own. Staff provisioning requires trusted administration. There is no tenant isolation, invitation system, identity provider, external evidence verification or production notification channel. Training reuses course lessons and server-graded quizzes; employees cannot use legacy chat, live quiz or scheduling routes or change their enrollment. Legacy students retain those features; their leaderboard excludes employee training scores. Tokens remain in tab-scoped session storage; logout clears that tab but does not revoke an already-issued refresh token on the server. Access tokens last 24 hours and refresh tokens seven days. The `loadtests/` suite predates onboarding and does not establish its performance.
+I built this project with help from AI tools, including GitHub Copilot, Cursor, Claude Code and Codex. I directed the design and reviewed the changes. I ran the test suites and the chaos campaigns myself. The raw outputs are committed under [docs/evidence](docs/evidence/).

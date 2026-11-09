@@ -1,12 +1,9 @@
-from django.contrib import admin
 from django.urls import path, include
 
+from onboarding import views as onboarding_views
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('api/auth/', include('users.urls')),
-    path('api/', include('courses.urls')),
-    path('api/', include('quizzes.urls')),
-    path('api/', include('schedule.urls')),
-    path('api/', include('messaging.urls')),
     path('api/onboarding/', include('onboarding.urls')),
+    path('healthz', onboarding_views.healthz),
 ]

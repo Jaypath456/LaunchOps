@@ -1,96 +1,109 @@
+import re
 from datetime import timedelta
+
 from django.conf import settings
-from django.db import transaction
+from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
-from users.models import User
-from courses.models import Course, Chapter
-from quizzes.models import Quiz, Question
-from onboarding.models import Onboarding
-from onboarding.services import create_onboarding
+
+from onboarding import repository
+from onboarding.db import get_users
+from onboarding.graph import ROLES, validate_blueprint
+from onboarding.indexes import ensure_indexes
+
 
 PASSWORD = 'LaunchOpsDemo2026!'
-LESSONS = [
-    ('Your security checklist', 'Use a unique password and MFA. If you see a suspicious sign-in link, report it to IT without opening it.', 'Security readiness check', [
-        ('What should you do with a suspicious sign-in link?', 'Open it to check', 'Report it without opening it'),
-        ('Which password should you use at work?', 'A reused personal password', 'A unique password'),
-        ('What protects a sign-in after the password?', 'Sharing the password', 'Multi-factor authentication')]),
-    ('Phishing and reporting', 'Check sender and destination before interacting. Use the designated IT support channel to report suspicious messages; never forward credentials.', 'Phishing response check', [
-        ('A sender urgently requests credentials. What next?', 'Send credentials', 'Report to IT'),
-        ('A message has a strange attachment. What next?', 'Open it immediately', 'Ask IT to inspect it'),
-        ('You clicked a suspicious link. What next?', 'Keep it secret', 'Tell IT promptly')]),
-    ('Protecting your device', 'Lock your screen when away, install approved updates, and report a missing device immediately. Do not turn off endpoint protection.', 'Device safety check', [
-        ('You leave your workstation. What should you do?', 'Leave it unlocked', 'Lock the screen'),
-        ('A device is missing. What should you do?', 'Wait a week', 'Report it to IT immediately'),
-        ('An approved security update is ready. What should you do?', 'Disable protection', 'Apply the update')]),
-    ('Handling company data', 'Store work files only in approved systems. Share the minimum access necessary, and follow your team retention rules.', 'Data handling check', [
-        ('Where should you store work files?', 'A personal cloud account', 'An approved work system'),
-        ('How much access should a collaborator receive?', 'Everyone gets full access', 'Only the access they need'),
-        ('You sent data to the wrong person. What next?', 'Ignore it', 'Report the incident promptly')]),
-    ('Support and incident response', 'Save the IT support channel. When reporting a security issue, describe what happened and when; do not paste passwords or recovery codes into tickets.', 'Incident response check', [
-        ('A ticket asks for a recovery code. What should you do?', 'Paste the code', 'Refuse and alert IT'),
-        ('What should an incident report include?', 'Your password', 'The time and what happened'),
-        ('Which channel should you use for a suspected incident?', 'A public social post', 'An approved IT channel')]),
-]
+PAGINATION_USERS = [f'demo_page_{number:03}' for number in range(1, 106)]
+# Django's username rules (UnicodeUsernameValidator, max_length=150).
+USERNAME = re.compile(r'^[\w.@+-]+\Z')
 
 
-def rich_text(value):
-    return [{'type': 'paragraph', 'children': [{'text': value}]}]
+def _actor(user):
+    return {'id': str(user['_id']), 'username': user['username'], 'role': user['role']}
 
 
 class Command(BaseCommand):
-    help = 'Idempotently create a four-role demo and five security lessons with assessments.'
+    help = 'Idempotently create a four-role onboarding demo with policy attestation.'
 
     def add_arguments(self, parser):
-        parser.add_argument('--pagination-demo', action='store_true', help='Also add named, non-login demo workflows for browsing beyond 100 records.')
+        parser.add_argument('--pagination-demo', action='store_true',
+                            help='Also add named, non-login demo workflows for browsing beyond 100 records.')
+        parser.add_argument('--walkthrough-employee',
+                            help='Create a fresh employee account without a workflow for the local browser walkthrough.')
+        parser.add_argument('--bulk-employees', type=int, default=0,
+                            help='Create named chaos employees without workflows for local API campaigns.')
 
-    @transaction.atomic
-    def handle(self, *args, **kwargs):
+    def handle(self, *args, **options):
         if not settings.DEBUG:
             raise CommandError('Demo fixtures are available only with DEBUG=True. No data was changed.')
-        people = {}
-        for username, role in [('demo_hr', 'hr'), ('demo_it', 'it'), ('demo_manager', 'manager'), ('demo_employee', 'employee'), ('training_editor', 'instructor')]:
-            user, created = User.objects.get_or_create(username=username, defaults={'role': role, 'email': username + '@example.test'})
-            if created:
-                user.set_password(PASSWORD)
-                user.save(update_fields=['password'])
-            elif user.role != role:
-                raise CommandError(f'{username} already exists with role {user.role}; resolve the demo account collision first.')
-            if user.is_staff or user.is_superuser or not user.is_active:
-                raise CommandError(f'{username} collides with a privileged or inactive account. No data was changed.')
-            people[role] = user
-        course, _ = Course.objects.get_or_create(title='Security essentials', instructor=people['instructor'],
-            defaults={'description': 'Five short lessons on accounts, phishing, devices, data and incident response.', 'is_published': True})
-        for index, (title, content, quiz_title, questions) in enumerate(LESSONS):
-            Chapter.objects.get_or_create(course=course, title=title, defaults={
-                'order_index': index, 'visibility': 'public', 'content': rich_text(content)})
-            quiz, _ = Quiz.objects.get_or_create(course=course, title=quiz_title,
-                defaults={'is_published': True, 'description': 'Pass with at least 70% to complete onboarding.'})
-            for order, (prompt, incorrect, correct) in enumerate(questions):
-                question, created = Question.objects.get_or_create(quiz=quiz, order_index=order, defaults={
-                    'question_type': Question.SINGLE_CHOICE, 'points': 1,
-                    'body': {'prompt': rich_text(prompt), 'options': [
-                        {'id': 'a', 'text': incorrect}, {'id': 'b', 'text': correct}], 'correct_option_ids': ['b']}})
-                # Repair only the two exact erroneous demo fixtures. Keep authored
-                # questions and all historical submissions unchanged.
-                if index == 4 and order in (1, 2) and not created:
-                    wrong_body = {'prompt': rich_text(prompt), 'options': [
-                        {'id': 'a', 'text': correct}, {'id': 'b', 'text': incorrect}], 'correct_option_ids': ['b']}
-                    if question.body == wrong_body:
-                        question.body['correct_option_ids'] = ['a']
-                        question.save(update_fields=['body'])
-        if not Onboarding.objects.filter(employee=people['employee']).exists():
-            create_onboarding(employee=people['employee'], manager=people['manager'], creator=people['hr'],
-                job_title='Software Engineer', department='Engineering', start_date=timezone.localdate() + timedelta(days=7), course=course)
-        if kwargs['pagination_demo']:
-            for number in range(1, 106):
-                user, created = User.objects.get_or_create(username=f'demo_page_{number:03}', defaults={'role': 'employee'})
-                if user.role != 'employee' or user.is_staff or user.is_superuser:
-                    raise CommandError(f'{user.username} collides with an existing account. No data was changed.')
-                if created:
-                    user.set_unusable_password()
-                    user.save(update_fields=['password'])
-                if not Onboarding.objects.filter(employee=user).exists():
-                    create_onboarding(employee=user, manager=people['manager'], creator=people['hr'],
-                        job_title='Pagination demo', department='Demo fixtures', start_date=timezone.localdate(), course=course)
-        self.stdout.write(self.style.SUCCESS('LaunchOps local demo ready. Existing passwords and workflows preserved; see README for local sign-in instructions.'))
+        validate_blueprint()
+        users = get_users()
+        walkthrough = options.get('walkthrough_employee')
+        pagination = options.get('pagination_demo')
+        bulk = options.get('bulk_employees', 0)
+        if bulk < 0:
+            raise CommandError('Bulk employee count must be nonnegative. No data was changed.')
+        bulk_names = [f'chaos-employee-{number:04d}' for number in range(1, bulk + 1)]
+
+        # MongoDB has no multi-document transaction here: preflight every collision before any write.
+        if walkthrough is not None:
+            if not walkthrough or len(walkthrough) > 150 or not USERNAME.match(walkthrough):
+                raise CommandError('Invalid walkthrough employee username.')
+            if walkthrough.startswith('demo_') or users.find_one({'username': walkthrough}, {'_id': 1}) is not None:
+                raise CommandError('Walkthrough employee must be a fresh, non-demo username. No data was changed.')
+        for role in sorted(ROLES):
+            username = f'demo_{role}'
+            existing = users.find_one({'username': username})
+            if existing is not None and existing.get('role') != role:
+                raise CommandError(f'{username} already exists with a different role; resolve the demo account collision first.')
+        if pagination:
+            collision = users.find_one({'username': {'$in': PAGINATION_USERS}, 'role': {'$ne': 'employee'}})
+            if collision is not None:
+                raise CommandError(f'{collision["username"]} collides with an existing account. No data was changed.')
+        if bulk_names:
+            collision = users.find_one({'username': {'$in': bulk_names}, 'role': {'$ne': 'employee'}})
+            if collision is not None:
+                raise CommandError(f'{collision["username"]} collides with an existing account. No data was changed.')
+            if walkthrough in bulk_names:
+                raise CommandError('Walkthrough employee collides with a bulk employee. No data was changed.')
+
+        ensure_indexes()
+        for role in sorted(ROLES):
+            username = f'demo_{role}'
+            users.update_one({'username': username, 'role': role}, {'$setOnInsert': {
+                'username': username,
+                'display_name': f'Demo {role.upper() if role in ("hr", "it") else role.title()}',
+                'role': role,
+                'password': make_password(PASSWORD),
+            }}, upsert=True)
+        people = {user['role']: user for user in users.find({'username': {'$in': [f'demo_{role}' for role in ROLES]}})}
+        hr, manager = _actor(people['hr']), people['manager']['_id']
+        self._ensure_workflow(hr, people['employee']['_id'], manager, 'Software Engineer', 'Engineering',
+                              timezone.localdate() + timedelta(days=7))
+        if walkthrough is not None:
+            users.insert_one({'username': walkthrough, 'display_name': walkthrough, 'role': 'employee',
+                              'password': make_password(PASSWORD)})
+        for username in bulk_names:
+            users.update_one({'username': username, 'role': 'employee'}, {'$setOnInsert': {
+                'username': username, 'display_name': username, 'role': 'employee',
+                'password': make_password(None),
+            }}, upsert=True)
+        if pagination:
+            for username in PAGINATION_USERS:
+                users.update_one({'username': username, 'role': 'employee'}, {'$setOnInsert': {
+                    'username': username, 'display_name': username.replace('_', ' ').title(), 'role': 'employee',
+                    'password': make_password(None),  # unusable: these accounts cannot sign in
+                }}, upsert=True)
+            for user in users.find({'username': {'$in': PAGINATION_USERS}}).sort('username', 1):
+                self._ensure_workflow(hr, user['_id'], manager, 'Pagination demo', 'Demo fixtures', timezone.localdate())
+        self.stdout.write(self.style.SUCCESS(
+            'LaunchOps local demo ready. Existing passwords and workflows preserved; see README for local sign-in instructions.'))
+
+    def _ensure_workflow(self, hr, employee_id, manager_id, job_title, department, start_date):
+        if repository.find_by_employee(employee_id) is not None:
+            return
+        try:
+            repository.create_workflow(actor=hr, employee_id=employee_id, manager_id=manager_id, job_title=job_title,
+                                       department=department, start_date=start_date)
+        except repository.DuplicateWorkflow:
+            pass

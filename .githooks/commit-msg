@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Keeps every commit authored by Jay only: strips AI attribution lines and refuses foreign author identities.
+set -euo pipefail
+msg_file="$1"
+allowed_emails="jaypathare123@gmail.com 84195294+Jaypath456@users.noreply.github.com"
+
+perl -i -ne 'print unless /^\s*co-authored-by:.*(claude|anthropic|codex|openai|chatgpt|copilot|cursor)/i
+                       || /generated with .*(claude|codex|chatgpt)/i || /\x{1F916}/' "$msg_file" 2>/dev/null \
+  || perl -i -ne 'print unless /^\s*co-authored-by:.*(claude|anthropic|codex|openai|chatgpt|copilot|cursor)/i || /generated with .*(claude|codex|chatgpt)/i' "$msg_file"
+
+author_email="$(git var GIT_AUTHOR_IDENT | sed -E 's/.*<([^>]+)>.*/\1/')"
+committer_email="$(git var GIT_COMMITTER_IDENT | sed -E 's/.*<([^>]+)>.*/\1/')"
+for e in "$author_email" "$committer_email"; do
+  case " $allowed_emails " in *" $e "*) ;; *) echo "commit-msg: refusing commit by '$e' (not Jay's identity)" >&2; exit 1;; esac
+done

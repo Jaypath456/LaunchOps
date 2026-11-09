@@ -1,113 +1,87 @@
 services:
-  # Existing onboarding records stay in PostgreSQL until the documented
-  # per-model migration is validated. Live-room answers use MongoDB.
-  postgres:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${DB_NAME:-launchops_db}
-      POSTGRES_USER: ${DB_USER:-launchops_user}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-your_password_here}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-launchops_user} -d ${DB_NAME:-launchops_db}"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
-  # Backs Django's cache, the Celery broker, the Channels layer, and
-  # live-session state.
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
   mongo:
-    image: mongo:7
-    profiles: ["live"]
+    image: ${MONGO_IMAGE:-mongo:8}
     restart: unless-stopped
     volumes:
       - mongo_data:/data/db
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
     healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand({ping:1}).ok"]
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
       interval: 5s
       timeout: 5s
-      retries: 20
+      retries: 10
 
-  go-live-a: &go_live
-    build: ./go-live
-    profiles: ["live"]
+  mock-saas:
+    build:
+      context: ./provisioner
+      dockerfile: Dockerfile.mocksaas
     restart: unless-stopped
     depends_on:
       mongo:
         condition: service_healthy
-      redis:
-        condition: service_healthy
-      backend:
-        condition: service_healthy
-    environment: &go_live_environment
-      REDIS_ADDR: redis:6379
+    environment:
       MONGO_URI: mongodb://mongo:27017
-      MONGO_DB: launchops_live
-      BACKEND_URL: http://backend:8000
-      LIVE_SERVICE_SECRET: ${LIVE_SERVICE_SECRET:-replace-this-local-demo-service-secret-before-deployment}
-      ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:13000}
-
-  go-live-b:
-    <<: *go_live
-
-  live-gateway:
-    image: nginx:1.27-alpine
-    profiles: ["live"]
-    restart: unless-stopped
-    depends_on:
-      - go-live-a
-      - go-live-b
-    volumes:
-      - ./go-live/nginx.conf:/etc/nginx/nginx.conf:ro
+      MOCKSAAS_DB: mocksaas
+      MOCKSAAS_ADDR: :8080
+      ERROR_RATE: ${ERROR_RATE:-0}
+      HANG_RATE: ${HANG_RATE:-0}
+      DROP_AFTER_COMMIT_RATE: ${DROP_AFTER_COMMIT_RATE:-0}
+      LATENCY_MS: ${LATENCY_MS:-0}
     ports:
-      - "${LIVE_PORT:-19090}:8080"
+      - "${MOCKSAAS_PORT:-18080}:8080"
+    healthcheck:
+      test: ["CMD", "/mocksaas", "-healthcheck"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  provisioner:
+    build:
+      context: ./provisioner
+      dockerfile: Dockerfile.provisioner
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+    depends_on:
+      mongo:
+        condition: service_healthy
+      mock-saas:
+        condition: service_healthy
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB: launchops
+      MOCKSAAS_URL: http://mock-saas:8080
+      WORKERS: "4"
+      HEALTH_ADDR: :8081
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "/provisioner", "-healthcheck"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   backend:
     build:
       context: ./backend
     restart: unless-stopped
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
+      mongo:
         condition: service_healthy
     environment:
-      DB_NAME: ${DB_NAME:-launchops_db}
-      DB_USER: ${DB_USER:-launchops_user}
-      DB_PASSWORD: ${DB_PASSWORD:-your_password_here}
-      DB_HOST: postgres
-      DB_PORT: 5432
-      REDIS_URL: redis://redis:6379/0
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB: ${MONGO_DB:-launchops}
       SECRET_KEY: ${SECRET_KEY:-docker-compose-local-dev-secret-key}
       DEBUG: ${DEBUG:-True}
       ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:13000}
-      # Only ever set to True for the "before" half of a loadtests/
-      # before/after comparison (see loadtests/README.md) - defaults to
-      # off (optimizations enabled) for normal use.
-      LOAD_TEST_DISABLE_REDIS_OPTIMIZATIONS: ${LOAD_TEST_DISABLE_REDIS_OPTIMIZATIONS:-False}
-      LIVE_SERVICE_SECRET: ${LIVE_SERVICE_SECRET:-replace-this-local-demo-service-secret-before-deployment}
-      MONGO_URI: mongodb://mongo:27017
-      LIVE_QUIZ_ENGINE: ${LIVE_QUIZ_ENGINE:-django}
     ports:
       - "${BACKEND_PORT:-18000}:8000"
     volumes:
       - ./backend:/app
+      - ./contracts:/contracts:ro
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/admin/login/', timeout=2)"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2)"]
       interval: 3s
       timeout: 3s
       retries: 20
@@ -121,75 +95,12 @@ services:
       backend:
         condition: service_healthy
     environment:
-      REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:18000/api}
-      REACT_APP_WS_URL: ${REACT_APP_WS_URL:-}
-      REACT_APP_LIVE_WS_URL: ${REACT_APP_LIVE_WS_URL:-ws://localhost:19090}
+      REACT_APP_API_URL: ${REACT_APP_API_URL:-http://backend:8000/api}
     ports:
       - "${FRONTEND_PORT:-13000}:3000"
     volumes:
       - ./frontend:/app
       - /app/node_modules
 
-  worker:
-    build: ./backend
-    entrypoint: []
-    command: ["celery", "-A", "lms_project", "worker", "--loglevel=info", "--concurrency=2"]
-    restart: unless-stopped
-    depends_on:
-      backend:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      DB_NAME: ${DB_NAME:-launchops_db}
-      DB_USER: ${DB_USER:-launchops_user}
-      DB_PASSWORD: ${DB_PASSWORD:-your_password_here}
-      DB_HOST: postgres
-      DB_PORT: 5432
-      REDIS_URL: redis://redis:6379/0
-      SECRET_KEY: ${SECRET_KEY:-docker-compose-local-dev-secret-key}
-      DEBUG: ${DEBUG:-True}
-
-  beat:
-    build: ./backend
-    entrypoint: []
-    command: ["celery", "-A", "lms_project", "beat", "--loglevel=info"]
-    restart: unless-stopped
-    depends_on:
-      backend:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      DB_NAME: ${DB_NAME:-launchops_db}
-      DB_USER: ${DB_USER:-launchops_user}
-      DB_PASSWORD: ${DB_PASSWORD:-your_password_here}
-      DB_HOST: postgres
-      DB_PORT: 5432
-      REDIS_URL: redis://redis:6379/0
-      SECRET_KEY: ${SECRET_KEY:-docker-compose-local-dev-secret-key}
-      DEBUG: ${DEBUG:-True}
-
-  # Not started by a normal `docker compose up` - gated behind the
-  # "loadtest" profile so it only runs when explicitly requested, e.g.:
-  #   docker compose --profile loadtest run --rm locust \
-  #     --headless --users 100 --spawn-rate 20 --run-time 2m \
-  #     --csv /reports/rest_100users
-  # See loadtests/README.md for the full before/after methodology.
-  locust:
-    image: locustio/locust:2.44.4
-    profiles: ["loadtest"]
-    depends_on:
-      - backend
-    volumes:
-      - ./loadtests:/mnt/locust
-      - ./loadtests/reports:/reports
-    working_dir: /mnt/locust
-    entrypoint: ["locust", "-f", "locustfile.py", "--host", "http://backend:8000"]
-    ports:
-      - "8089:8089"
-
 volumes:
-  postgres_data:
-  redis_data:
   mongo_data:

@@ -7,31 +7,10 @@ on:
 
 jobs:
   backend:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_DB: launchops_db
-          POSTGRES_USER: launchops_user
-          POSTGRES_PASSWORD: ci_password
-        ports: ["5432:5432"]
-        options: >-
-          --health-cmd "pg_isready -U launchops_user -d launchops_db"
-          --health-interval 5s --health-timeout 5s --health-retries 10
-      redis:
-        image: redis:7-alpine
-        ports: ["6379:6379"]
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 5s --health-timeout 5s --health-retries 10
+    runs-on: ubuntu-24.04
     env:
-      DB_NAME: launchops_db
-      DB_USER: launchops_user
-      DB_PASSWORD: ci_password
-      DB_HOST: localhost
-      DB_PORT: "5432"
-      REDIS_URL: redis://localhost:6379/15
+      MONGO_URI: mongodb://localhost:27017
+      MONGO_DB: launchops_ci
       SECRET_KEY: ci-only-secret-key
       DEBUG: "False"
     defaults:
@@ -39,6 +18,18 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
+      - name: Start MongoDB
+        working-directory: .
+        run: |
+          # MongoDB 8.x refuses to start on Linux kernel 6.19 or newer (SERVER-121912), which GitHub's runners now use.
+          out=$(docker run -d --name mongo -p 27017:27017 mongo:7.0 2>&1) || { echo "::error title=docker run failed::$(echo "$out" | tr '\n' ' ' | cut -c1-900)"; exit 1; }
+          for i in $(seq 1 30); do
+            if docker exec mongo mongosh --quiet --eval 'db.adminCommand({ping:1}).ok' | grep -q 1; then exit 0; fi
+            sleep 2
+          done
+          echo "::error title=MongoDB did not become ready::arch=$(uname -m) avx=$(grep -m1 -o -E 'avx2|avx' /proc/cpuinfo | head -1) state=$(docker inspect mongo --format '{{.State.Status}} exit={{.State.ExitCode}} {{.State.Error}}') logs=$(docker logs --tail 15 mongo 2>&1 | tr '\n' ' ' | cut -c1-900)"
+          docker logs mongo
+          exit 1
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -46,8 +37,36 @@ jobs:
           cache-dependency-path: backend/requirements.txt
       - run: pip install -r requirements.txt
       - run: python manage.py check
-      - run: python manage.py makemigrations --check --dry-run
       - run: python manage.py test --noinput --verbosity 1
+      - run: python -m unittest discover -s ../scripts/chaos -v
+
+  provisioner:
+    runs-on: ubuntu-24.04
+    env:
+      MONGO_URI: mongodb://localhost:27017
+    defaults:
+      run:
+        working-directory: provisioner
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start MongoDB
+        working-directory: .
+        run: |
+          # MongoDB 8.x refuses to start on Linux kernel 6.19 or newer (SERVER-121912), which GitHub's runners now use.
+          out=$(docker run -d --name mongo -p 27017:27017 mongo:7.0 2>&1) || { echo "::error title=docker run failed::$(echo "$out" | tr '\n' ' ' | cut -c1-900)"; exit 1; }
+          for i in $(seq 1 30); do
+            if docker exec mongo mongosh --quiet --eval 'db.adminCommand({ping:1}).ok' | grep -q 1; then exit 0; fi
+            sleep 2
+          done
+          echo "::error title=MongoDB did not become ready::arch=$(uname -m) avx=$(grep -m1 -o -E 'avx2|avx' /proc/cpuinfo | head -1) state=$(docker inspect mongo --format '{{.State.Status}} exit={{.State.ExitCode}} {{.State.Error}}') logs=$(docker logs --tail 15 mongo 2>&1 | tr '\n' ' ' | cut -c1-900)"
+          docker logs mongo
+          exit 1
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: provisioner/go.mod
+          cache-dependency-path: provisioner/go.sum
+      - run: go vet ./...
+      - run: go test -race -count=1 ./...
 
   frontend:
     runs-on: ubuntu-latest

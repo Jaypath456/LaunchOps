@@ -1,366 +1,267 @@
-from datetime import timedelta
-from django.test import TestCase, override_settings
-from django.db import connection
-from django.test.utils import CaptureQueriesContext
-from django.utils import timezone
-from rest_framework.test import APIClient
-from users.models import User
-from courses.models import Course, Enrollment, Chapter
-from quizzes.models import Quiz, Question, Submission
-from .models import Event, Step, LessonReview, AssessmentAttempt, Issue, Onboarding
-from .services import create_onboarding
-from .blueprint import BLUEPRINT, FORMS
-from .tasks import scan_overdue
+from copy import deepcopy
+from datetime import UTC, datetime
+from io import StringIO
+import json
+from unittest import mock
+
+from bson import ObjectId
+from django.contrib.auth.hashers import check_password, make_password
+from django.core.management import call_command
+from django.core.management.base import CommandError
+from django.test import override_settings
+from jsonschema import Draft7Validator, FormatChecker, ValidationError
+from pymongo.errors import DuplicateKeyError, WriteError
+
+from . import repository
+from .blueprint import BLUEPRINT, BLUEPRINT_VERSION, CONNECTORS, FORMS
+from .db import get_db, get_users
+from .graph import validate_blueprint
+from .indexes import CONTRACT_PATH, ensure_indexes, load_provisioning_schema
+from .management.commands.seed_launchops import PASSWORD
+from .testing import MongoTestCase, actor_of, make_user
 
 
-class OnboardingFlowTests(TestCase):
+def fixtures():
+    return {
+        path.stem: json.loads(path.read_text())
+        for path in sorted((CONTRACT_PATH.parent / 'fixtures').glob('*.json'))
+    }
+
+
+def bson_job(job):
+    result = deepcopy(job)
+    for key in ('lease_until', 'next_attempt_at', 'updated_at'):
+        if result[key] is not None:
+            result[key] = datetime.fromisoformat(result[key].replace('Z', '+00:00'))
+    return result
+
+
+class BlueprintGraphTests(MongoTestCase):
     def setUp(self):
-        self.users = {role: User.objects.create_user(username=role, password='pass123456', role=role)
-                      for role in ('hr', 'it', 'manager', 'employee')}
-        self.other = User.objects.create_user(username='other', password='pass123456', role='employee')
-        self.editor = User.objects.create_user(username='editor', password='pass123456', role='instructor')
-        self.course = Course.objects.create(title='Security', instructor=self.editor, is_published=True)
-        self.quiz = Quiz.objects.create(course=self.course, title='Check', is_published=True)
-        self.record = create_onboarding(employee=self.users['employee'], manager=self.users['manager'],
-            creator=self.users['hr'], job_title='Engineer', department='Engineering',
-            start_date=timezone.localdate() + timedelta(days=10), course=self.course)
-        self.chapter = Chapter.objects.create(course=self.course, title='Lesson', visibility='public', content=[{'type': 'paragraph', 'children': [{'text': 'Read this lesson'}]}])
-        LessonReview.objects.create(onboarding=self.record, chapter=self.chapter)
-        self.client = APIClient()
+        self.blueprint = [
+            ('second', 'Second', '', 'employee', 'training', 0, ['first']),
+            ('first', 'First', '', 'hr', 'approval', 0, []),
+        ]
+        self.forms = {'first': [], 'second': []}
 
-    def as_role(self, role):
-        self.client.force_authenticate(user=self.users[role])
+    def test_cycle_detected(self):
+        self.blueprint[1] = (*self.blueprint[1][:-1], ['second'])
+        with self.assertRaisesRegex(ValueError, 'cycle'):
+            validate_blueprint(self.blueprint, self.forms)
 
-    def step(self, key):
-        return self.record.steps.get(key=key)
+    def test_self_cycle_detected(self):
+        self.blueprint[1] = (*self.blueprint[1][:-1], ['first'])
+        with self.assertRaisesRegex(ValueError, 'cycle'):
+            validate_blueprint(self.blueprint, self.forms)
 
-    def evidence(self, key):
-        return {field['name']: (True if field['type'] == 'checkbox' else field['options'][0] if field['type'] == 'select'
-                else timezone.localdate().isoformat() if field['type'] == 'date' else 'Local test ticket reference')
-                for field in FORMS[key]}
+    def test_unknown_prerequisite(self):
+        self.blueprint[0] = (*self.blueprint[0][:-1], ['absent'])
+        with self.assertRaisesRegex(ValueError, 'Unknown prerequisite'):
+            validate_blueprint(self.blueprint, self.forms)
 
-    def complete(self, key, evidence=None):
-        return self.client.post(f'/api/onboarding/steps/{self.step(key).pk}/complete/',
-                                {'evidence': self.evidence(key) if evidence is None else evidence}, format='json')
+    def test_duplicate_key(self):
+        with self.assertRaisesRegex(ValueError, 'Duplicate step key'):
+            validate_blueprint(self.blueprint + [self.blueprint[0]], self.forms)
 
-    def test_visibility_and_permissions(self):
-        self.client.force_authenticate(user=self.other)
-        self.assertEqual(self.client.get(f'/api/onboarding/workflows/{self.record.pk}/').status_code, 404)
-        self.assertEqual(self.client.get(f'/api/onboarding/steps/{self.step("profile").pk}/').status_code, 404)
-        self.assertEqual(self.complete('profile').status_code, 403)
-        self.as_role('employee')
-        self.assertEqual(self.client.get('/api/onboarding/workflows/').data['count'], 1)
-        self.assertEqual(self.client.post('/api/onboarding/workflows/', {}).status_code, 403)
-        self.assertEqual(self.complete('profile').status_code, 403)
+    def test_missing_form(self):
+        with self.assertRaisesRegex(ValueError, 'Missing form'):
+            validate_blueprint(self.blueprint, {'first': []})
 
-    def test_dependency_gate_retry_and_training_proof(self):
-        self.as_role('it')
-        self.assertEqual(self.complete('access').status_code, 400)
-        self.as_role('hr')
-        self.assertEqual(self.complete('profile', {}).status_code, 400)
-        self.assertEqual(self.complete('profile', {**self.evidence('profile'), 'injected': 'yes'}).status_code, 400)
-        self.assertEqual(self.complete('profile').status_code, 200)
-        self.assertFalse(self.complete('profile').data['changed'])
-        self.assertEqual(Event.objects.filter(step=self.step('profile'), action='completed').count(), 1)
-        self.as_role('it')
-        self.assertEqual(self.complete('access').status_code, 200)
-        self.as_role('employee')
-        self.assertEqual(self.complete('training').status_code, 400)
-        Submission.objects.create(quiz=self.quiz, student=self.users['employee'], score=6, max_score=10)
-        self.assertEqual(self.complete('training').status_code, 400)
-        submission = Submission.objects.get(quiz=self.quiz)
-        submission.score = 8
-        submission.save()
-        self.assertEqual(self.complete('training').status_code, 200)
-        self.assertTrue(Enrollment.objects.filter(course=self.course, student=self.users['employee']).exists())
-        self.as_role('hr')
-        self.assertEqual(self.complete('ready').status_code, 400)
-        self.assertEqual(self.record.steps.get(key='training').evidence['confirmed'], True)
+    def test_form_key_must_exist(self):
+        with self.assertRaisesRegex(ValueError, 'Form has no blueprint step'):
+            validate_blueprint(self.blueprint, {**self.forms, 'absent': []})
 
-    def test_public_registration_cannot_claim_staff_role(self):
-        self.client.force_authenticate(user=None)
-        response = self.client.post('/api/auth/register/', {'username': 'selfregister', 'password': 'pass123456', 'role': 'hr'})
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(User.objects.get(username='selfregister').role, 'employee')
+    def test_unknown_role_and_kind(self):
+        for index, value, message in ((3, 'admin', 'Unknown role'), (4, 'quiz', 'Unknown kind')):
+            with self.subTest(value=value):
+                step = list(self.blueprint[0])
+                step[index] = value
+                with self.assertRaisesRegex(ValueError, message):
+                    validate_blueprint([tuple(step), self.blueprint[1]], self.forms)
 
-    def test_failed_assessment_can_be_retried_with_audit_record(self):
-        self.as_role('employee')
-        Submission.objects.create(quiz=self.quiz, student=self.users['employee'], score=0, max_score=10)
-        url = f'/api/onboarding/assessments/{self.quiz.pk}/retry/'
-        self.assertEqual(self.client.post(url).status_code, 200)
-        self.assertFalse(Submission.objects.filter(quiz=self.quiz, student=self.users['employee']).exists())
-        self.assertEqual(Event.objects.filter(action='assessment_retry').count(), 1)
-        self.assertEqual(self.client.post(url).status_code, 409)
+    def test_topological_order_valid(self):
+        self.assertEqual(validate_blueprint(self.blueprint, self.forms), ['first', 'second'])
 
-    def test_employee_completes_training_through_quiz_api(self):
-        question = Question.objects.create(quiz=self.quiz, question_type=Question.SINGLE_CHOICE, points=1,
-            body={'prompt': [{'type': 'paragraph', 'children': [{'text': 'Question'}]}],
-                  'options': [{'id': 'a', 'text': 'Yes'}, {'id': 'b', 'text': 'No'}], 'correct_option_ids': ['a']})
-        self.as_role('hr')
-        self.complete('profile')
-        self.as_role('it')
-        self.complete('access')
-        self.as_role('employee')
-        take = self.client.get(f'/api/quizzes/{self.quiz.pk}/take/')
-        self.assertEqual(take.status_code, 200)
-        self.assertNotIn('correct_option_ids', str(take.data))
-        result = self.client.post(f'/api/quizzes/{self.quiz.pk}/submit/',
-                                  {'answers': {str(question.pk): ['a']}}, format='json')
-        self.assertEqual(result.status_code, 201)
-        self.assertEqual(self.complete('training').status_code, 200)
+    def test_real_blueprint_valid(self):
+        order = validate_blueprint()
+        self.assertEqual(len(order), len(BLUEPRINT))
+        self.assertEqual(set(order), set(FORMS))
+        positions = {key: index for index, key in enumerate(order)}
+        for key, _title, _description, _role, _kind, _offset, prerequisites in BLUEPRINT:
+            for prerequisite in prerequisites:
+                self.assertLess(positions[prerequisite], positions[key])
+        self.assertEqual(BLUEPRINT_VERSION, 1)
+        self.assertEqual(CONNECTORS, ['workspace', 'slack', 'github'])
 
-    def test_overdue_scan_is_idempotent(self):
-        Step.objects.filter(pk=self.step('profile').pk).update(due_at=timezone.now() - timedelta(days=1))
-        self.assertEqual(scan_overdue(), 1)
-        self.assertEqual(scan_overdue(), 0)
-        self.assertEqual(Event.objects.filter(action='overdue').count(), 1)
 
-    def test_all_twenty_tasks_and_owner_boundaries(self):
-        self.assertEqual(self.record.steps.count(), 20)
-        self.assertEqual({role: self.record.steps.filter(owner_role=role).count()
-                          for role in ('hr', 'it', 'manager', 'employee')},
-                         {'hr': 5, 'it': 5, 'manager': 5, 'employee': 5})
-        self.as_role('hr')
-        self.complete('profile')
-        self.as_role('it')
-        self.assertEqual(self.complete('mentor').status_code, 403)
-        self.as_role('manager')
-        self.assertEqual(self.complete('mentor', {**self.evidence('mentor'), 'extra': 'true'}).status_code, 400)
-        self.assertEqual(self.complete('mentor').status_code, 200)
-        for key, _, _, role, _, _, _ in BLUEPRINT:
-            if key in ('profile', 'mentor'):
-                continue
-            if key == 'training':
-                Submission.objects.create(quiz=self.quiz, student=self.users['employee'], score=3, max_score=3)
-            self.as_role(role)
-            response = self.complete(key)
-            self.assertEqual(response.status_code, 200, f'{key}: {response.data}')
-        self.assertEqual(self.record.steps.filter(completed_at__isnull=True).count(), 0)
-        self.assertEqual(Event.objects.filter(action='completed').count(), 20)
+class ProvisioningContractTests(MongoTestCase):
+    def setUp(self):
+        schema = load_provisioning_schema()
+        Draft7Validator.check_schema(schema)
+        self.validator = Draft7Validator(schema, format_checker=FormatChecker())
 
-    def test_dates_are_bounded_and_rescheduling_is_hr_only(self):
-        self.as_role('hr')
-        url = f'/api/onboarding/workflows/{self.record.pk}/'
-        self.assertEqual(self.client.patch(url, {'start_date': '1111-01-01'}).status_code, 400)
-        self.as_role('employee')
-        self.assertEqual(self.client.patch(url, {'start_date': timezone.localdate().isoformat()}).status_code, 403)
-        self.as_role('hr')
-        new_date = timezone.localdate() + timedelta(days=15)
-        previous_due = self.step('profile').due_at
-        self.assertEqual(self.client.patch(url, {'start_date': new_date.isoformat()}).status_code, 200)
-        self.assertEqual(self.record.steps.get(key='profile').due_at - previous_due, timedelta(days=5))
-        self.assertEqual(Event.objects.filter(action='rescheduled').count(), 1)
-        self.client.patch(url, {'start_date': new_date.isoformat()})
-        self.assertEqual(Event.objects.filter(action='rescheduled').count(), 1)
+    def test_all_six_fixtures_validate(self):
+        examples = fixtures()
+        self.assertEqual(set(examples), {'pending', 'running', 'retry', 'succeeded', 'dead', 'overridden'})
+        for status, job in examples.items():
+            with self.subTest(status=status):
+                self.assertEqual(job['status'], status)
+                self.validator.validate(job)
 
-    def test_signup_and_task_page_cannot_bypass_role_or_missing_fields(self):
-        self.as_role('hr')
-        response = self.client.post('/api/onboarding/workflows/', {
-            'employee_id': self.other.pk, 'manager_id': self.users['manager'].pk,
-            'job_title': 'Engineer', 'department': 'Engineering', 'start_date': '1111-01-01',
-            'training_course_id': self.course.pk})
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(self.record.steps.filter(completed_at__isnull=False).count(), 0)
-        self.assertEqual(self.complete('profile', {'verified': True}).status_code, 400)
+    def test_create_workflow_rejects_fixture_with_duplicate_connectors(self):
+        document = json.loads((CONTRACT_PATH.parent / 'invalid_workflow_duplicate_connectors.json').read_text())
+        for job in document['provisioning']:
+            self.validator.validate(job)
+        employee = make_user('duplicate_contract_employee', 'employee')
+        manager = make_user('duplicate_contract_manager', 'manager')
+        hr = make_user('duplicate_contract_hr', 'hr')
+        connectors = [job['connector'] for job in document['provisioning']]
+        before = get_db()['workflow_instances'].count_documents({})
+        with mock.patch.object(repository, 'CONNECTORS', connectors):
+            with self.assertRaises(repository.ValidationError) as caught:
+                repository.create_workflow(actor=actor_of(hr), employee_id=employee['_id'], manager_id=manager['_id'],
+                                           job_title='Engineer', department='Engineering', start_date=datetime.now(UTC).date())
+        self.assertIn('provisioning', caught.exception.detail)
+        self.assertEqual(get_db()['workflow_instances'].count_documents({}), before)
 
-    def test_other_manager_and_employee_cannot_complete_or_read_tasks(self):
-        manager2 = User.objects.create_user(username='other_manager', password='pass123456', role='manager')
-        other_record = create_onboarding(employee=self.other, manager=manager2, creator=self.users['hr'],
-            job_title='Analyst', department='Operations', start_date=timezone.localdate(), course=self.course)
-        other_step = other_record.steps.get(key='mentor')
-        other_employee_step = other_record.steps.get(key='contact')
-        self.as_role('manager')
-        self.assertEqual(self.client.get(f'/api/onboarding/steps/{other_step.pk}/').status_code, 404)
-        self.assertEqual(self.client.post(f'/api/onboarding/steps/{other_step.pk}/complete/',
-                             {'evidence': self.evidence('mentor')}, format='json').status_code, 403)
-        self.as_role('employee')
-        self.assertEqual(self.client.get(f'/api/onboarding/steps/{other_employee_step.pk}/').status_code, 404)
-        self.assertEqual(self.client.post(f'/api/onboarding/steps/{other_employee_step.pk}/complete/',
-                             {'evidence': self.evidence('contact')}, format='json').status_code, 403)
+    def test_contract_rejects_missing_unknown_and_malformed_fields(self):
+        pending = fixtures()['pending']
+        invalid = []
+        for key in pending:
+            job = deepcopy(pending)
+            del job[key]
+            invalid.append(job)
+        for key, value in (
+            ('unexpected', True), ('connector', 'unknown'), ('status', 'unknown'),
+            ('attempts', -1), ('attempts', 1.5), ('fence', -1),
+            ('updated_at', None), ('updated_at', 'not-a-date'),
+            ('lease_until', 'not-a-date'), ('next_attempt_at', 'not-a-date'),
+            ('payload', {'username': 'missing-fields'}), ('idempotency_key', 'invalid'),
+        ):
+            invalid.append({**pending, key: value})
+        for job in invalid:
+            with self.subTest(job=job):
+                with self.assertRaises(ValidationError):
+                    self.validator.validate(job)
 
-    def test_rejects_invalid_evidence_without_changing_task(self):
-        self.as_role('hr')
-        self.assertEqual(self.complete('profile', {'verification': 'Forged', 'verified': True}).status_code, 400)
-        self.assertEqual(self.complete('profile', {'verification': 'HR records', 'verified': False}).status_code, 400)
-        self.assertEqual(self.complete('profile', {'verification': 'HR records', 'verified': 'true'}).status_code, 400)
-        self.assertEqual(self.complete('profile', {'verification': 'HR records', 'verified': True,
-                                                   'notes': 'A' * 100000}).status_code, 400)
-        self.assertEqual(Event.objects.filter(action='completed').count(), 0)
-        self.assertIsNone(self.record.steps.get(key='profile').completed_at)
 
-    def test_training_progress_is_visible_to_its_employee_only(self):
-        second_quiz = Quiz.objects.create(course=self.course, title='Another check', is_published=True)
-        Submission.objects.create(quiz=self.quiz, student=self.users['employee'], score=8, max_score=10)
-        url = f'/api/onboarding/steps/{self.step("training").pk}/'
-        self.as_role('employee')
-        result = self.client.get(url)
-        self.assertEqual(result.status_code, 200)
-        self.assertEqual(len(result.data['assessments']), 2)
-        self.assertTrue(next(row for row in result.data['assessments'] if row['id'] == self.quiz.pk)['passed'])
-        self.assertIsNone(next(row for row in result.data['assessments'] if row['id'] == second_quiz.pk)['score'])
-        self.as_role('it')
-        self.assertEqual(self.client.get(url).data['assessments'], [])
+class IndexAndValidatorTests(MongoTestCase):
+    def setUp(self):
+        ensure_indexes()
+        self.instances = get_db()['workflow_instances']
 
-    def test_workflow_list_prefetches_related_tasks(self):
-        self.as_role('hr')
-        for number in range(2):
-            employee = User.objects.create_user(username=f'new_hire_{number}', password='pass123456', role='employee')
-            create_onboarding(employee=employee, manager=self.users['manager'], creator=self.users['hr'],
-                              job_title='Engineer', department='Ops', start_date=timezone.localdate(), course=self.course)
-        with CaptureQueriesContext(connection) as queries:
-            response = self.client.get('/api/onboarding/workflows/')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data['results']), 3)
-        self.assertLessEqual(len(queries), 15)
+    def test_ensure_indexes_twice_is_clean(self):
+        before = self.instances.index_information()
+        options = self.instances.options()
+        call_command('ensure_indexes', stdout=StringIO())
+        call_command('ensure_indexes', stdout=StringIO())
+        self.assertEqual(self.instances.index_information(), before)
+        self.assertEqual(self.instances.options(), options)
+        self.assertTrue(get_users().index_information()['username_1']['unique'])
+        self.assertEqual({tuple(index['key']) for index in before.values()}, {
+            (('_id', 1),), (('employee_id', 1),), (('manager_id', 1),),
+            (('created_at', -1),), (('provisioning.status', 1), ('provisioning.next_attempt_at', 1)),
+        })
 
-    def test_simulation_proof_is_server_owned_and_legacy_evidence_preserved(self):
-        self.as_role('hr')
-        self.assertEqual(self.complete('profile', {'review': 'Match demo profile', '_proof': {'mode': 'verified'}}).status_code, 400)
-        self.assertEqual(self.complete('profile').status_code, 200)
-        proof = self.step('profile').evidence['_proof']
-        self.assertEqual(proof['mode'], 'simulation')
-        self.assertEqual(proof['profile']['employee'], 'employee')
-        self.as_role('it')
-        self.assertEqual(self.complete('equipment').status_code, 200)
-        self.assertEqual(self.complete('endpoint').status_code, 200)
-        self.assertEqual(self.step('equipment').evidence['_proof']['asset'], self.step('endpoint').evidence['_proof']['asset'])
-        old = {'ticket': 'historical-reference'}
-        Step.objects.filter(pk=self.step('access').pk).update(completed_at=timezone.now(), evidence=old)
-        self.assertFalse(self.complete('access').data['changed'])
-        self.assertEqual(self.step('access').evidence, old)
-        self.assertEqual(self.client.get(f'/api/onboarding/steps/{self.step("access").pk}/').data['step']['completion_mode'], 'legacy_unverified')
+    def test_employee_index_is_unique_and_upgrades_an_old_plain_index(self):
+        self.assertTrue(self.instances.index_information()['employee_id_1']['unique'])
+        self.instances.drop_index('employee_id_1')
+        self.instances.create_index('employee_id')
+        self.assertNotIn('unique', self.instances.index_information()['employee_id_1'])
+        ensure_indexes()
+        info = self.instances.index_information()['employee_id_1']
+        self.assertTrue(info['unique'])
+        self.assertEqual(info['partialFilterExpression'], {'employee_id': {'$type': 'objectId'}})
 
-    def test_lesson_acknowledgments_required_and_idempotent(self):
-        self.as_role('hr'); self.complete('profile')
-        self.as_role('it'); self.complete('access')
-        Submission.objects.create(quiz=self.quiz, student=self.users['employee'], score=3, max_score=3)
-        self.record.lesson_reviews.all().delete()
-        self.as_role('employee')
-        self.assertEqual(self.complete('training').status_code, 400)
-        url = f'/api/onboarding/lessons/{self.chapter.pk}/review/'
-        self.assertEqual(self.client.post(url, {'acknowledged': 'true'}, format='json').status_code, 400)
-        self.client.force_authenticate(user=self.other)
-        self.assertEqual(self.client.post(url, {'acknowledged': True}, format='json').status_code, 404)
-        self.as_role('employee')
-        for _ in range(2):
-            self.assertEqual(self.client.post(url, {'acknowledged': True}, format='json').status_code, 200)
-        self.assertEqual(Event.objects.filter(action='lesson_acknowledged').count(), 1)
-        self.assertEqual(self.complete('training').status_code, 200)
+    def test_ensure_indexes_updates_existing_validator(self):
+        get_db().command('collMod', 'workflow_instances', validator={})
+        ensure_indexes()
+        self.assertIn('$jsonSchema', self.instances.options()['validator'])
 
-    def test_failed_attempt_retained_and_pass_is_exact(self):
-        self.as_role('employee')
-        submission = Submission.objects.create(quiz=self.quiz, student=self.users['employee'], score=139, max_score=200, answers={'1': ['a']})
-        result = self.client.get(f'/api/quizzes/{self.quiz.pk}/my-result/').data
-        self.assertFalse(result['passed'])  # 69.5% must not be rounded into a pass.
-        self.assertEqual(self.client.post(f'/api/onboarding/assessments/{self.quiz.pk}/retry/').status_code, 200)
-        archived = AssessmentAttempt.objects.get()
-        self.assertEqual(archived.answers, submission.answers)
-        self.assertEqual(archived.score, 139)
-        Submission.objects.create(quiz=self.quiz, student=self.users['employee'], score=140, max_score=200)
-        self.assertEqual(self.client.post(f'/api/onboarding/assessments/{self.quiz.pk}/retry/').status_code, 409)
+    def test_mongo_accepts_every_fixture_with_bson_dates(self):
+        for status, job in fixtures().items():
+            with self.subTest(status=status):
+                result = self.instances.insert_one({'provisioning': [bson_job(job)]})
+                stored = self.instances.find_one({'_id': result.inserted_id})
+                self.assertIsInstance(stored['_id'], ObjectId)
+                self.assertEqual(stored['provisioning'][0]['updated_at'].tzinfo, UTC)
 
-    def test_forged_quiz_score_and_malformed_answer(self):
-        q = Question.objects.create(quiz=self.quiz, question_type=Question.SINGLE_CHOICE, points=1,
-            body={'options': [{'id': 'a', 'text': 'Answer'}], 'correct_option_ids': ['a']})
-        self.as_role('employee')
-        url = f'/api/quizzes/{self.quiz.pk}/submit/'
-        self.assertEqual(self.client.post(url, {'answers': {}, 'score': 100}, format='json').status_code, 400)
-        response = self.client.post(url, {'answers': {str(q.pk): [{}]}}, format='json')
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data['score'], 0)
-        self.assertEqual(self.client.post(url, {'answers': {str(q.pk): ['a']}}, format='json').data['score'], 0)
-        self.assertEqual(Event.objects.filter(action='assessment_submitted').count(), 1)
+    def test_mongo_rejects_malformed_provisioning_on_insert(self):
+        pending = bson_job(fixtures()['pending'])
+        malformed = [{}, {'connector': 'workspace'}]
+        for key in pending:
+            job = deepcopy(pending)
+            del job[key]
+            malformed.append(job)
+        for key, value in (
+            ('status', 'unknown'), ('connector', 'unknown'), ('attempts', -1),
+            ('attempts', 0.5), ('fence', -1), ('fence', True),
+            ('updated_at', '2026-01-01T00:00:00Z'), ('updated_at', None),
+            ('lease_until', '2026-01-01T00:00:00Z'),
+            ('next_attempt_at', '2026-01-01T00:00:00Z'),
+            ('payload', {'username': 'missing-fields'}), ('unexpected', 'field'),
+        ):
+            malformed.append({**pending, key: value})
+        for job in malformed:
+            with self.subTest(job=job):
+                with self.assertRaises(WriteError) as caught:
+                    self.instances.insert_one({'provisioning': [job]})
+                self.assertEqual(caught.exception.code, 121)
 
-    def test_final_signoff_checks_all_tasks_and_open_issues(self):
-        # Even legacy/incomplete dependency graphs cannot bypass the all-task gate.
-        self.step('ready').prerequisites.clear()
-        self.as_role('hr')
-        self.assertEqual(self.complete('ready').status_code, 400)
-        self.record.steps.exclude(key__in=['ready', 'receipt']).update(completed_at=timezone.now())
-        self.as_role('employee')
-        self.assertEqual(self.complete('receipt', {'condition': 'Needs support'}).status_code, 200)
-        issue = Issue.objects.get()
-        self.as_role('hr')
-        self.assertEqual(self.complete('ready').status_code, 400)
-        self.as_role('it')
-        url = f'/api/onboarding/issues/{issue.pk}/resolve/'
-        self.assertEqual(self.client.post(url, {'resolution': 'Replaced demo device'}).status_code, 403)
-        self.as_role('hr')
-        self.assertEqual(self.client.post(url, {'resolution': 'ok'}).status_code, 400)
-        self.assertTrue(self.client.post(url, {'resolution': 'Replaced demo device'}).data['changed'])
-        self.assertFalse(self.client.post(url, {'resolution': 'Replaced demo device'}).data['changed'])
-        self.assertEqual(self.complete('ready').status_code, 200)
-        self.assertEqual(len(self.step('ready').evidence['_proof']['reviewed_tasks']), 19)
+    def test_mongo_rejects_invalid_container_and_object_id(self):
+        for document in ({}, {'provisioning': {}}, {'provisioning': None}, {'_id': 'invalid', 'provisioning': []}):
+            with self.subTest(document=document):
+                with self.assertRaises(WriteError) as caught:
+                    self.instances.insert_one(document)
+                self.assertEqual(caught.exception.code, 121)
 
-    def test_year_1111_requires_explicit_hr_correction(self):
-        from datetime import date
-        Onboarding.objects.filter(pk=self.record.pk).update(start_date=date(1111, 11, 11))
-        self.as_role('hr')
-        self.assertTrue(self.client.get(f'/api/onboarding/workflows/{self.record.pk}/').data['date_needs_correction'])
-        self.assertEqual(self.complete('profile').status_code, 400)
-        self.client.patch(f'/api/onboarding/workflows/{self.record.pk}/', {'start_date': timezone.localdate().isoformat()})
-        self.assertEqual(self.complete('profile').status_code, 200)
+    def test_mongo_validator_applies_to_updates(self):
+        result = self.instances.insert_one({'provisioning': [bson_job(fixtures()['pending'])]})
+        with self.assertRaises(WriteError) as caught:
+            self.instances.update_one({'_id': result.inserted_id}, {'$set': {'provisioning.0.status': 'unknown'}})
+        self.assertEqual(caught.exception.code, 121)
+
+
+class SeedLaunchOpsTests(MongoTestCase):
+    def setUp(self):
+        get_users().delete_many({})
 
     @override_settings(DEBUG=True)
-    def test_seed_is_repeatable_and_preserves_existing_records(self):
-        from django.core.management import call_command
-        from io import StringIO
+    def test_seed_twice_is_clean_and_preserves_credentials(self):
         call_command('seed_launchops', stdout=StringIO())
-        employee = User.objects.get(username='demo_employee')
-        record = Onboarding.objects.get(employee=employee)
-        profile = record.steps.get(key='profile')
-        profile.evidence = {'old': 'preserve me'}
-        profile.completed_at = timezone.now()
-        profile.save()
-        snapshots = (User.objects.count(), Course.objects.count(), Chapter.objects.count(), Quiz.objects.count(), Question.objects.count(), Onboarding.objects.count(), Step.objects.count(), Event.objects.count(), employee.password)
+        before = list(get_users().find().sort('username', 1))
+        self.assertEqual(len(before), 4)
+        self.assertEqual({user['role'] for user in before}, {'hr', 'it', 'manager', 'employee'})
+        for user in before:
+            self.assertEqual(user['username'], f'demo_{user["role"]}')
+            self.assertTrue(user['display_name'])
+            self.assertTrue(check_password(PASSWORD, user['password']))
+        user = before[0]
+        changed_password = make_password('changed password')
+        get_users().update_one({'_id': user['_id']}, {'$set': {'password': changed_password}})
+        user['password'] = changed_password
         call_command('seed_launchops', stdout=StringIO())
-        self.assertEqual(snapshots, (User.objects.count(), Course.objects.count(), Chapter.objects.count(), Quiz.objects.count(), Question.objects.count(), Onboarding.objects.count(), Step.objects.count(), Event.objects.count(), User.objects.get(pk=employee.pk).password))
-        profile.refresh_from_db()
-        self.assertEqual(profile.evidence, {'old': 'preserve me'})
-        self.assertIsNotNone(profile.completed_at)
+        self.assertEqual(list(get_users().find().sort('username', 1)), before)
+        self.assertIn('validator', get_db()['workflow_instances'].options())
 
-    def test_task_detail_query_budget(self):
-        self.as_role('employee')
-        with CaptureQueriesContext(connection) as queries:
-            response = self.client.get(f'/api/onboarding/steps/{self.step("training").pk}/')
-        self.assertEqual(response.status_code, 200)
-        self.assertLessEqual(len(queries), 12)
+    @override_settings(DEBUG=False)
+    def test_seed_refuses_outside_debug_without_writes(self):
+        before = get_db().list_collection_names()
+        with self.assertRaisesRegex(CommandError, 'DEBUG=True'):
+            call_command('seed_launchops', stdout=StringIO())
+        self.assertEqual(get_users().count_documents({}), 0)
+        self.assertEqual(get_db().list_collection_names(), before)
 
     @override_settings(DEBUG=True)
-    def test_seed_incident_answers_are_safe_and_existing_publication_is_preserved(self):
-        from django.core.management import call_command
-        from io import StringIO
-        call_command('seed_launchops', stdout=StringIO())
-        quiz = Quiz.objects.get(title='Incident response check')
-        for q in quiz.questions.all():
-            correct = [o['text'] for o in q.body['options'] if o['id'] in q.body['correct_option_ids']]
-            self.assertNotIn('Your password', correct)
-            self.assertNotIn('A public social post', correct)
-        quiz.is_published = False
-        quiz.save()
-        call_command('seed_launchops', stdout=StringIO())
-        quiz.refresh_from_db()
-        self.assertFalse(quiz.is_published)
+    def test_seed_refuses_role_collision_before_creating_users(self):
+        get_users().insert_one({'username': 'demo_manager', 'role': 'employee', 'password': 'unchanged'})
+        with self.assertRaisesRegex(CommandError, 'collision'):
+            call_command('seed_launchops', stdout=StringIO())
+        self.assertEqual(get_users().count_documents({}), 1)
+        self.assertEqual(get_users().find_one({'username': 'demo_manager'})['role'], 'employee')
 
-    def test_training_track_repair_is_hr_only_and_preserves_completed_training(self):
-        self.record.training_course = None
-        self.record.save()
-        url = f'/api/onboarding/workflows/{self.record.pk}/'
-        self.as_role('employee')
-        self.assertEqual(self.client.patch(url, {'training_course_id': self.course.pk}).status_code, 403)
-        self.as_role('hr')
-        self.assertEqual(self.client.patch(url, {'training_course_id': self.course.pk}).status_code, 200)
-        self.assertEqual(Event.objects.filter(action='track_assigned').count(), 1)
-        self.client.patch(url, {'training_course_id': self.course.pk})
-        self.assertEqual(Event.objects.filter(action='track_assigned').count(), 1)
-        second = Course.objects.create(title='Another track', instructor=self.editor, is_published=True)
-        self.assertEqual(self.client.patch(url, {'training_course_id': second.pk}).status_code, 400)
-        self.record.steps.filter(key='training').update(completed_at=timezone.now())
-        self.assertEqual(self.client.patch(url, {'training_course_id': second.pk}).status_code, 400)
-
-    def test_attendance_cannot_be_future_dated(self):
-        self.record.steps.filter(key__in=['equipment', 'mentor']).update(completed_at=timezone.now())
-        self.as_role('manager')
-        data = self.evidence('welcome')
-        data['session_date'] = (timezone.localdate() + timedelta(days=1)).isoformat()
-        self.assertEqual(self.complete('welcome', data).status_code, 400)
+    @override_settings(DEBUG=True)
+    def test_seed_enforces_unique_usernames(self):
+        call_command('seed_launchops', stdout=StringIO())
+        with self.assertRaises(DuplicateKeyError):
+            get_users().insert_one({'username': 'demo_employee', 'role': 'employee'})

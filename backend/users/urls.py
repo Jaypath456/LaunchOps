@@ -1,9 +1,8 @@
 from django.urls import path
-from . import views
+from onboarding import auth
 
 urlpatterns = [
-    path('register/', views.register),
-    path('login/', views.login),
-    path('refresh/', views.SessionRefreshView.as_view()),
-    path('me/', views.me),
+    path('login/', auth.login),
+    path('refresh/', auth.SessionRefreshView.as_view()),
+    path('me/', auth.me),
 ]

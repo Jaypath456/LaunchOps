@@ -1,0 +1,12 @@
+{
+  "hires": 100,
+  "replicas": 3,
+  "kill_every": 10.0,
+  "timeout": 900.0,
+  "error_rate": 0.2,
+  "hang_rate": 0.05,
+  "drop_rate": 0.1,
+  "run_id": "run-1",
+  "project": "launchops-chaos",
+  "mongo_volume": "launchops-chaos-run-1-01bc1b393e7744828e86a3e0182e920d"
+}

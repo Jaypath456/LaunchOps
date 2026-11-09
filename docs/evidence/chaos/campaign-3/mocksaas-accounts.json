@@ -1,0 +1,2543 @@
+[
+  {
+    "external_ref": "6af15b8ecfec60965693dfe1",
+    "connector": "slack",
+    "username": "chaos-employee-0001",
+    "display_name": "chaos-employee-0001",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b8ecfec60965693dfe3",
+    "connector": "slack",
+    "username": "chaos-employee-0002",
+    "display_name": "chaos-employee-0002",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b8ecfec60965693dfe5",
+    "connector": "github",
+    "username": "chaos-employee-0001",
+    "display_name": "chaos-employee-0001",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b8ecfec60965693dfe7",
+    "connector": "workspace",
+    "username": "chaos-employee-0002",
+    "display_name": "chaos-employee-0002",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b8ecfec60965693dfe9",
+    "connector": "workspace",
+    "username": "chaos-employee-0004",
+    "display_name": "chaos-employee-0004",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b8fcfec60965693dfeb",
+    "connector": "github",
+    "username": "chaos-employee-0002",
+    "display_name": "chaos-employee-0002",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b90cfec60965693dfed",
+    "connector": "github",
+    "username": "chaos-employee-0004",
+    "display_name": "chaos-employee-0004",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b90cfec60965693dfef",
+    "connector": "slack",
+    "username": "chaos-employee-0004",
+    "display_name": "chaos-employee-0004",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b90cfec60965693dff1",
+    "connector": "slack",
+    "username": "chaos-employee-0003",
+    "display_name": "chaos-employee-0003",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b90cfec60965693dff3",
+    "connector": "workspace",
+    "username": "chaos-employee-0003",
+    "display_name": "chaos-employee-0003",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b91cfec60965693dff5",
+    "connector": "github",
+    "username": "demo_employee",
+    "display_name": "Demo Employee",
+    "department": "Engineering"
+  },
+  {
+    "external_ref": "6af15b91cfec60965693dff7",
+    "connector": "workspace",
+    "username": "chaos-employee-0007",
+    "display_name": "chaos-employee-0007",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b91cfec60965693dff9",
+    "connector": "github",
+    "username": "chaos-employee-0003",
+    "display_name": "chaos-employee-0003",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b91cfec60965693dffb",
+    "connector": "workspace",
+    "username": "chaos-employee-0005",
+    "display_name": "chaos-employee-0005",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b91cfec60965693dffd",
+    "connector": "github",
+    "username": "chaos-employee-0007",
+    "display_name": "chaos-employee-0007",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b92cfec60965693dfff",
+    "connector": "github",
+    "username": "chaos-employee-0005",
+    "display_name": "chaos-employee-0005",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b93cfec60965693e001",
+    "connector": "github",
+    "username": "chaos-employee-0009",
+    "display_name": "chaos-employee-0009",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b93cfec60965693e003",
+    "connector": "github",
+    "username": "chaos-employee-0006",
+    "display_name": "chaos-employee-0006",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b94cfec60965693e005",
+    "connector": "slack",
+    "username": "chaos-employee-0007",
+    "display_name": "chaos-employee-0007",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b94cfec60965693e007",
+    "connector": "workspace",
+    "username": "chaos-employee-0008",
+    "display_name": "chaos-employee-0008",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b94cfec60965693e009",
+    "connector": "github",
+    "username": "chaos-employee-0010",
+    "display_name": "chaos-employee-0010",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b95cfec60965693e00b",
+    "connector": "slack",
+    "username": "chaos-employee-0006",
+    "display_name": "chaos-employee-0006",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b96cfec60965693e00d",
+    "connector": "workspace",
+    "username": "chaos-employee-0010",
+    "display_name": "chaos-employee-0010",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b96cfec60965693e00f",
+    "connector": "slack",
+    "username": "chaos-employee-0012",
+    "display_name": "chaos-employee-0012",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b96cfec60965693e011",
+    "connector": "github",
+    "username": "chaos-employee-0008",
+    "display_name": "chaos-employee-0008",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b96cfec60965693e012",
+    "connector": "slack",
+    "username": "chaos-employee-0008",
+    "display_name": "chaos-employee-0008",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b96cfec60965693e015",
+    "connector": "workspace",
+    "username": "chaos-employee-0011",
+    "display_name": "chaos-employee-0011",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b97cfec60965693e017",
+    "connector": "slack",
+    "username": "chaos-employee-0011",
+    "display_name": "chaos-employee-0011",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b97cfec60965693e019",
+    "connector": "slack",
+    "username": "chaos-employee-0015",
+    "display_name": "chaos-employee-0015",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b97cfec60965693e01b",
+    "connector": "slack",
+    "username": "chaos-employee-0013",
+    "display_name": "chaos-employee-0013",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b98cfec60965693e01d",
+    "connector": "slack",
+    "username": "chaos-employee-0014",
+    "display_name": "chaos-employee-0014",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b98cfec60965693e01f",
+    "connector": "github",
+    "username": "chaos-employee-0011",
+    "display_name": "chaos-employee-0011",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b99cfec60965693e021",
+    "connector": "github",
+    "username": "chaos-employee-0016",
+    "display_name": "chaos-employee-0016",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b99cfec60965693e023",
+    "connector": "github",
+    "username": "chaos-employee-0015",
+    "display_name": "chaos-employee-0015",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b9acfec60965693e025",
+    "connector": "slack",
+    "username": "chaos-employee-0018",
+    "display_name": "chaos-employee-0018",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b9acfec60965693e027",
+    "connector": "github",
+    "username": "chaos-employee-0014",
+    "display_name": "chaos-employee-0014",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b9acfec60965693e029",
+    "connector": "workspace",
+    "username": "chaos-employee-0017",
+    "display_name": "chaos-employee-0017",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b9bcfec60965693e02b",
+    "connector": "slack",
+    "username": "chaos-employee-0019",
+    "display_name": "chaos-employee-0019",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b9ccfec60965693e02d",
+    "connector": "workspace",
+    "username": "chaos-employee-0019",
+    "display_name": "chaos-employee-0019",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b9ccfec60965693e02f",
+    "connector": "github",
+    "username": "chaos-employee-0018",
+    "display_name": "chaos-employee-0018",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b9dcfec60965693e031",
+    "connector": "workspace",
+    "username": "chaos-employee-0022",
+    "display_name": "chaos-employee-0022",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b9dcfec60965693e033",
+    "connector": "github",
+    "username": "chaos-employee-0022",
+    "display_name": "chaos-employee-0022",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b9ecfec60965693e035",
+    "connector": "workspace",
+    "username": "chaos-employee-0021",
+    "display_name": "chaos-employee-0021",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b9fcfec60965693e037",
+    "connector": "github",
+    "username": "chaos-employee-0017",
+    "display_name": "chaos-employee-0017",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15b9fcfec60965693e039",
+    "connector": "workspace",
+    "username": "chaos-employee-0020",
+    "display_name": "chaos-employee-0020",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba0cfec60965693e03b",
+    "connector": "workspace",
+    "username": "chaos-employee-0024",
+    "display_name": "chaos-employee-0024",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba0cfec60965693e03d",
+    "connector": "slack",
+    "username": "chaos-employee-0025",
+    "display_name": "chaos-employee-0025",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba0cfec60965693e03e",
+    "connector": "workspace",
+    "username": "chaos-employee-0025",
+    "display_name": "chaos-employee-0025",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba0cfec60965693e041",
+    "connector": "github",
+    "username": "chaos-employee-0024",
+    "display_name": "chaos-employee-0024",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba1cfec60965693e043",
+    "connector": "slack",
+    "username": "chaos-employee-0024",
+    "display_name": "chaos-employee-0024",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba2cfec60965693e045",
+    "connector": "slack",
+    "username": "chaos-employee-0026",
+    "display_name": "chaos-employee-0026",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba2cfec60965693e046",
+    "connector": "github",
+    "username": "chaos-employee-0019",
+    "display_name": "chaos-employee-0019",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba3cfec60965693e049",
+    "connector": "github",
+    "username": "chaos-employee-0025",
+    "display_name": "chaos-employee-0025",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba3cfec60965693e04b",
+    "connector": "github",
+    "username": "chaos-employee-0028",
+    "display_name": "chaos-employee-0028",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba3cfec60965693e04d",
+    "connector": "workspace",
+    "username": "chaos-employee-0026",
+    "display_name": "chaos-employee-0026",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba3cfec60965693e04e",
+    "connector": "slack",
+    "username": "chaos-employee-0028",
+    "display_name": "chaos-employee-0028",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba4cfec60965693e051",
+    "connector": "workspace",
+    "username": "chaos-employee-0029",
+    "display_name": "chaos-employee-0029",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba4cfec60965693e052",
+    "connector": "slack",
+    "username": "chaos-employee-0023",
+    "display_name": "chaos-employee-0023",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba5cfec60965693e055",
+    "connector": "workspace",
+    "username": "chaos-employee-0031",
+    "display_name": "chaos-employee-0031",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba5cfec60965693e057",
+    "connector": "slack",
+    "username": "chaos-employee-0029",
+    "display_name": "chaos-employee-0029",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba5cfec60965693e059",
+    "connector": "github",
+    "username": "chaos-employee-0027",
+    "display_name": "chaos-employee-0027",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba5cfec60965693e05b",
+    "connector": "slack",
+    "username": "chaos-employee-0030",
+    "display_name": "chaos-employee-0030",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba6cfec60965693e05d",
+    "connector": "github",
+    "username": "chaos-employee-0029",
+    "display_name": "chaos-employee-0029",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba6cfec60965693e05f",
+    "connector": "workspace",
+    "username": "chaos-employee-0027",
+    "display_name": "chaos-employee-0027",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba6cfec60965693e061",
+    "connector": "workspace",
+    "username": "chaos-employee-0033",
+    "display_name": "chaos-employee-0033",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba6cfec60965693e062",
+    "connector": "github",
+    "username": "chaos-employee-0030",
+    "display_name": "chaos-employee-0030",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba6cfec60965693e063",
+    "connector": "github",
+    "username": "chaos-employee-0032",
+    "display_name": "chaos-employee-0032",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba7cfec60965693e067",
+    "connector": "slack",
+    "username": "chaos-employee-0034",
+    "display_name": "chaos-employee-0034",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba7cfec60965693e068",
+    "connector": "slack",
+    "username": "chaos-employee-0032",
+    "display_name": "chaos-employee-0032",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba8cfec60965693e06b",
+    "connector": "github",
+    "username": "chaos-employee-0033",
+    "display_name": "chaos-employee-0033",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba8cfec60965693e06d",
+    "connector": "workspace",
+    "username": "chaos-employee-0030",
+    "display_name": "chaos-employee-0030",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba9cfec60965693e06f",
+    "connector": "slack",
+    "username": "chaos-employee-0035",
+    "display_name": "chaos-employee-0035",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba9cfec60965693e071",
+    "connector": "workspace",
+    "username": "chaos-employee-0035",
+    "display_name": "chaos-employee-0035",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15ba9cfec60965693e073",
+    "connector": "slack",
+    "username": "chaos-employee-0036",
+    "display_name": "chaos-employee-0036",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15baacfec60965693e075",
+    "connector": "github",
+    "username": "chaos-employee-0034",
+    "display_name": "chaos-employee-0034",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15baacfec60965693e077",
+    "connector": "workspace",
+    "username": "chaos-employee-0036",
+    "display_name": "chaos-employee-0036",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15babcfec60965693e079",
+    "connector": "slack",
+    "username": "chaos-employee-0038",
+    "display_name": "chaos-employee-0038",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15babcfec60965693e07b",
+    "connector": "github",
+    "username": "chaos-employee-0036",
+    "display_name": "chaos-employee-0036",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15babcfec60965693e07d",
+    "connector": "workspace",
+    "username": "chaos-employee-0037",
+    "display_name": "chaos-employee-0037",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15baccfec60965693e07f",
+    "connector": "slack",
+    "username": "chaos-employee-0040",
+    "display_name": "chaos-employee-0040",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15badcfec60965693e081",
+    "connector": "workspace",
+    "username": "chaos-employee-0034",
+    "display_name": "chaos-employee-0034",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15badcfec60965693e082",
+    "connector": "slack",
+    "username": "chaos-employee-0041",
+    "display_name": "chaos-employee-0041",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15badcfec60965693e085",
+    "connector": "github",
+    "username": "chaos-employee-0038",
+    "display_name": "chaos-employee-0038",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15baecfec60965693e087",
+    "connector": "slack",
+    "username": "chaos-employee-0042",
+    "display_name": "chaos-employee-0042",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15baecfec60965693e088",
+    "connector": "workspace",
+    "username": "chaos-employee-0041",
+    "display_name": "chaos-employee-0041",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15baecfec60965693e08b",
+    "connector": "slack",
+    "username": "chaos-employee-0039",
+    "display_name": "chaos-employee-0039",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15baecfec60965693e08d",
+    "connector": "github",
+    "username": "chaos-employee-0041",
+    "display_name": "chaos-employee-0041",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15baecfec60965693e08f",
+    "connector": "workspace",
+    "username": "chaos-employee-0040",
+    "display_name": "chaos-employee-0040",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bafcfec60965693e091",
+    "connector": "workspace",
+    "username": "chaos-employee-0039",
+    "display_name": "chaos-employee-0039",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bafcfec60965693e093",
+    "connector": "workspace",
+    "username": "chaos-employee-0042",
+    "display_name": "chaos-employee-0042",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bafcfec60965693e095",
+    "connector": "workspace",
+    "username": "chaos-employee-0043",
+    "display_name": "chaos-employee-0043",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb0cfec60965693e097",
+    "connector": "slack",
+    "username": "chaos-employee-0044",
+    "display_name": "chaos-employee-0044",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb0cfec60965693e098",
+    "connector": "github",
+    "username": "chaos-employee-0042",
+    "display_name": "chaos-employee-0042",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb1cfec60965693e09c",
+    "connector": "github",
+    "username": "chaos-employee-0044",
+    "display_name": "chaos-employee-0044",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb1cfec60965693e09f",
+    "connector": "slack",
+    "username": "chaos-employee-0043",
+    "display_name": "chaos-employee-0043",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb1cfec60965693e0a1",
+    "connector": "github",
+    "username": "chaos-employee-0045",
+    "display_name": "chaos-employee-0045",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb1cfec60965693e0a3",
+    "connector": "workspace",
+    "username": "chaos-employee-0047",
+    "display_name": "chaos-employee-0047",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb2cfec60965693e0a5",
+    "connector": "workspace",
+    "username": "chaos-employee-0044",
+    "display_name": "chaos-employee-0044",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb2cfec60965693e0a7",
+    "connector": "slack",
+    "username": "chaos-employee-0046",
+    "display_name": "chaos-employee-0046",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb3cfec60965693e0a9",
+    "connector": "github",
+    "username": "chaos-employee-0046",
+    "display_name": "chaos-employee-0046",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb3cfec60965693e0aa",
+    "connector": "slack",
+    "username": "chaos-employee-0009",
+    "display_name": "chaos-employee-0009",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb4cfec60965693e0ad",
+    "connector": "github",
+    "username": "chaos-employee-0043",
+    "display_name": "chaos-employee-0043",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb5cfec60965693e0af",
+    "connector": "github",
+    "username": "chaos-employee-0049",
+    "display_name": "chaos-employee-0049",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb5cfec60965693e0b1",
+    "connector": "slack",
+    "username": "chaos-employee-0005",
+    "display_name": "chaos-employee-0005",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb5cfec60965693e0b2",
+    "connector": "slack",
+    "username": "chaos-employee-0050",
+    "display_name": "chaos-employee-0050",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb5cfec60965693e0b5",
+    "connector": "github",
+    "username": "chaos-employee-0047",
+    "display_name": "chaos-employee-0047",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb5cfec60965693e0b7",
+    "connector": "slack",
+    "username": "chaos-employee-0049",
+    "display_name": "chaos-employee-0049",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb6cfec60965693e0b9",
+    "connector": "slack",
+    "username": "chaos-employee-0051",
+    "display_name": "chaos-employee-0051",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb8cfec60965693e0bb",
+    "connector": "slack",
+    "username": "chaos-employee-0052",
+    "display_name": "chaos-employee-0052",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb8cfec60965693e0bc",
+    "connector": "github",
+    "username": "chaos-employee-0052",
+    "display_name": "chaos-employee-0052",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb8cfec60965693e0bf",
+    "connector": "github",
+    "username": "chaos-employee-0048",
+    "display_name": "chaos-employee-0048",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb8cfec60965693e0c1",
+    "connector": "workspace",
+    "username": "chaos-employee-0014",
+    "display_name": "chaos-employee-0014",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb8cfec60965693e0c3",
+    "connector": "workspace",
+    "username": "chaos-employee-0016",
+    "display_name": "chaos-employee-0016",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb8cfec60965693e0c5",
+    "connector": "workspace",
+    "username": "chaos-employee-0054",
+    "display_name": "chaos-employee-0054",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb8cfec60965693e0c7",
+    "connector": "slack",
+    "username": "chaos-employee-0053",
+    "display_name": "chaos-employee-0053",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bb9cfec60965693e0c9",
+    "connector": "github",
+    "username": "chaos-employee-0053",
+    "display_name": "chaos-employee-0053",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bbbcfec60965693e0cb",
+    "connector": "slack",
+    "username": "chaos-employee-0016",
+    "display_name": "chaos-employee-0016",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bbbcfec60965693e0cc",
+    "connector": "github",
+    "username": "chaos-employee-0012",
+    "display_name": "chaos-employee-0012",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bbbcfec60965693e0d1",
+    "connector": "github",
+    "username": "chaos-employee-0050",
+    "display_name": "chaos-employee-0050",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bbccfec60965693e0d5",
+    "connector": "workspace",
+    "username": "chaos-employee-0053",
+    "display_name": "chaos-employee-0053",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bbecfec60965693e0d7",
+    "connector": "workspace",
+    "username": "chaos-employee-0057",
+    "display_name": "chaos-employee-0057",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bbecfec60965693e0d9",
+    "connector": "slack",
+    "username": "chaos-employee-0054",
+    "display_name": "chaos-employee-0054",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bbecfec60965693e0db",
+    "connector": "slack",
+    "username": "chaos-employee-0057",
+    "display_name": "chaos-employee-0057",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc0cfec60965693e0dd",
+    "connector": "workspace",
+    "username": "chaos-employee-0059",
+    "display_name": "chaos-employee-0059",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc0cfec60965693e0de",
+    "connector": "github",
+    "username": "chaos-employee-0058",
+    "display_name": "chaos-employee-0058",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc0cfec60965693e0df",
+    "connector": "github",
+    "username": "chaos-employee-0054",
+    "display_name": "chaos-employee-0054",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc0cfec60965693e0e0",
+    "connector": "workspace",
+    "username": "chaos-employee-0058",
+    "display_name": "chaos-employee-0058",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc1cfec60965693e0e5",
+    "connector": "slack",
+    "username": "chaos-employee-0059",
+    "display_name": "chaos-employee-0059",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc1cfec60965693e0e7",
+    "connector": "github",
+    "username": "chaos-employee-0059",
+    "display_name": "chaos-employee-0059",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc3cfec60965693e0e9",
+    "connector": "workspace",
+    "username": "chaos-employee-0055",
+    "display_name": "chaos-employee-0055",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc3cfec60965693e0ea",
+    "connector": "slack",
+    "username": "chaos-employee-0060",
+    "display_name": "chaos-employee-0060",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc3cfec60965693e0ed",
+    "connector": "workspace",
+    "username": "chaos-employee-0060",
+    "display_name": "chaos-employee-0060",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc4cfec60965693e0ef",
+    "connector": "github",
+    "username": "chaos-employee-0060",
+    "display_name": "chaos-employee-0060",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc4cfec60965693e0f1",
+    "connector": "workspace",
+    "username": "chaos-employee-0063",
+    "display_name": "chaos-employee-0063",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc6cfec60965693e0f7",
+    "connector": "slack",
+    "username": "chaos-employee-0063",
+    "display_name": "chaos-employee-0063",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc6cfec60965693e0f9",
+    "connector": "github",
+    "username": "chaos-employee-0031",
+    "display_name": "chaos-employee-0031",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc7cfec60965693e0fb",
+    "connector": "slack",
+    "username": "chaos-employee-0061",
+    "display_name": "chaos-employee-0061",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc7cfec60965693e0fc",
+    "connector": "slack",
+    "username": "chaos-employee-0062",
+    "display_name": "chaos-employee-0062",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bc9cfec60965693e0ff",
+    "connector": "slack",
+    "username": "chaos-employee-0031",
+    "display_name": "chaos-employee-0031",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bcacfec60965693e101",
+    "connector": "github",
+    "username": "chaos-employee-0062",
+    "display_name": "chaos-employee-0062",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bcacfec60965693e103",
+    "connector": "workspace",
+    "username": "chaos-employee-0065",
+    "display_name": "chaos-employee-0065",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bcacfec60965693e105",
+    "connector": "workspace",
+    "username": "chaos-employee-0066",
+    "display_name": "chaos-employee-0066",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bcacfec60965693e106",
+    "connector": "workspace",
+    "username": "chaos-employee-0064",
+    "display_name": "chaos-employee-0064",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bcccfec60965693e109",
+    "connector": "slack",
+    "username": "chaos-employee-0065",
+    "display_name": "chaos-employee-0065",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bcdcfec60965693e10b",
+    "connector": "slack",
+    "username": "chaos-employee-0067",
+    "display_name": "chaos-employee-0067",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bcdcfec60965693e10c",
+    "connector": "workspace",
+    "username": "chaos-employee-0067",
+    "display_name": "chaos-employee-0067",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bcdcfec60965693e10f",
+    "connector": "github",
+    "username": "chaos-employee-0065",
+    "display_name": "chaos-employee-0065",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bcdcfec60965693e111",
+    "connector": "workspace",
+    "username": "chaos-employee-0068",
+    "display_name": "chaos-employee-0068",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bcdcfec60965693e112",
+    "connector": "slack",
+    "username": "chaos-employee-0064",
+    "display_name": "chaos-employee-0064",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bcdcfec60965693e113",
+    "connector": "github",
+    "username": "chaos-employee-0067",
+    "display_name": "chaos-employee-0067",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd0cfec60965693e117",
+    "connector": "github",
+    "username": "chaos-employee-0068",
+    "display_name": "chaos-employee-0068",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd0cfec60965693e119",
+    "connector": "workspace",
+    "username": "chaos-employee-0070",
+    "display_name": "chaos-employee-0070",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd0cfec60965693e11b",
+    "connector": "slack",
+    "username": "chaos-employee-0066",
+    "display_name": "chaos-employee-0066",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd0cfec60965693e11c",
+    "connector": "github",
+    "username": "chaos-employee-0070",
+    "display_name": "chaos-employee-0070",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd2cfec60965693e11f",
+    "connector": "workspace",
+    "username": "chaos-employee-0046",
+    "display_name": "chaos-employee-0046",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd3cfec60965693e121",
+    "connector": "slack",
+    "username": "chaos-employee-0070",
+    "display_name": "chaos-employee-0070",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd3cfec60965693e122",
+    "connector": "workspace",
+    "username": "chaos-employee-0071",
+    "display_name": "chaos-employee-0071",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd3cfec60965693e125",
+    "connector": "slack",
+    "username": "chaos-employee-0010",
+    "display_name": "chaos-employee-0010",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd3cfec60965693e127",
+    "connector": "slack",
+    "username": "chaos-employee-0047",
+    "display_name": "chaos-employee-0047",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd3cfec60965693e128",
+    "connector": "github",
+    "username": "chaos-employee-0069",
+    "display_name": "chaos-employee-0069",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd3cfec60965693e12a",
+    "connector": "workspace",
+    "username": "chaos-employee-0012",
+    "display_name": "chaos-employee-0012",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd5cfec60965693e12d",
+    "connector": "slack",
+    "username": "chaos-employee-0072",
+    "display_name": "chaos-employee-0072",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd5cfec60965693e12f",
+    "connector": "workspace",
+    "username": "chaos-employee-0048",
+    "display_name": "chaos-employee-0048",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd6cfec60965693e131",
+    "connector": "workspace",
+    "username": "chaos-employee-0073",
+    "display_name": "chaos-employee-0073",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd6cfec60965693e132",
+    "connector": "github",
+    "username": "chaos-employee-0073",
+    "display_name": "chaos-employee-0073",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd6cfec60965693e135",
+    "connector": "workspace",
+    "username": "chaos-employee-0074",
+    "display_name": "chaos-employee-0074",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd8cfec60965693e139",
+    "connector": "github",
+    "username": "chaos-employee-0074",
+    "display_name": "chaos-employee-0074",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd8cfec60965693e13a",
+    "connector": "github",
+    "username": "chaos-employee-0072",
+    "display_name": "chaos-employee-0072",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd9cfec60965693e13d",
+    "connector": "workspace",
+    "username": "chaos-employee-0069",
+    "display_name": "chaos-employee-0069",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bd9cfec60965693e13e",
+    "connector": "slack",
+    "username": "chaos-employee-0069",
+    "display_name": "chaos-employee-0069",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bdacfec60965693e143",
+    "connector": "slack",
+    "username": "chaos-employee-0074",
+    "display_name": "chaos-employee-0074",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bdbcfec60965693e145",
+    "connector": "workspace",
+    "username": "chaos-employee-0075",
+    "display_name": "chaos-employee-0075",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bdbcfec60965693e146",
+    "connector": "github",
+    "username": "chaos-employee-0075",
+    "display_name": "chaos-employee-0075",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bdbcfec60965693e149",
+    "connector": "github",
+    "username": "chaos-employee-0077",
+    "display_name": "chaos-employee-0077",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bdecfec60965693e14d",
+    "connector": "workspace",
+    "username": "chaos-employee-0077",
+    "display_name": "chaos-employee-0077",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bdecfec60965693e14f",
+    "connector": "github",
+    "username": "chaos-employee-0057",
+    "display_name": "chaos-employee-0057",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bdfcfec60965693e151",
+    "connector": "slack",
+    "username": "chaos-employee-0077",
+    "display_name": "chaos-employee-0077",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bdfcfec60965693e152",
+    "connector": "slack",
+    "username": "chaos-employee-0055",
+    "display_name": "chaos-employee-0055",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bdfcfec60965693e153",
+    "connector": "slack",
+    "username": "chaos-employee-0078",
+    "display_name": "chaos-employee-0078",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be0cfec60965693e157",
+    "connector": "slack",
+    "username": "chaos-employee-0079",
+    "display_name": "chaos-employee-0079",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be1cfec60965693e159",
+    "connector": "slack",
+    "username": "chaos-employee-0056",
+    "display_name": "chaos-employee-0056",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be1cfec60965693e15a",
+    "connector": "workspace",
+    "username": "chaos-employee-0080",
+    "display_name": "chaos-employee-0080",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be1cfec60965693e15b",
+    "connector": "workspace",
+    "username": "chaos-employee-0078",
+    "display_name": "chaos-employee-0078",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be2cfec60965693e15f",
+    "connector": "github",
+    "username": "chaos-employee-0079",
+    "display_name": "chaos-employee-0079",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be2cfec60965693e160",
+    "connector": "github",
+    "username": "chaos-employee-0081",
+    "display_name": "chaos-employee-0081",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be2cfec60965693e162",
+    "connector": "github",
+    "username": "chaos-employee-0080",
+    "display_name": "chaos-employee-0080",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be3cfec60965693e165",
+    "connector": "slack",
+    "username": "chaos-employee-0083",
+    "display_name": "chaos-employee-0083",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be4cfec60965693e167",
+    "connector": "slack",
+    "username": "chaos-employee-0080",
+    "display_name": "chaos-employee-0080",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be6cfec60965693e16b",
+    "connector": "slack",
+    "username": "chaos-employee-0082",
+    "display_name": "chaos-employee-0082",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be7cfec60965693e16d",
+    "connector": "slack",
+    "username": "chaos-employee-0084",
+    "display_name": "chaos-employee-0084",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be7cfec60965693e16e",
+    "connector": "workspace",
+    "username": "chaos-employee-0081",
+    "display_name": "chaos-employee-0081",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be9cfec60965693e171",
+    "connector": "workspace",
+    "username": "chaos-employee-0084",
+    "display_name": "chaos-employee-0084",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be9cfec60965693e173",
+    "connector": "workspace",
+    "username": "chaos-employee-0061",
+    "display_name": "chaos-employee-0061",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be9cfec60965693e175",
+    "connector": "github",
+    "username": "chaos-employee-0083",
+    "display_name": "chaos-employee-0083",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be9cfec60965693e176",
+    "connector": "github",
+    "username": "chaos-employee-0085",
+    "display_name": "chaos-employee-0085",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15be9cfec60965693e177",
+    "connector": "workspace",
+    "username": "chaos-employee-0083",
+    "display_name": "chaos-employee-0083",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15beacfec60965693e17b",
+    "connector": "slack",
+    "username": "chaos-employee-0085",
+    "display_name": "chaos-employee-0085",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15beccfec60965693e17d",
+    "connector": "workspace",
+    "username": "chaos-employee-0087",
+    "display_name": "chaos-employee-0087",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15beccfec60965693e17e",
+    "connector": "slack",
+    "username": "chaos-employee-0087",
+    "display_name": "chaos-employee-0087",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15beccfec60965693e181",
+    "connector": "github",
+    "username": "chaos-employee-0087",
+    "display_name": "chaos-employee-0087",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15beccfec60965693e182",
+    "connector": "github",
+    "username": "chaos-employee-0084",
+    "display_name": "chaos-employee-0084",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15beccfec60965693e185",
+    "connector": "workspace",
+    "username": "chaos-employee-0086",
+    "display_name": "chaos-employee-0086",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bedcfec60965693e187",
+    "connector": "github",
+    "username": "chaos-employee-0088",
+    "display_name": "chaos-employee-0088",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15befcfec60965693e189",
+    "connector": "github",
+    "username": "chaos-employee-0089",
+    "display_name": "chaos-employee-0089",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15befcfec60965693e18b",
+    "connector": "slack",
+    "username": "chaos-employee-0081",
+    "display_name": "chaos-employee-0081",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15befcfec60965693e18d",
+    "connector": "github",
+    "username": "chaos-employee-0090",
+    "display_name": "chaos-employee-0090",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15befcfec60965693e18e",
+    "connector": "slack",
+    "username": "chaos-employee-0088",
+    "display_name": "chaos-employee-0088",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf2cfec60965693e191",
+    "connector": "workspace",
+    "username": "chaos-employee-0091",
+    "display_name": "chaos-employee-0091",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf2cfec60965693e192",
+    "connector": "github",
+    "username": "chaos-employee-0091",
+    "display_name": "chaos-employee-0091",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf2cfec60965693e195",
+    "connector": "workspace",
+    "username": "chaos-employee-0092",
+    "display_name": "chaos-employee-0092",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf2cfec60965693e197",
+    "connector": "slack",
+    "username": "chaos-employee-0092",
+    "display_name": "chaos-employee-0092",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf2cfec60965693e198",
+    "connector": "workspace",
+    "username": "chaos-employee-0088",
+    "display_name": "chaos-employee-0088",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf2cfec60965693e199",
+    "connector": "slack",
+    "username": "chaos-employee-0091",
+    "display_name": "chaos-employee-0091",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf2cfec60965693e19d",
+    "connector": "github",
+    "username": "chaos-employee-0092",
+    "display_name": "chaos-employee-0092",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf4cfec60965693e19f",
+    "connector": "slack",
+    "username": "chaos-employee-0093",
+    "display_name": "chaos-employee-0093",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf4cfec60965693e1a1",
+    "connector": "workspace",
+    "username": "chaos-employee-0094",
+    "display_name": "chaos-employee-0094",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf4cfec60965693e1a5",
+    "connector": "github",
+    "username": "chaos-employee-0093",
+    "display_name": "chaos-employee-0093",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf5cfec60965693e1a7",
+    "connector": "workspace",
+    "username": "chaos-employee-0093",
+    "display_name": "chaos-employee-0093",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf5cfec60965693e1a9",
+    "connector": "slack",
+    "username": "chaos-employee-0089",
+    "display_name": "chaos-employee-0089",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf5cfec60965693e1af",
+    "connector": "github",
+    "username": "chaos-employee-0094",
+    "display_name": "chaos-employee-0094",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf7cfec60965693e1b1",
+    "connector": "github",
+    "username": "chaos-employee-0095",
+    "display_name": "chaos-employee-0095",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf7cfec60965693e1b2",
+    "connector": "slack",
+    "username": "chaos-employee-0094",
+    "display_name": "chaos-employee-0094",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf7cfec60965693e1b5",
+    "connector": "workspace",
+    "username": "chaos-employee-0097",
+    "display_name": "chaos-employee-0097",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf8cfec60965693e1b7",
+    "connector": "workspace",
+    "username": "chaos-employee-0098",
+    "display_name": "chaos-employee-0098",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf8cfec60965693e1bb",
+    "connector": "slack",
+    "username": "chaos-employee-0098",
+    "display_name": "chaos-employee-0098",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bf8cfec60965693e1bc",
+    "connector": "slack",
+    "username": "chaos-employee-0097",
+    "display_name": "chaos-employee-0097",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bfacfec60965693e1bf",
+    "connector": "workspace",
+    "username": "chaos-employee-0099",
+    "display_name": "chaos-employee-0099",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bfacfec60965693e1c0",
+    "connector": "workspace",
+    "username": "chaos-employee-0100",
+    "display_name": "chaos-employee-0100",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bfacfec60965693e1c3",
+    "connector": "github",
+    "username": "chaos-employee-0098",
+    "display_name": "chaos-employee-0098",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bfbcfec60965693e1c5",
+    "connector": "workspace",
+    "username": "chaos-employee-0056",
+    "display_name": "chaos-employee-0056",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bfbcfec60965693e1c6",
+    "connector": "slack",
+    "username": "chaos-employee-0076",
+    "display_name": "chaos-employee-0076",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bfbcfec60965693e1c7",
+    "connector": "github",
+    "username": "chaos-employee-0056",
+    "display_name": "chaos-employee-0056",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bfdcfec60965693e1cb",
+    "connector": "workspace",
+    "username": "chaos-employee-0101",
+    "display_name": "chaos-employee-0101",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bfecfec60965693e1cd",
+    "connector": "slack",
+    "username": "chaos-employee-0099",
+    "display_name": "chaos-employee-0099",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bfecfec60965693e1cf",
+    "connector": "github",
+    "username": "chaos-employee-0055",
+    "display_name": "chaos-employee-0055",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bfecfec60965693e1d0",
+    "connector": "workspace",
+    "username": "chaos-employee-0102",
+    "display_name": "chaos-employee-0102",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bfecfec60965693e1d3",
+    "connector": "github",
+    "username": "chaos-employee-0100",
+    "display_name": "chaos-employee-0100",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bfecfec60965693e1d4",
+    "connector": "workspace",
+    "username": "chaos-employee-0103",
+    "display_name": "chaos-employee-0103",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bfecfec60965693e1d5",
+    "connector": "slack",
+    "username": "chaos-employee-0101",
+    "display_name": "chaos-employee-0101",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bfecfec60965693e1d9",
+    "connector": "github",
+    "username": "chaos-employee-0102",
+    "display_name": "chaos-employee-0102",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15bffcfec60965693e1db",
+    "connector": "github",
+    "username": "chaos-employee-0097",
+    "display_name": "chaos-employee-0097",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c00cfec60965693e1dd",
+    "connector": "github",
+    "username": "chaos-employee-0076",
+    "display_name": "chaos-employee-0076",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c00cfec60965693e1de",
+    "connector": "slack",
+    "username": "chaos-employee-0104",
+    "display_name": "chaos-employee-0104",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c01cfec60965693e1e1",
+    "connector": "workspace",
+    "username": "chaos-employee-0106",
+    "display_name": "chaos-employee-0106",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c01cfec60965693e1e2",
+    "connector": "workspace",
+    "username": "chaos-employee-0105",
+    "display_name": "chaos-employee-0105",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c01cfec60965693e1e5",
+    "connector": "slack",
+    "username": "chaos-employee-0105",
+    "display_name": "chaos-employee-0105",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c01cfec60965693e1e6",
+    "connector": "workspace",
+    "username": "chaos-employee-0107",
+    "display_name": "chaos-employee-0107",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c02cfec60965693e1e9",
+    "connector": "slack",
+    "username": "chaos-employee-0108",
+    "display_name": "chaos-employee-0108",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c03cfec60965693e1eb",
+    "connector": "slack",
+    "username": "chaos-employee-0103",
+    "display_name": "chaos-employee-0103",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c03cfec60965693e1ec",
+    "connector": "slack",
+    "username": "chaos-employee-0106",
+    "display_name": "chaos-employee-0106",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c03cfec60965693e1ef",
+    "connector": "workspace",
+    "username": "chaos-employee-0108",
+    "display_name": "chaos-employee-0108",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c04cfec60965693e1f1",
+    "connector": "workspace",
+    "username": "chaos-employee-0032",
+    "display_name": "chaos-employee-0032",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c04cfec60965693e1f7",
+    "connector": "github",
+    "username": "chaos-employee-0063",
+    "display_name": "chaos-employee-0063",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c04cfec60965693e1f8",
+    "connector": "github",
+    "username": "chaos-employee-0109",
+    "display_name": "chaos-employee-0109",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c04cfec60965693e1fb",
+    "connector": "slack",
+    "username": "chaos-employee-0107",
+    "display_name": "chaos-employee-0107",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c05cfec60965693e1fd",
+    "connector": "slack",
+    "username": "chaos-employee-0102",
+    "display_name": "chaos-employee-0102",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c08cfec60965693e1ff",
+    "connector": "slack",
+    "username": "chaos-employee-0109",
+    "display_name": "chaos-employee-0109",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c08cfec60965693e200",
+    "connector": "slack",
+    "username": "chaos-employee-0110",
+    "display_name": "chaos-employee-0110",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c09cfec60965693e203",
+    "connector": "github",
+    "username": "chaos-employee-0113",
+    "display_name": "chaos-employee-0113",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c09cfec60965693e204",
+    "connector": "workspace",
+    "username": "chaos-employee-0109",
+    "display_name": "chaos-employee-0109",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c09cfec60965693e207",
+    "connector": "github",
+    "username": "chaos-employee-0112",
+    "display_name": "chaos-employee-0112",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c0bcfec60965693e209",
+    "connector": "slack",
+    "username": "chaos-employee-0112",
+    "display_name": "chaos-employee-0112",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c0ccfec60965693e20b",
+    "connector": "github",
+    "username": "chaos-employee-0115",
+    "display_name": "chaos-employee-0115",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c0ccfec60965693e20d",
+    "connector": "workspace",
+    "username": "chaos-employee-0113",
+    "display_name": "chaos-employee-0113",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c0ccfec60965693e20f",
+    "connector": "slack",
+    "username": "chaos-employee-0114",
+    "display_name": "chaos-employee-0114",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c0dcfec60965693e211",
+    "connector": "github",
+    "username": "chaos-employee-0117",
+    "display_name": "chaos-employee-0117",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c0ecfec60965693e213",
+    "connector": "workspace",
+    "username": "chaos-employee-0117",
+    "display_name": "chaos-employee-0117",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c0ecfec60965693e214",
+    "connector": "slack",
+    "username": "chaos-employee-0117",
+    "display_name": "chaos-employee-0117",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c0ecfec60965693e217",
+    "connector": "github",
+    "username": "chaos-employee-0116",
+    "display_name": "chaos-employee-0116",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c0fcfec60965693e219",
+    "connector": "github",
+    "username": "chaos-employee-0118",
+    "display_name": "chaos-employee-0118",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c0fcfec60965693e21a",
+    "connector": "workspace",
+    "username": "chaos-employee-0115",
+    "display_name": "chaos-employee-0115",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c0fcfec60965693e21d",
+    "connector": "workspace",
+    "username": "chaos-employee-0118",
+    "display_name": "chaos-employee-0118",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c0fcfec60965693e21f",
+    "connector": "workspace",
+    "username": "chaos-employee-0114",
+    "display_name": "chaos-employee-0114",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c10cfec60965693e221",
+    "connector": "github",
+    "username": "chaos-employee-0119",
+    "display_name": "chaos-employee-0119",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c11cfec60965693e223",
+    "connector": "workspace",
+    "username": "chaos-employee-0116",
+    "display_name": "chaos-employee-0116",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c12cfec60965693e225",
+    "connector": "slack",
+    "username": "chaos-employee-0116",
+    "display_name": "chaos-employee-0116",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c12cfec60965693e226",
+    "connector": "slack",
+    "username": "chaos-employee-0120",
+    "display_name": "chaos-employee-0120",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c13cfec60965693e22b",
+    "connector": "slack",
+    "username": "demo_employee",
+    "display_name": "Demo Employee",
+    "department": "Engineering"
+  },
+  {
+    "external_ref": "6af15c13cfec60965693e22d",
+    "connector": "slack",
+    "username": "chaos-employee-0115",
+    "display_name": "chaos-employee-0115",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c13cfec60965693e22e",
+    "connector": "slack",
+    "username": "chaos-employee-0073",
+    "display_name": "chaos-employee-0073",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c13cfec60965693e231",
+    "connector": "workspace",
+    "username": "chaos-employee-0089",
+    "display_name": "chaos-employee-0089",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c14cfec60965693e233",
+    "connector": "workspace",
+    "username": "chaos-employee-0119",
+    "display_name": "chaos-employee-0119",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c15cfec60965693e237",
+    "connector": "workspace",
+    "username": "chaos-employee-0120",
+    "display_name": "chaos-employee-0120",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c15cfec60965693e239",
+    "connector": "workspace",
+    "username": "chaos-employee-0096",
+    "display_name": "chaos-employee-0096",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c16cfec60965693e23b",
+    "connector": "workspace",
+    "username": "chaos-employee-0001",
+    "display_name": "chaos-employee-0001",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c16cfec60965693e23d",
+    "connector": "workspace",
+    "username": "chaos-employee-0013",
+    "display_name": "chaos-employee-0013",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c18cfec60965693e23f",
+    "connector": "workspace",
+    "username": "chaos-employee-0015",
+    "display_name": "chaos-employee-0015",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c18cfec60965693e240",
+    "connector": "workspace",
+    "username": "chaos-employee-0018",
+    "display_name": "chaos-employee-0018",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c18cfec60965693e241",
+    "connector": "github",
+    "username": "chaos-employee-0120",
+    "display_name": "chaos-employee-0120",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c19cfec60965693e245",
+    "connector": "github",
+    "username": "chaos-employee-0020",
+    "display_name": "chaos-employee-0020",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c1bcfec60965693e24c",
+    "connector": "slack",
+    "username": "chaos-employee-0017",
+    "display_name": "chaos-employee-0017",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c1bcfec60965693e24f",
+    "connector": "github",
+    "username": "chaos-employee-0021",
+    "display_name": "chaos-employee-0021",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c1bcfec60965693e251",
+    "connector": "workspace",
+    "username": "chaos-employee-0023",
+    "display_name": "chaos-employee-0023",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c1ccfec60965693e253",
+    "connector": "github",
+    "username": "chaos-employee-0023",
+    "display_name": "chaos-employee-0023",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c1ccfec60965693e254",
+    "connector": "slack",
+    "username": "chaos-employee-0021",
+    "display_name": "chaos-employee-0021",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c1dcfec60965693e258",
+    "connector": "slack",
+    "username": "chaos-employee-0022",
+    "display_name": "chaos-employee-0022",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c1ecfec60965693e25b",
+    "connector": "workspace",
+    "username": "chaos-employee-0038",
+    "display_name": "chaos-employee-0038",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c1ecfec60965693e25f",
+    "connector": "slack",
+    "username": "chaos-employee-0037",
+    "display_name": "chaos-employee-0037",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c1fcfec60965693e261",
+    "connector": "github",
+    "username": "chaos-employee-0039",
+    "display_name": "chaos-employee-0039",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c1fcfec60965693e263",
+    "connector": "github",
+    "username": "chaos-employee-0035",
+    "display_name": "chaos-employee-0035",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c20cfec60965693e265",
+    "connector": "workspace",
+    "username": "chaos-employee-0045",
+    "display_name": "chaos-employee-0045",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c20cfec60965693e267",
+    "connector": "github",
+    "username": "chaos-employee-0013",
+    "display_name": "chaos-employee-0013",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c20cfec60965693e269",
+    "connector": "github",
+    "username": "chaos-employee-0040",
+    "display_name": "chaos-employee-0040",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c20cfec60965693e26b",
+    "connector": "github",
+    "username": "chaos-employee-0037",
+    "display_name": "chaos-employee-0037",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c21cfec60965693e26d",
+    "connector": "slack",
+    "username": "chaos-employee-0045",
+    "display_name": "chaos-employee-0045",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c21cfec60965693e26e",
+    "connector": "workspace",
+    "username": "chaos-employee-0050",
+    "display_name": "chaos-employee-0050",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c21cfec60965693e271",
+    "connector": "workspace",
+    "username": "chaos-employee-0049",
+    "display_name": "chaos-employee-0049",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c23cfec60965693e27d",
+    "connector": "workspace",
+    "username": "chaos-employee-0028",
+    "display_name": "chaos-employee-0028",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c24cfec60965693e281",
+    "connector": "slack",
+    "username": "chaos-employee-0033",
+    "display_name": "chaos-employee-0033",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c25cfec60965693e285",
+    "connector": "workspace",
+    "username": "chaos-employee-0062",
+    "display_name": "chaos-employee-0062",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c25cfec60965693e286",
+    "connector": "workspace",
+    "username": "chaos-employee-0051",
+    "display_name": "chaos-employee-0051",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c25cfec60965693e289",
+    "connector": "slack",
+    "username": "chaos-employee-0068",
+    "display_name": "chaos-employee-0068",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c28cfec60965693e28c",
+    "connector": "workspace",
+    "username": "chaos-employee-0111",
+    "display_name": "chaos-employee-0111",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c28cfec60965693e28f",
+    "connector": "github",
+    "username": "chaos-employee-0066",
+    "display_name": "chaos-employee-0066",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c28cfec60965693e291",
+    "connector": "github",
+    "username": "chaos-employee-0064",
+    "display_name": "chaos-employee-0064",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c29cfec60965693e297",
+    "connector": "slack",
+    "username": "chaos-employee-0075",
+    "display_name": "chaos-employee-0075",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c2bcfec60965693e299",
+    "connector": "slack",
+    "username": "chaos-employee-0071",
+    "display_name": "chaos-employee-0071",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c2bcfec60965693e29a",
+    "connector": "slack",
+    "username": "chaos-employee-0048",
+    "display_name": "chaos-employee-0048",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c2bcfec60965693e29e",
+    "connector": "workspace",
+    "username": "chaos-employee-0079",
+    "display_name": "chaos-employee-0079",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c2bcfec60965693e2a1",
+    "connector": "slack",
+    "username": "chaos-employee-0086",
+    "display_name": "chaos-employee-0086",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c2bcfec60965693e2a3",
+    "connector": "workspace",
+    "username": "chaos-employee-0072",
+    "display_name": "chaos-employee-0072",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c2ccfec60965693e2a5",
+    "connector": "workspace",
+    "username": "chaos-employee-0085",
+    "display_name": "chaos-employee-0085",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c2ecfec60965693e2a7",
+    "connector": "github",
+    "username": "chaos-employee-0061",
+    "display_name": "chaos-employee-0061",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c2ecfec60965693e2ab",
+    "connector": "slack",
+    "username": "chaos-employee-0090",
+    "display_name": "chaos-employee-0090",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c2ecfec60965693e2ac",
+    "connector": "github",
+    "username": "chaos-employee-0078",
+    "display_name": "chaos-employee-0078",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c2ecfec60965693e2af",
+    "connector": "workspace",
+    "username": "chaos-employee-0095",
+    "display_name": "chaos-employee-0095",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c2fcfec60965693e2b1",
+    "connector": "github",
+    "username": "chaos-employee-0099",
+    "display_name": "chaos-employee-0099",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c31cfec60965693e2b3",
+    "connector": "slack",
+    "username": "chaos-employee-0100",
+    "display_name": "chaos-employee-0100",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c31cfec60965693e2b4",
+    "connector": "slack",
+    "username": "chaos-employee-0095",
+    "display_name": "chaos-employee-0095",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c31cfec60965693e2b7",
+    "connector": "workspace",
+    "username": "chaos-employee-0104",
+    "display_name": "chaos-employee-0104",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c32cfec60965693e2bb",
+    "connector": "github",
+    "username": "chaos-employee-0101",
+    "display_name": "chaos-employee-0101",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c32cfec60965693e2bd",
+    "connector": "slack",
+    "username": "chaos-employee-0119",
+    "display_name": "chaos-employee-0119",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c35cfec60965693e2c2",
+    "connector": "github",
+    "username": "chaos-employee-0106",
+    "display_name": "chaos-employee-0106",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c38cfec60965693e2c7",
+    "connector": "workspace",
+    "username": "chaos-employee-0110",
+    "display_name": "chaos-employee-0110",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c38cfec60965693e2cb",
+    "connector": "github",
+    "username": "chaos-employee-0103",
+    "display_name": "chaos-employee-0103",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c38cfec60965693e2cd",
+    "connector": "github",
+    "username": "chaos-employee-0104",
+    "display_name": "chaos-employee-0104",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c3bcfec60965693e2cf",
+    "connector": "github",
+    "username": "chaos-employee-0114",
+    "display_name": "chaos-employee-0114",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c3bcfec60965693e2d4",
+    "connector": "workspace",
+    "username": "chaos-employee-0076",
+    "display_name": "chaos-employee-0076",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c3dcfec60965693e2d7",
+    "connector": "workspace",
+    "username": "chaos-employee-0112",
+    "display_name": "chaos-employee-0112",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c3dcfec60965693e2d8",
+    "connector": "slack",
+    "username": "chaos-employee-0113",
+    "display_name": "chaos-employee-0113",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c3ecfec60965693e2db",
+    "connector": "workspace",
+    "username": "chaos-employee-0009",
+    "display_name": "chaos-employee-0009",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c3ecfec60965693e2dc",
+    "connector": "slack",
+    "username": "chaos-employee-0020",
+    "display_name": "chaos-employee-0020",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c40cfec60965693e2e3",
+    "connector": "slack",
+    "username": "chaos-employee-0027",
+    "display_name": "chaos-employee-0027",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c40cfec60965693e2e4",
+    "connector": "github",
+    "username": "chaos-employee-0026",
+    "display_name": "chaos-employee-0026",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c41cfec60965693e2e7",
+    "connector": "workspace",
+    "username": "chaos-employee-0006",
+    "display_name": "chaos-employee-0006",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c41cfec60965693e2eb",
+    "connector": "workspace",
+    "username": "chaos-employee-0082",
+    "display_name": "chaos-employee-0082",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c42cfec60965693e2ed",
+    "connector": "slack",
+    "username": "chaos-employee-0058",
+    "display_name": "chaos-employee-0058",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c47cfec60965693e2f4",
+    "connector": "workspace",
+    "username": "chaos-employee-0052",
+    "display_name": "chaos-employee-0052",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c47cfec60965693e2f7",
+    "connector": "slack",
+    "username": "chaos-employee-0111",
+    "display_name": "chaos-employee-0111",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c47cfec60965693e2fd",
+    "connector": "github",
+    "username": "chaos-employee-0071",
+    "display_name": "chaos-employee-0071",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c4acfec60965693e2ff",
+    "connector": "github",
+    "username": "chaos-employee-0051",
+    "display_name": "chaos-employee-0051",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c4acfec60965693e301",
+    "connector": "github",
+    "username": "chaos-employee-0107",
+    "display_name": "chaos-employee-0107",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c4ccfec60965693e309",
+    "connector": "github",
+    "username": "chaos-employee-0096",
+    "display_name": "chaos-employee-0096",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c4ccfec60965693e30a",
+    "connector": "github",
+    "username": "chaos-employee-0110",
+    "display_name": "chaos-employee-0110",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c4dcfec60965693e30e",
+    "connector": "github",
+    "username": "chaos-employee-0105",
+    "display_name": "chaos-employee-0105",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c4dcfec60965693e311",
+    "connector": "github",
+    "username": "chaos-employee-0086",
+    "display_name": "chaos-employee-0086",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c4fcfec60965693e313",
+    "connector": "workspace",
+    "username": "chaos-employee-0090",
+    "display_name": "chaos-employee-0090",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c4fcfec60965693e315",
+    "connector": "slack",
+    "username": "chaos-employee-0096",
+    "display_name": "chaos-employee-0096",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c51cfec60965693e31b",
+    "connector": "github",
+    "username": "chaos-employee-0082",
+    "display_name": "chaos-employee-0082",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c51cfec60965693e31d",
+    "connector": "workspace",
+    "username": "demo_employee",
+    "display_name": "Demo Employee",
+    "department": "Engineering"
+  },
+  {
+    "external_ref": "6af15c71cfec60965693e333",
+    "connector": "slack",
+    "username": "chaos-employee-0118",
+    "display_name": "chaos-employee-0118",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c71cfec60965693e335",
+    "connector": "github",
+    "username": "chaos-employee-0108",
+    "display_name": "chaos-employee-0108",
+    "department": "Local simulator"
+  },
+  {
+    "external_ref": "6af15c82cfec60965693e343",
+    "connector": "github",
+    "username": "chaos-employee-0111",
+    "display_name": "chaos-employee-0111",
+    "department": "Local simulator"
+  }
+]
