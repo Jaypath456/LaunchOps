@@ -11,7 +11,7 @@ from datetime import UTC, datetime
 
 from bson import Int64, ObjectId
 from pymongo import WriteConcern
-from pymongo.errors import DuplicateKeyError
+from pymongo.errors import AutoReconnect, DuplicateKeyError, ExecutionTimeout, NetworkTimeout, WTimeoutError
 from rest_framework import status
 from rest_framework.exceptions import APIException, NotFound, PermissionDenied, ValidationError
 
@@ -26,18 +26,31 @@ class Conflict(APIException):
     default_code = 'conflict'
 
 
-class DuplicateWorkflow(Exception):
+class WriteOutcomeUnknown(APIException):
+    status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+    default_detail = 'the write may or may not have been applied; check and retry'
+    default_code = 'write_outcome_unknown'
+
+
+class DuplicateWorkflow(ValidationError):
     """The unique employee_id index rejected a second workflow for the same employee."""
+
+    default_detail = {'employee_id': ['This employee already has an onboarding workflow.']}
 
 
 def instances():
     return get_db().get_collection('workflow_instances', write_concern=WriteConcern(w='majority'))
 
 
-def now_ms():
+def _now():
     """UTC now truncated to MongoDB's millisecond precision, so returned values equal stored ones."""
     now = datetime.now(UTC)
     return now.replace(microsecond=now.microsecond // 1000 * 1000)
+
+
+def now_ms():
+    """Compatibility helper for fixtures; all clocks go through the patchable `_now`."""
+    return _now()
 
 
 # Compare-and-set core.
@@ -76,12 +89,24 @@ def mutate(instance_id, build, retries=5):
         plan = build(doc)
         if plan.noop:
             return Outcome(plan.result, attempt, True)
-        result = collection.update_one(
-            guard_filter(doc, plan), {**plan.update, '$inc': {'version': 1}},
-            array_filters=plan.array_filters,
-        )
+        try:
+            result = collection.update_one(
+                guard_filter(doc, plan), {**plan.update, '$inc': {'version': 1}},
+                array_filters=plan.array_filters,
+            )
+        except (AutoReconnect, NetworkTimeout, ExecutionTimeout, WTimeoutError) as exc:
+            raise WriteOutcomeUnknown() from exc
         if result.matched_count == 1:
             return Outcome(plan.result, attempt, False)
+    # The last miss may have lost to the completion we can now replay. Never write again here.
+    doc = collection.find_one({'_id': instance_id})
+    if doc is not None:
+        try:
+            plan = build(doc)
+        except APIException as exc:
+            raise Conflict() from exc
+        if plan.noop:
+            return Outcome(plan.result, retries, True)
     raise Conflict()
 
 
@@ -179,10 +204,10 @@ def create_workflow(*, actor, employee_id, manager_id, job_title, department, st
         raise ValidationError(errors)
     collection = instances()
     if find_by_employee(employee['_id']) is not None:
-        raise ValidationError({'employee_id': ['This employee already has an onboarding workflow.']})
+        raise DuplicateWorkflow()
 
     instance_id = ObjectId()
-    now = now_ms()
+    now = _now()
     payload = {'username': employee['username'], 'display_name': employee.get('display_name') or employee['username'],
                'department': department}
     doc = {
@@ -235,7 +260,7 @@ def complete_step(instance_id, key, actor, evidence, request_id=None):
 
     def build(doc):
         decision = domain.decide_completion(
-            doc, key, actor, evidence, by=actor_oid, request_id=request_id, now=now_ms(),
+            doc, key, actor, evidence, by=actor_oid, request_id=request_id, now=_now(),
             employee_username=employee_username, issue_id=ObjectId(),
         )
         if decision.replay:
@@ -286,7 +311,7 @@ def _change_job(instance_id, connector, actor, allowed, changes, event_type, now
 
 
 def retry_job(instance_id, connector, actor):
-    now = now_ms()
+    now = _now()
     return _change_job(instance_id, connector, actor, 'dead',
                        {'status': 'pending', 'attempts': 0, 'next_attempt_at': now},
                        'provisioning.manual_retry', now)
@@ -299,12 +324,12 @@ def override_job(instance_id, connector, actor, reason):
         raise ValidationError({'reason': 'A non-empty override reason is required.'})
     return _change_job(instance_id, connector, actor, {'$in': ['pending', 'retry', 'dead']},
                        {'status': 'overridden', 'override_reason': reason.strip()},
-                       'provisioning.overridden', now_ms())
+                       'provisioning.overridden', _now())
 
 
 def reschedule(instance_id, actor, start_date):
     def build(doc):
-        decision = domain.decide_reschedule(doc, actor, start_date, now_ms())
+        decision = domain.decide_reschedule(doc, actor, start_date, _now())
         if decision is None:
             return Plan(result=False, noop=True)
         # Positional paths are safe: the version guard pins this exact snapshot, and steps never reorder.
@@ -319,7 +344,7 @@ def resolve_issue(instance_id, issue_id, actor, data):
     actor_oid = ObjectId(actor['id'])
 
     def build(doc):
-        now = now_ms()
+        now = _now()
         decision = domain.decide_resolution(doc, issue_id, actor, data, by=actor_oid, now=now)
         if decision is None:
             return Plan(result={'changed': False}, noop=True)

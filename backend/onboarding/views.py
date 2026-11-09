@@ -1,5 +1,3 @@
-from datetime import UTC, datetime
-
 from pymongo.errors import PyMongoError
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.exceptions import NotFound, PermissionDenied
@@ -16,10 +14,6 @@ from .serializers import (
 )
 
 
-def _now():
-    return datetime.now(UTC)
-
-
 def _visible_workflow(actor, workflow_id):
     doc = repository.get_workflow(workflow_id)
     if doc is None or not domain.can_view(actor, doc):
@@ -29,7 +23,7 @@ def _visible_workflow(actor, workflow_id):
 
 def _workflow_response(doc, status=200):
     users = repository.users_by_id(repository.referenced_user_ids([doc]))
-    return Response(workflow_data(doc, users, _now()), status=status)
+    return Response(workflow_data(doc, users, repository._now()), status=status)
 
 
 @api_view(['GET', 'POST'])
@@ -40,18 +34,15 @@ def workflows(request):
         paginator = WorkflowPagination()
         page = paginator.paginate_queryset(repository.list_workflows(actor), request)
         users = repository.users_by_id(repository.referenced_user_ids(page))
-        now = _now()
+        now = repository._now()
         return paginator.get_paginated_response([workflow_data(doc, users, now) for doc in page])
     domain.require_hr(actor, 'Only HR can start onboarding.')
     serializer = CreateWorkflowSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     data = serializer.validated_data
-    try:
-        doc = repository.create_workflow(actor=actor, employee_id=data['employee_id'], manager_id=data['manager_id'],
-                                         job_title=data['job_title'], department=data['department'],
-                                         start_date=data['start_date'])
-    except repository.DuplicateWorkflow:
-        return Response({'employee_id': 'This employee already has an onboarding workflow.'}, status=409)
+    doc = repository.create_workflow(actor=actor, employee_id=data['employee_id'], manager_id=data['manager_id'],
+                                     job_title=data['job_title'], department=data['department'],
+                                     start_date=data['start_date'])
     return _workflow_response(doc, status=201)
 
 
@@ -77,7 +68,7 @@ def step_detail(request, workflow_id, key):
         raise NotFound()
     doc = _visible_workflow(actor, workflow_id)
     users = repository.users_by_id(repository.referenced_user_ids([doc]))
-    return Response(step_detail_data(doc, key, users, _now()))
+    return Response(step_detail_data(doc, key, users, repository._now()))
 
 
 @api_view(['POST'])

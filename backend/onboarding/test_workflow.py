@@ -373,8 +373,8 @@ class OnboardingFlowTests(WorkflowTestCase):
                 'employee_id': str(self.other['_id']), 'manager_id': str(self.users['manager']['_id']),
                 'job_title': 'Engineer', 'department': 'Engineering',
                 'start_date': timezone.localdate().isoformat()}, format='json')
-        self.assertEqual(response.status_code, 409)
-        self.assertEqual(response.data, {'employee_id': 'This employee already has an onboarding workflow.'})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, {'employee_id': ['This employee already has an onboarding workflow.']})
 
     def test_reschedule_requires_a_start_date(self):
         self.as_role('hr')
