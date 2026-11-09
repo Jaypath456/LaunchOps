@@ -127,12 +127,12 @@ The snapshots include the seeded demo workflow as well as campaign hires, as des
 ## Boundaries
 
 local demo; simulated accounts, payroll, identity and devices; external systems are a local mock with injected faults; single host;
-no production, HA or failover claim; browser walkthrough is manual.
+no production, HA or failover claim; the browser walkthrough is a local Playwright script and is not part of CI.
 
 ## Origins
 
-LaunchOps started as a learning-management system I built (courses, chapters, quizzes, scheduling, course chat history) and that I converted into this onboarding platform. The onboarding workflow engine was later work in this repository. The learning modules have been removed as the onboarding backend moves to MongoDB. This repository's history starts from a snapshot of the combined code, so it does not show that split.
+LaunchOps started as a learning-management system I built (courses, chapters, quizzes, scheduling, course chat history) and that I converted into this onboarding platform. The onboarding workflow engine was later work in this repository. The learning modules were removed when the onboarding backend moved to MongoDB; the earlier PostgreSQL version is preserved at the tag `v1-postgres`. This repository's history starts from a snapshot of the combined code, so it does not show that split.
 
 ## AI tools used
 
-I built this project with help from AI tools, including GitHub Copilot, Cursor, Claude Code and Codex.
+I built this project with help from AI tools, including GitHub Copilot, Cursor, Claude Code and Codex. I directed the design and reviewed the changes. I ran the test suites and the chaos campaigns myself. The raw outputs are committed under [docs/evidence](docs/evidence/).

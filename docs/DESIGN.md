@@ -74,7 +74,7 @@ The [README results](../README.md#results) quote each campaign's verifier counte
 
 A passing campaign does not mean all work succeeded. Each campaign's `dead_with_accounts` list reports jobs whose account exists despite a dead job state. Repeated ambiguous failures can consume the attempt budget after the side effect happened. The verifier lists each connector, username and reference; IT resolves these cases by reconciliation: a manual retry first (the same idempotency key makes the simulator replay the stored response), then a verified override as the fallback. The verifier's own `reason` text in `verify.json` still reads "IT override required"; that is retained raw output. The [README](../README.md#results) names the observed cases explicitly.
 
-These are observations of worker crashes, stalls and injected simulator faults on a single host. They do not prove host-loss recovery, database availability, arbitrary network-partition safety, multi-host clock correctness, real-provider semantics, throughput, or browser behavior. The browser walkthrough remains manual.
+These are observations of worker crashes, stalls and injected simulator faults on a single host. They do not prove host-loss recovery, database availability, arbitrary network-partition safety, multi-host clock correctness, real-provider semantics, throughput, or browser behavior. The browser walkthrough is a local Playwright script (see its [run record](evidence/walkthrough/)) and is not part of CI.
 
 ## Limitations and larger scale
 
