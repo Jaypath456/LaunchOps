@@ -118,9 +118,16 @@ def task_step_data(step, steps, users, now):
             'form_fields': FORMS.get(step['key'], [])}
 
 
+def event_detail(detail):
+    """Python writes string details; Go provisioner events carry an object. The API shape is a string."""
+    if isinstance(detail, dict):
+        return ', '.join(f'{key} {value}' for key, value in detail.items() if value is not None)
+    return detail
+
+
 def event_data(index, event, users):
     return {'id': index, 'actor': actor_name(users, event.get('actor')), 'step': event.get('step_key'),
-            'action': event.get('type'), 'detail': event.get('detail'), 'created_at': iso(event.get('at'))}
+            'action': event.get('type'), 'detail': event_detail(event.get('detail')), 'created_at': iso(event.get('at'))}
 
 
 def events_in_order(doc, users):

@@ -1,0 +1,8 @@
+# Stack (own compose project, non-default ports; REACT_APP_API_URL is the proxy target seen from inside the frontend container)
+BACKEND_PORT=28300 FRONTEND_PORT=23300 MONGO_PORT=47050 MOCKSAAS_PORT=28380 REACT_APP_API_URL=http://backend:8000/api CORS_ALLOWED_ORIGINS=http://localhost:23300 docker compose -p cc-e2e up -d --build --wait
+docker compose -p cc-e2e exec -T backend python manage.py seed_launchops
+# Playwright, installed outside the repo
+mkdir -p /tmp/launchops-browser && cd /tmp/launchops-browser && npm init -y && npm i playwright
+# Walkthrough (same exported port variables as above; COMPOSE_PROJECT lets the script seed, stop/start provisioners and write to MongoDB)
+NODE_PATH=/tmp/launchops-browser/node_modules COMPOSE_PROJECT=cc-e2e LAUNCHOPS_URL=http://localhost:23300 LAUNCHOPS_API=http://localhost:28300/api LAUNCHOPS_REPORT_DIR=/tmp/launchops-walkthrough node scripts/walkthrough.cjs
+# Evidence copied from /tmp/launchops-walkthrough: report.json and screens/ (1280x800 viewport)

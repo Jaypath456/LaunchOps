@@ -237,3 +237,14 @@ class ProvisioningTests(WorkflowTestCase):
                                   'last_error': 'Simulated timeout', 'external_ref': 'simulated-account',
                                   'override_reason': None})
                 self.assertIsNone(self.client.get(self.url('steps/profile/')).data['provisioning'])
+
+    def test_go_provisioner_event_details_are_serialized_as_strings(self):
+        # Go pushes provisioning.* events whose detail is an object; the API (and the UI) expect a string.
+        instances().update_one({'_id': self.wid}, {'$push': {'events': {
+            'type': 'provisioning.succeeded', 'step_key': None, 'actor': 'provisioner:worker/1', 'at': repository.now_ms(),
+            'detail': {'connector': 'github', 'attempt': 1, 'fence': Int64(1), 'external_ref': 'ref-1', 'error': None}}}})
+        expected = 'connector github, attempt 1, fence 1, external_ref ref-1'
+        timeline = self.client.get(self.url('timeline/')).data['events']
+        self.assertEqual(timeline[-1]['detail'], expected)
+        listed = self.client.get(self.url('')).data['events']
+        self.assertEqual(next(e for e in listed if e['action'] == 'provisioning.succeeded')['detail'], expected)

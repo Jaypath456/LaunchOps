@@ -95,7 +95,7 @@ services:
       backend:
         condition: service_healthy
     environment:
-      REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:18000/api}
+      REACT_APP_API_URL: ${REACT_APP_API_URL:-http://backend:8000/api}
     ports:
       - "${FRONTEND_PORT:-13000}:3000"
     volumes:

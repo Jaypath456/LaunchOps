@@ -1,0 +1,867 @@
+{
+  "started": "2026-11-09T06:27:27.524Z",
+  "base": "http://localhost:23300",
+  "api": "http://localhost:28300/api",
+  "composeProject": "cc-e2e",
+  "pages": [],
+  "actions": [
+    {
+      "action": "role login through landing page",
+      "role": "hr",
+      "username": "demo_hr"
+    },
+    {
+      "action": "role login through landing page",
+      "role": "it",
+      "username": "demo_it"
+    },
+    {
+      "action": "role login through landing page",
+      "role": "manager",
+      "username": "demo_manager"
+    },
+    {
+      "action": "role login through landing page",
+      "role": "employee",
+      "username": "demo_employee"
+    },
+    {
+      "action": "role login through landing page",
+      "role": "employee",
+      "username": "walk_a_1794205652119"
+    },
+    {
+      "action": "role login through landing page",
+      "role": "employee",
+      "username": "walk_b_1794205652119"
+    },
+    {
+      "action": "HR created hire in UI",
+      "employee": "walk_a_1794205652119",
+      "workflow": "6af167db9ffb9ee7eacddf66"
+    },
+    {
+      "action": "HR created hire in UI",
+      "employee": "walk_b_1794205652119",
+      "workflow": "6af167dc9ffb9ee7eacddf67"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "profile",
+      "actor": "demo_hr",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "action": "set workspace and slack jobs of hire B to dead through MongoDB",
+      "workflow": "6af167dc9ffb9ee7eacddf67"
+    },
+    {
+      "workflow": "6af167dc9ffb9ee7eacddf67",
+      "task": "profile",
+      "actor": "demo_hr",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167dc9ffb9ee7eacddf67",
+      "task": "access",
+      "actor": "demo_it",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "contract",
+      "actor": "demo_hr",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "payroll",
+      "actor": "demo_hr",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "policy",
+      "actor": "demo_hr",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "equipment",
+      "actor": "demo_it",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "access",
+      "actor": "demo_it",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "mfa",
+      "actor": "demo_it",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "endpoint",
+      "actor": "demo_it",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "it_handoff",
+      "actor": "demo_it",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "mentor",
+      "actor": "demo_manager",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "welcome",
+      "actor": "demo_manager",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "goals",
+      "actor": "demo_manager",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "calendar",
+      "actor": "demo_manager",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "manager_signoff",
+      "actor": "demo_manager",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "contact",
+      "actor": "walk_a_1794205652119",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "handbook",
+      "actor": "walk_a_1794205652119",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "training",
+      "actor": "walk_a_1794205652119",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "receipt",
+      "actor": "walk_a_1794205652119",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "feedback",
+      "actor": "walk_a_1794205652119",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    },
+    {
+      "workflow": "6af167db9ffb9ee7eacddf66",
+      "task": "ready",
+      "actor": "demo_hr",
+      "uiPosts": 1,
+      "action": "completed through UI form; replay identical"
+    }
+  ],
+  "checks": [
+    {
+      "check": "provisioner replicas stopped for the pending-state checks"
+    },
+    {
+      "check": "HR created hire walk_a_1794205652119 through the UI",
+      "detail": "6af167db9ffb9ee7eacddf66"
+    },
+    {
+      "check": "HR created hire walk_b_1794205652119 through the UI",
+      "detail": "6af167dc9ffb9ee7eacddf67"
+    },
+    {
+      "check": "IT completing access before the jobs succeed is refused (UI disabled with message; API 400)",
+      "detail": "{\"provisioning\":\"Every job must succeed or be overridden before completing access.\"}"
+    },
+    {
+      "check": "provisioner replicas started"
+    },
+    {
+      "check": "hire A: three jobs succeeded through the provisioners",
+      "detail": "succeeded,succeeded,succeeded"
+    },
+    {
+      "check": "hire B: dead jobs visible in the panel",
+      "detail": "dead,dead,succeeded"
+    },
+    {
+      "check": "hire B: retry succeeded, override recorded, third job succeeded",
+      "detail": "succeeded,overridden,succeeded"
+    },
+    {
+      "check": "hire B: IT completed access after retry and override"
+    },
+    {
+      "check": "duplicate click on Complete (contract) produced exactly one completion",
+      "detail": "UI POSTs: 1"
+    },
+    {
+      "check": "all 20 steps done through the UI by hr, it, manager and employee",
+      "detail": 20
+    },
+    {
+      "check": "timeline lists every event in order",
+      "detail": "23 events"
+    },
+    {
+      "check": "final sign-off marked the workflow ready",
+      "detail": "ready"
+    },
+    {
+      "check": "logout then login replaces the identity in the same browser"
+    }
+  ],
+  "errors": [],
+  "timings": [
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/?page=1",
+      "ms": 52,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/?page=1",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 7,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/profile/",
+      "ms": 5,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/profile/complete/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/access/",
+      "ms": 6,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/access/complete/",
+      "ms": 3,
+      "status": 400
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167dc9ffb9ee7eacddf67/steps/profile/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167dc9ffb9ee7eacddf67/steps/profile/complete/",
+      "ms": 11,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167dc9ffb9ee7eacddf67/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/access/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167dc9ffb9ee7eacddf67/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167dc9ffb9ee7eacddf67/steps/access/",
+      "ms": 5,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167dc9ffb9ee7eacddf67/steps/access/complete/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167dc9ffb9ee7eacddf67/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 6,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/contract/",
+      "ms": 6,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/contract/complete/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 5,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/payroll/",
+      "ms": 3,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/payroll/complete/",
+      "ms": 11,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 3,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/policy/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/policy/complete/",
+      "ms": 5,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 3,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/equipment/",
+      "ms": 3,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/equipment/complete/",
+      "ms": 7,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/access/",
+      "ms": 7,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/access/complete/",
+      "ms": 11,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 7,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/mfa/",
+      "ms": 3,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/mfa/complete/",
+      "ms": 5,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 6,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 5,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/endpoint/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/endpoint/complete/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/it_handoff/",
+      "ms": 5,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/it_handoff/complete/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/mentor/",
+      "ms": 7,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/mentor/complete/",
+      "ms": 6,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 3,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/welcome/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/welcome/complete/",
+      "ms": 11,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 11,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 13,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/goals/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/goals/complete/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 10,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/calendar/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/calendar/complete/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 5,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 5,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/manager_signoff/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/manager_signoff/complete/",
+      "ms": 7,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 5,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/contact/",
+      "ms": 7,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/contact/complete/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/handbook/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/handbook/complete/",
+      "ms": 6,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 5,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/training/",
+      "ms": 6,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/training/complete/",
+      "ms": 14,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 10,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/receipt/",
+      "ms": 4,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/receipt/complete/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/feedback/",
+      "ms": 7,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/feedback/complete/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/ready/",
+      "ms": 10,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/steps/ready/complete/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 8,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/",
+      "ms": 9,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding/workflows/6af167db9ffb9ee7eacddf66/timeline/",
+      "ms": 9,
+      "status": 200
+    }
+  ],
+  "screenshots": [
+    "screens/02-workspace-list.png",
+    "screens/03-create-hire.png",
+    "screens/04-provisioning-pending.png",
+    "screens/06-provisioning-succeeded.png",
+    "screens/05-provisioning-dead.png",
+    "screens/07-provisioning-override.png",
+    "screens/08-task-form.png",
+    "screens/09-timeline.png",
+    "screens/10-ready-state.png",
+    "screens/11-manager-task-done.png",
+    "screens/12-employee-view.png"
+  ],
+  "attacks": [
+    {
+      "label": "access before provisioning",
+      "status": 400,
+      "body": {
+        "provisioning": "Every job must succeed or be overridden before completing access."
+      }
+    }
+  ],
+  "finalStatus": "ready",
+  "workflows": {
+    "A": "6af167db9ffb9ee7eacddf66",
+    "B": "6af167dc9ffb9ee7eacddf67"
+  },
+  "employees": {
+    "A": "walk_a_1794205652119",
+    "B": "walk_b_1794205652119"
+  },
+  "result": "PASS",
+  "finished": "2026-11-09T06:27:56.792Z"
+}
