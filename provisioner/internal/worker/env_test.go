@@ -103,6 +103,12 @@ func testContext(t *testing.T) context.Context {
 
 func newEnv(t *testing.T, policy jobs.Policy) *env {
 	t.Helper()
+	return newEnvMock(t, policy, mocksaas.Config{})
+}
+
+// newEnvMock is newEnv with extra mock-saas settings (HangDuration defaults to 3s).
+func newEnvMock(t *testing.T, policy jobs.Policy, mockCfg mocksaas.Config) *env {
+	t.Helper()
 	uri := os.Getenv("MONGO_URI")
 	if uri == "" {
 		t.Fatal("MONGO_URI is required: worker tests run against a real MongoDB and never skip")
@@ -141,7 +147,10 @@ func newEnv(t *testing.T, policy jobs.Policy) *env {
 	if err != nil {
 		t.Fatal(err)
 	}
-	mock, err := mocksaas.New(testContext(t), mockDB, mocksaas.Config{HangDuration: 3 * time.Second},
+	if mockCfg.HangDuration == 0 {
+		mockCfg.HangDuration = 3 * time.Second
+	}
+	mock, err := mocksaas.New(testContext(t), mockDB, mockCfg,
 		slog.New(slog.NewJSONHandler(io.Discard, nil)))
 	if err != nil {
 		t.Fatal(err)

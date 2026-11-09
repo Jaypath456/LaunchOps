@@ -40,12 +40,18 @@ type Account struct {
 	Department  string `json:"department" bson:"department"`
 }
 
+// requestRecord is the idempotency claim. AccountID is the account _id chosen before the claim exists, so
+// recovery can create or find exactly that account. Claim counts takeovers; StartedAt is the lease start.
+// Rows without AccountID predate recovery and are never taken over.
 type requestRecord struct {
-	Key         string `bson:"key"`
-	Fingerprint string `bson:"fingerprint"`
-	State       string `bson:"state"`
-	Status      int    `bson:"status"`
-	Body        []byte `bson:"body"`
+	Key         string    `bson:"key"`
+	Fingerprint string    `bson:"fingerprint"`
+	State       string    `bson:"state"`
+	Status      int       `bson:"status"`
+	Body        []byte    `bson:"body"`
+	AccountID   string    `bson:"account_id"`
+	StartedAt   time.Time `bson:"started_at"`
+	Claim       int32     `bson:"claim"`
 }
 
 type Stats struct {
@@ -55,6 +61,7 @@ type Stats struct {
 	ErrorFired           int64 `json:"error_fired" bson:"error_fired"`
 	HangFired            int64 `json:"hang_fired" bson:"hang_fired"`
 	DropAfterCommitFired int64 `json:"drop_after_commit_fired" bson:"drop_after_commit_fired"`
+	Takeovers            int64 `json:"takeovers" bson:"takeovers"`
 }
 
 // New constructs an in-process HTTP handler and creates the required unique indexes.
@@ -215,36 +222,131 @@ func (s *Service) createAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	connector := r.PathValue("connector")
+	fingerprint := fingerprintOf(connector, input)
+	ctx, cancel = context.WithTimeout(r.Context(), s.cfg.OperationTimeout)
+	defer cancel()
+	requests := s.db.Collection("requests")
+	claim := requestRecord{
+		Key: key, Fingerprint: fingerprint, State: "processing",
+		AccountID: bson.NewObjectID().Hex(), StartedAt: time.Now().UTC().Truncate(time.Millisecond),
+	}
+	_, err = requests.InsertOne(ctx, claim)
+	if mongo.IsDuplicateKeyError(err) {
+		var owned bool
+		claim, owned = s.existing(ctx, w, key, fingerprint)
+		if !owned {
+			return
+		}
+	} else if err != nil {
+		s.fail(w, err)
+		return
+	}
+	s.crashAt("after_claim")
+	s.finish(ctx, w, claim, connector, input, faults)
+}
+
+func fingerprintOf(connector string, input accountInput) string {
 	canonical, _ := json.Marshal(struct {
 		Connector string
 		Input     accountInput
 	}{connector, input})
 	hash := sha256.Sum256(canonical)
-	fingerprint := hex.EncodeToString(hash[:])
-	ctx, cancel = context.WithTimeout(r.Context(), s.cfg.OperationTimeout)
-	defer cancel()
+	return hex.EncodeToString(hash[:])
+}
+
+func (s *Service) crashAt(stage string) {
+	if s.cfg.Hooks.CrashAt != nil && s.cfg.Hooks.CrashAt(stage) {
+		panic(http.ErrAbortHandler)
+	}
+}
+
+// existing handles a key that already has a row. It answers the request itself (422, replay, 409 in
+// progress) unless the row is a stale `processing` claim that this request just won by compare-and-set;
+// then it returns the row it now owns and true.
+func (s *Service) existing(ctx context.Context, w http.ResponseWriter, key, fingerprint string) (requestRecord, bool) {
 	requests := s.db.Collection("requests")
-	_, err = requests.InsertOne(ctx, requestRecord{Key: key, Fingerprint: fingerprint, State: "processing"})
+	var stored requestRecord
+	if err := requests.FindOne(ctx, bson.M{"key": key}).Decode(&stored); err != nil {
+		s.fail(w, err)
+		return stored, false
+	}
+	if stored.Fingerprint != fingerprint {
+		writeJSON(w, http.StatusUnprocessableEntity, map[string]string{"error": "idempotency key body mismatch"})
+		return stored, false
+	}
+	switch stored.State {
+	case "done":
+		if err := s.increment(ctx, "replayed"); err != nil {
+			s.fail(w, err)
+			return stored, false
+		}
+		writeResponse(w, stored.Status, stored.Body)
+		return stored, false
+	case "processing":
+	default:
+		s.fail(w, errors.New("invalid stored request state"))
+		return stored, false
+	}
+	if stored.AccountID == "" || time.Since(stored.StartedAt) < s.cfg.ProcessingTimeout {
+		return stored, s.inProgress(ctx, w)
+	}
+	if s.cfg.Hooks.BeforeTakeover != nil {
+		s.cfg.Hooks.BeforeTakeover()
+	}
+	// Exactly one concurrent takeover matches the seen claim number; the others see it changed.
+	result, err := requests.UpdateOne(ctx,
+		bson.M{"key": key, "state": "processing", "claim": stored.Claim},
+		bson.M{"$set": bson.M{"started_at": time.Now().UTC().Truncate(time.Millisecond)}, "$inc": bson.M{"claim": 1}})
+	if err != nil {
+		s.fail(w, err)
+		return stored, false
+	}
+	if result.MatchedCount != 1 {
+		return stored, s.inProgress(ctx, w)
+	}
+	if err := s.increment(ctx, "takeovers"); err != nil {
+		s.fail(w, err)
+		return stored, false
+	}
+	stored.Claim++
+	return stored, true
+}
+
+// inProgress answers 409 "in progress" and reports false (the request is finished).
+func (s *Service) inProgress(ctx context.Context, w http.ResponseWriter) bool {
+	if err := s.increment(ctx, "in_progress_conflicts"); err != nil {
+		s.fail(w, err)
+		return false
+	}
+	writeJSON(w, http.StatusConflict, map[string]string{"error": "in progress"})
+	return false
+}
+
+// finish creates (or finds) the account with the claim's fixed id and completes the claim.
+func (s *Service) finish(ctx context.Context, w http.ResponseWriter, claim requestRecord, connector string, input accountInput, faults Faults) {
+	account := Account{claim.AccountID, connector, input.Username, input.DisplayName, input.Department}
+	_, err := s.db.Collection("accounts").InsertOne(ctx, account)
+	status := http.StatusCreated
 	if mongo.IsDuplicateKeyError(err) {
-		s.replay(ctx, w, key, fingerprint)
-		return
+		// Same _id: an earlier run of this claim already inserted it. Otherwise the connector/username
+		// belongs to an account created under another key.
+		err = s.db.Collection("accounts").FindOne(ctx, bson.M{"_id": claim.AccountID, "connector": connector, "username": input.Username}).Err()
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			status = http.StatusConflict
+			err = nil
+		}
 	}
 	if err != nil {
 		s.fail(w, err)
 		return
 	}
-	account := Account{bson.NewObjectID().Hex(), connector, input.Username, input.DisplayName, input.Department}
-	_, err = s.db.Collection("accounts").InsertOne(ctx, account)
-	status := http.StatusCreated
+	s.crashAt("after_account_insert")
 	body, _ := json.Marshal(account)
-	if mongo.IsDuplicateKeyError(err) {
-		status = http.StatusConflict
+	if status == http.StatusConflict {
 		body = []byte(`{"error":"account exists"}`)
-	} else if err != nil {
-		s.fail(w, err)
-		return
 	}
-	result, err := requests.UpdateOne(ctx, bson.M{"key": key, "state": "processing"},
+	result, err := s.db.Collection("requests").UpdateOne(ctx,
+		bson.M{"key": claim.Key, "state": "processing", "claim": claim.Claim},
 		bson.M{"$set": bson.M{"state": "done", "status": status, "body": body}})
 	if err != nil {
 		s.fail(w, err)
@@ -268,35 +370,6 @@ func (s *Service) createAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeResponse(w, status, body)
-}
-
-func (s *Service) replay(ctx context.Context, w http.ResponseWriter, key, fingerprint string) {
-	var stored requestRecord
-	if err := s.db.Collection("requests").FindOne(ctx, bson.M{"key": key}).Decode(&stored); err != nil {
-		s.fail(w, err)
-		return
-	}
-	if stored.Fingerprint != fingerprint {
-		writeJSON(w, http.StatusUnprocessableEntity, map[string]string{"error": "idempotency key body mismatch"})
-		return
-	}
-	if stored.State == "processing" {
-		if err := s.increment(ctx, "in_progress_conflicts"); err != nil {
-			s.fail(w, err)
-			return
-		}
-		writeJSON(w, http.StatusConflict, map[string]string{"error": "in progress"})
-		return
-	}
-	if stored.State != "done" {
-		s.fail(w, errors.New("invalid stored request state"))
-		return
-	}
-	if err := s.increment(ctx, "replayed"); err != nil {
-		s.fail(w, err)
-		return
-	}
-	writeResponse(w, stored.Status, stored.Body)
 }
 
 func (s *Service) accounts(w http.ResponseWriter, r *http.Request) {

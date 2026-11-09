@@ -211,6 +211,7 @@ func TestProcessingReturnsConflict(t *testing.T) {
 	}
 	_, err := s.db.Collection("requests").InsertOne(testContext(t), requestRecord{
 		Key: "pending", Fingerprint: stored.Fingerprint, State: "processing",
+		AccountID: bson.NewObjectID().Hex(), StartedAt: time.Now().UTC(),
 	})
 	if err != nil {
 		t.Fatal(err)
