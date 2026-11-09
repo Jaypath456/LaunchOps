@@ -30,6 +30,8 @@ class Command(BaseCommand):
                             help='Also add named, non-login demo workflows for browsing beyond 100 records.')
         parser.add_argument('--walkthrough-employee',
                             help='Create a fresh employee account without a workflow for the local browser walkthrough.')
+        parser.add_argument('--bulk-employees', type=int, default=0,
+                            help='Create named chaos employees without workflows for local API campaigns.')
 
     def handle(self, *args, **options):
         if not settings.DEBUG:
@@ -38,6 +40,10 @@ class Command(BaseCommand):
         users = get_users()
         walkthrough = options.get('walkthrough_employee')
         pagination = options.get('pagination_demo')
+        bulk = options.get('bulk_employees', 0)
+        if bulk < 0:
+            raise CommandError('Bulk employee count must be nonnegative. No data was changed.')
+        bulk_names = [f'chaos-employee-{number:04d}' for number in range(1, bulk + 1)]
 
         # MongoDB has no multi-document transaction here: preflight every collision before any write.
         if walkthrough is not None:
@@ -54,6 +60,12 @@ class Command(BaseCommand):
             collision = users.find_one({'username': {'$in': PAGINATION_USERS}, 'role': {'$ne': 'employee'}})
             if collision is not None:
                 raise CommandError(f'{collision["username"]} collides with an existing account. No data was changed.')
+        if bulk_names:
+            collision = users.find_one({'username': {'$in': bulk_names}, 'role': {'$ne': 'employee'}})
+            if collision is not None:
+                raise CommandError(f'{collision["username"]} collides with an existing account. No data was changed.')
+            if walkthrough in bulk_names:
+                raise CommandError('Walkthrough employee collides with a bulk employee. No data was changed.')
 
         ensure_indexes()
         for role in sorted(ROLES):
@@ -71,6 +83,11 @@ class Command(BaseCommand):
         if walkthrough is not None:
             users.insert_one({'username': walkthrough, 'display_name': walkthrough, 'role': 'employee',
                               'password': make_password(PASSWORD)})
+        for username in bulk_names:
+            users.update_one({'username': username, 'role': 'employee'}, {'$setOnInsert': {
+                'username': username, 'display_name': username, 'role': 'employee',
+                'password': make_password(None),
+            }}, upsert=True)
         if pagination:
             for username in PAGINATION_USERS:
                 users.update_one({'username': username, 'role': 'employee'}, {'$setOnInsert': {
