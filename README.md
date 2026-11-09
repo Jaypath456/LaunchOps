@@ -35,7 +35,7 @@ In another terminal, seed the local demo:
 docker compose -p launchops-v2 exec backend python manage.py seed_launchops
 ```
 
-The command inside the backend container is `python manage.py seed_launchops`. Seeding requires `DEBUG=True`, which is the Compose default. Open the frontend at `http://localhost:13000`; the API is at `http://localhost:18000/api` (default ports are defined in [Compose](docker-compose.yml); local environment overrides may change them). `GET /healthz` is unauthenticated and checks MongoDB; it returns `{"status":"ok"}` when available and an unavailable status when the ping fails.
+The command inside the backend container is `python manage.py seed_launchops`. Seeding requires `DEBUG=True`, which is the Compose default. Open the frontend at `http://localhost:13000`; the API is at `http://localhost:18000/api` (default ports are defined in [Compose](docker-compose.yml); override them with `FRONTEND_PORT`, `BACKEND_PORT`, `MONGO_PORT` and `MOCKSAAS_PORT`; if you change `FRONTEND_PORT`, also set `CORS_ALLOWED_ORIGINS` to the new frontend origin). `GET /healthz` is unauthenticated and checks MongoDB; it returns `{"status":"ok"}` when available and an unavailable status when the ping fails.
 
 | Role | Username |
 |---|---|
@@ -83,7 +83,7 @@ Step completion also requires `steps: {$elemMatch: {key, status: "open"}}`.
 `arrayFilters` selects the element to change; it cannot guard the document-level event append.  
 The same write stores the completion, event and any issue or final workflow state.  
 A lost compare-and-set rebuilds the decision against a fresh snapshot.  
-Either completion guard alone prevents duplicate completion; both are retained for their wider protections.  
+When every competing writer advances `version`, either completion guard alone prevents duplicate completion; the step guard also rejects a write that does not advance `version` or whose array filter matches no element. Both are retained.  
 `Idempotency-Key` is stored with the completion, and replays return the original completion without another event.  
 Permissions are checked before replay; event array order defines history.
 
@@ -98,7 +98,7 @@ Every claim advances the fence; stale workers cannot finish a newer claim.
 Attempts count the current retry round; IT manual retry resets attempts while preserving the fence.  
 Workers update their job element and append provisioning events without changing the business version.  
 Transient responses and transport failures retry with capped exponential backoff and full jitter.  
-Permanent errors or exhausted attempts leave a dead job for IT retry or override.  
+Permanent errors or exhausted attempts leave a dead job; if its external account already exists, IT reconciles it with a manual retry first and a verified override as the fallback.  
 The external idempotency key stays constant across attempts and replays the stored simulator response.  
 After drop-after-commit, a retry can recover an account that exists even though the caller received no response.
 
@@ -122,7 +122,7 @@ Each campaign's configuration is recorded independently:
 | [campaign-2](docs/evidence/chaos/campaign-2/config.json) | 120 | 3 | 10.0 | 15.0 | 35.0 | 0.2 | 0.05 | 0.1 | 3000 |
 | [campaign-3](docs/evidence/chaos/campaign-3/config.json) | 120 | 3 | 10.0 | 15.0 | 35.0 | 0.2 | 0.05 | 0.1 | 3000 |
 
-The snapshots include the seeded demo workflow as well as campaign hires, as described in the [campaign guide](docs/evidence/chaos/README.md). `passed: true` includes explicit reporting of `dead_with_accounts`; it does not mean every job succeeded. Known outcomes requiring IT override are `workspace / chaos-employee-0086` in [campaign-1](docs/evidence/chaos/campaign-1/verify.json), `slack / chaos-employee-0092` in [campaign-2](docs/evidence/chaos/campaign-2/verify.json), and `github / chaos-employee-0082` plus `slack / chaos-employee-0096` in [campaign-3](docs/evidence/chaos/campaign-3/verify.json). The verifier checks account references and terminal states and reports these ambiguous side effects; it does not establish availability or behavior under host or database loss.
+The snapshots include the seeded demo workflow as well as campaign hires, as described in the [campaign guide](docs/evidence/chaos/README.md). `passed: true` includes explicit reporting of `dead_with_accounts`; it does not mean every job succeeded. Known dead jobs whose account already exists, which IT resolves by reconciliation (a manual retry first, since the same idempotency key makes the simulator replay the stored response, then a verified override as the fallback), are `workspace / chaos-employee-0086` in [campaign-1](docs/evidence/chaos/campaign-1/verify.json), `slack / chaos-employee-0092` in [campaign-2](docs/evidence/chaos/campaign-2/verify.json), and `github / chaos-employee-0082` plus `slack / chaos-employee-0096` in [campaign-3](docs/evidence/chaos/campaign-3/verify.json). The verifier checks account references and terminal states and reports these ambiguous side effects; it does not establish availability or behavior under host or database loss.
 
 ## Boundaries
 

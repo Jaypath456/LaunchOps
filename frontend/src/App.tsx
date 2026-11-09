@@ -1,8 +1,9 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
+import ErrorBoundary from './components/ErrorBoundary';
 
 import Login from './pages/auth/Login';
 import Landing from './pages/auth/Landing';
@@ -26,6 +27,15 @@ function AppRoutes(): React.JSX.Element {
   );
 }
 
+function RoutedApp(): React.JSX.Element {
+  const { pathname } = useLocation();
+  return (
+    <ErrorBoundary resetKey={pathname}>
+      <AppRoutes />
+    </ErrorBoundary>
+  );
+}
+
 export default function App(): React.JSX.Element {
   return (
     <BrowserRouter>
@@ -33,7 +43,7 @@ export default function App(): React.JSX.Element {
         {/* Global UI Components rendered outside of Routes */}
         <Navbar />
         <main>
-          <AppRoutes />
+          <RoutedApp />
         </main>
       </AuthProvider>
     </BrowserRouter>
