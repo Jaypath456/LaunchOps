@@ -1,6 +1,7 @@
 package mocksaas
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
@@ -61,6 +62,7 @@ type Stats struct {
 	ErrorFired           int64 `json:"error_fired" bson:"error_fired"`
 	HangFired            int64 `json:"hang_fired" bson:"hang_fired"`
 	DropAfterCommitFired int64 `json:"drop_after_commit_fired" bson:"drop_after_commit_fired"`
+	LatencyFired         int64 `json:"latency_fired" bson:"latency_fired"`
 	Takeovers            int64 `json:"takeovers" bson:"takeovers"`
 }
 
@@ -180,6 +182,33 @@ func (s *Service) createAccount(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		s.fail(w, err)
 		return
+	}
+	if faults.LatencyMS > 0 {
+		// Consume the wire body so net/http can detect a disconnect during the delay,
+		// then restore it for the existing validation path. No claim/account is written.
+		body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, 64<<10))
+		if err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid request body"})
+			return
+		}
+		r.Body = io.NopCloser(bytes.NewReader(body))
+		ctx, cancel := context.WithTimeout(r.Context(), s.cfg.OperationTimeout)
+		err = s.increment(ctx, "latency_fired")
+		cancel()
+		if err != nil {
+			s.fail(w, err)
+			return
+		}
+		timer := time.NewTimer(time.Duration(faults.LatencyMS) * time.Millisecond)
+		defer timer.Stop()
+		select {
+		case <-timer.C:
+		case <-r.Context().Done():
+			return
+		}
+		if r.Context().Err() != nil {
+			return
+		}
 	}
 	if rand.Float64() < faults.ErrorRate {
 		ctx, cancel := context.WithTimeout(r.Context(), s.cfg.OperationTimeout)
@@ -409,14 +438,33 @@ func (s *Service) stats(w http.ResponseWriter, r *http.Request) {
 func (s *Service) faults(w http.ResponseWriter, r *http.Request) {
 	// Apply only supplied fields in one write, so concurrent partial updates cannot
 	// overwrite unrelated settings. Invalid updates change nothing.
-	var patch map[string]*float64
-	if err := decode(w, r, &patch); err != nil || patch == nil || len(patch) == 0 {
+	var supplied map[string]json.RawMessage
+	if err := decode(w, r, &supplied); err != nil || supplied == nil || len(supplied) == 0 {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "expected fault rates"})
 		return
 	}
-	for key, rate := range patch {
+	patch := bson.M{}
+	for key, value := range supplied {
+		if key == "latency_ms" {
+			var latency *int
+			if err := json.Unmarshal(value, &latency); err != nil || latency == nil {
+				writeJSON(w, http.StatusBadRequest, map[string]string{"error": "latency_ms must be an integer"})
+				return
+			}
+			if err := (Faults{LatencyMS: *latency}).validate(); err != nil {
+				writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+				return
+			}
+			patch[key] = *latency
+			continue
+		}
 		if key != "error_rate" && key != "hang_rate" && key != "drop_after_commit_rate" {
 			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "unknown fault rate"})
+			return
+		}
+		var rate *float64
+		if err := json.Unmarshal(value, &rate); err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 			return
 		}
 		if rate == nil {
@@ -427,6 +475,7 @@ func (s *Service) faults(w http.ResponseWriter, r *http.Request) {
 			writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 			return
 		}
+		patch[key] = *rate
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), s.cfg.OperationTimeout)
 	defer cancel()

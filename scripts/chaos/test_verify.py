@@ -13,7 +13,7 @@ from verify import verify
 
 class VerifyTests(unittest.TestCase):
     def setUp(self):
-        self.config = {'hires': 1, 'kill_every': 10}
+        self.config = {'hires': 1, 'kill_every': 10, 'pause_every': 10}
         self.created = [{'id': 'hire', 'employee': 'chaos-employee-0001'}]
         self.workflows = []
         self.accounts = []
@@ -29,9 +29,11 @@ class VerifyTests(unittest.TestCase):
         self.logs = json.dumps({'outcome': 'fence_rejected', 'job_key': 'hire:workspace',
                                 'fence': 1, 'worker_id': 'worker'})
         self.kills = [{'container': 'worker', 'at': 'synthetic'}]
+        self.pauses = [{'container': 'worker', 'start': 'synthetic start', 'end': 'synthetic end'}]
 
     def result(self):
-        return verify(self.config, self.workflows, self.accounts, self.stats, self.logs, self.kills, self.created)
+        return verify(self.config, self.workflows, self.accounts, self.stats, self.logs, self.kills,
+                      self.created, self.pauses)
 
     def test_complete_campaign_passes(self):
         self.assertTrue(self.result()['passed'])
@@ -104,6 +106,44 @@ class VerifyTests(unittest.TestCase):
         self.logs = self.logs + '\n' + self.logs
         self.assertEqual(self.result()['counts']['fence_rejections'], 1)
 
+    def test_fence_rejection_is_not_required_without_pauses(self):
+        self.pauses.clear()
+        self.logs = ''
+        for interval in (0, 10):
+            with self.subTest(pause_every=interval):
+                self.config['pause_every'] = interval
+                result = self.result()
+                self.assertTrue(result['passed'])
+                self.assertEqual(result['counts']['pauses'], 0)
+                self.assertEqual(result['fault_requirements']['fence_rejections'], 'not required')
+                self.assertNotIn('Fault not exercised: fence_rejections', result['failures'])
+
+    def test_pause_requires_fence_rejection_even_if_interval_is_disabled(self):
+        self.logs = ''
+        self.config['pause_every'] = 0
+        result = self.result()
+        self.assertFalse(result['passed'])
+        self.assertTrue(result['invariants_passed'])
+        self.assertEqual(result['counts']['pauses'], 1)
+        self.assertEqual(result['fault_requirements']['fence_rejections'], 'required')
+        self.assertIn('Fault not exercised: fence_rejections', result['failures'])
+
+    def test_pause_without_end_time_fails_invariants(self):
+        for end in (None, ''):
+            with self.subTest(end=end):
+                self.pauses[0]['end'] = end
+                self.assertFalse(self.result()['invariants_passed'])
+                self.assertIn('Pause has no end time: worker', self.result()['failures'])
+        del self.pauses[0]['end']
+        self.assertFalse(self.result()['passed'])
+
+    def test_latency_count_is_reported_without_requiring_latency(self):
+        self.assertEqual(self.result()['counts']['latency_fired'], 0)
+        self.stats['latency_fired'] = 3
+        self.assertEqual(self.result()['counts']['latency_fired'], 3)
+        self.stats['latency_fired'] = 0
+        self.assertTrue(self.result()['passed'])
+
     def test_overridden_is_terminal(self):
         self.workflows[0]['provisioning'][0]['status'] = 'overridden'
         self.assertTrue(self.result()['passed'])
@@ -117,15 +157,18 @@ class VerifyTests(unittest.TestCase):
                 (root / name).write_text(json.dumps(value))
             (root / 'provisioner.log').write_text(self.logs)
             (root / 'kills.jsonl').write_text(''.join(json.dumps(kill) + '\n' for kill in self.kills))
+            (root / 'pauses.jsonl').write_text(''.join(json.dumps(pause) + '\n' for pause in self.pauses))
             command = [sys.executable, str(Path(__file__).with_name('verify.py')), directory, *args]
             process = subprocess.run(command, capture_output=True, text=True, check=False)
             return process.returncode, json.loads((root / 'verify.json').read_text())
 
     def disable_faults(self):
         self.config['kill_every'] = 0
+        self.config['pause_every'] = 0
         self.stats = {key: 0 for key in self.stats}
         self.logs = ''
         self.kills.clear()
+        self.pauses.clear()
 
     def test_explicit_dry_run_checks_invariants_without_claiming_campaign_pass(self):
         self.disable_faults()
@@ -136,7 +179,7 @@ class VerifyTests(unittest.TestCase):
         self.assertTrue(result['invariants_passed'])
         self.assertFalse(result['passed'])
         self.assertEqual(set(result['failures']), {
-            f'Fault not exercised: {fault}' for fault in ('replays', 'fence_rejections', 'kills', 'drops')})
+            f'Fault not exercised: {fault}' for fault in ('replays', 'kills', 'drops')})
 
     def test_disabled_kills_do_not_relax_default_campaign_cli(self):
         self.disable_faults()
@@ -174,6 +217,20 @@ class VerifyTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertFalse(result['dry_run_passed'])
         self.assertIn('Dry-run verification requires KILL_EVERY=0', result['failures'][0])
+
+    def test_dry_run_refuses_configuration_with_pauses_enabled(self):
+        self.disable_faults()
+        self.config['pause_every'] = 1
+        code, result = self.run_cli('--dry-run')
+        self.assertEqual(code, 1)
+        self.assertIn('Dry-run verification requires PAUSE_EVERY=0', result['failures'][0])
+
+    def test_dry_run_refuses_pause_records(self):
+        self.disable_faults()
+        self.pauses.append({'container': 'worker', 'start': 'start', 'end': None})
+        code, result = self.run_cli('--dry-run')
+        self.assertEqual(code, 1)
+        self.assertFalse(result['dry_run_passed'])
 
     def test_dry_run_missing_evidence_still_exits_nonzero(self):
         with tempfile.TemporaryDirectory() as directory:

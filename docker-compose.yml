@@ -27,6 +27,7 @@ services:
       ERROR_RATE: ${ERROR_RATE:-0}
       HANG_RATE: ${HANG_RATE:-0}
       DROP_AFTER_COMMIT_RATE: ${DROP_AFTER_COMMIT_RATE:-0}
+      LATENCY_MS: ${LATENCY_MS:-0}
     ports:
       - "${MOCKSAAS_PORT:-18080}:8080"
     healthcheck:

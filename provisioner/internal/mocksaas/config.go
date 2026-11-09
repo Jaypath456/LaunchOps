@@ -13,9 +13,13 @@ type Faults struct {
 	ErrorRate           float64 `json:"error_rate" bson:"error_rate"`
 	HangRate            float64 `json:"hang_rate" bson:"hang_rate"`
 	DropAfterCommitRate float64 `json:"drop_after_commit_rate" bson:"drop_after_commit_rate"`
+	LatencyMS           int     `json:"latency_ms" bson:"latency_ms"`
 }
 
 func (f Faults) validate() error {
+	if f.LatencyMS < 0 || f.LatencyMS > 10000 {
+		return fmt.Errorf("latency_ms must be between 0 and 10000")
+	}
 	for _, rate := range []float64{f.ErrorRate, f.HangRate, f.DropAfterCommitRate} {
 		if math.IsNaN(rate) || math.IsInf(rate, 0) || rate < 0 || rate > 1 {
 			return fmt.Errorf("fault rates must be finite and between 0 and 1")
@@ -83,6 +87,13 @@ func (c Config) validate() error {
 // ConfigFromEnv reads startup defaults. Runtime fault settings are persisted in MongoDB.
 func ConfigFromEnv() (Config, error) {
 	c := Config{MongoURI: os.Getenv("MONGO_URI"), Database: os.Getenv("MOCKSAAS_DB"), Address: os.Getenv("MOCKSAAS_ADDR")}.defaults()
+	if value, ok := os.LookupEnv("LATENCY_MS"); ok {
+		parsed, err := strconv.Atoi(value)
+		if err != nil {
+			return Config{}, fmt.Errorf("LATENCY_MS: %w", err)
+		}
+		c.Faults.LatencyMS = parsed
+	}
 	for name, target := range map[string]*float64{
 		"ERROR_RATE":             &c.Faults.ErrorRate,
 		"HANG_RATE":              &c.Faults.HangRate,

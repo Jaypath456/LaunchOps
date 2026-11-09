@@ -55,6 +55,7 @@ def main():
     parser.add_argument('--error-rate', type=float, default=0.2)
     parser.add_argument('--hang-rate', type=float, default=0.05)
     parser.add_argument('--drop-rate', type=float, default=0.1)
+    parser.add_argument('--latency-ms', type=int, default=0)
     args = parser.parse_args()
     if args.action == 'create':
         result = create(args.hires)
@@ -73,7 +74,7 @@ def main():
         body = None
         if args.action == 'faults':
             body = {'error_rate': args.error_rate, 'hang_rate': args.hang_rate,
-                    'drop_after_commit_rate': args.drop_rate}
+                    'drop_after_commit_rate': args.drop_rate, 'latency_ms': args.latency_ms}
         result = request('http://mock-saas:8080', '/admin/' + args.action, body)
     print(json.dumps(result, default=str, indent=2))
 

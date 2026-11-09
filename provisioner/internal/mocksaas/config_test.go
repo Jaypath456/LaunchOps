@@ -2,12 +2,13 @@ package mocksaas
 
 import (
 	"math"
+	"os"
 	"testing"
 	"time"
 )
 
 func TestConfigFromEnv(t *testing.T) {
-	for _, name := range []string{"MONGO_URI", "MOCKSAAS_DB", "MOCKSAAS_ADDR", "ERROR_RATE", "HANG_RATE", "DROP_AFTER_COMMIT_RATE", "MOCKSAAS_HANG_DURATION", "MOCKSAAS_OPERATION_TIMEOUT", "MOCKSAAS_SHUTDOWN_TIMEOUT", "PROCESSING_TIMEOUT"} {
+	for _, name := range []string{"MONGO_URI", "MOCKSAAS_DB", "MOCKSAAS_ADDR", "ERROR_RATE", "HANG_RATE", "DROP_AFTER_COMMIT_RATE", "LATENCY_MS", "MOCKSAAS_HANG_DURATION", "MOCKSAAS_OPERATION_TIMEOUT", "MOCKSAAS_SHUTDOWN_TIMEOUT", "PROCESSING_TIMEOUT"} {
 		t.Setenv(name, "")
 	}
 	// Empty numeric/duration variables are invalid rather than silently defaulted.
@@ -20,6 +21,7 @@ func TestConfigFromEnv(t *testing.T) {
 	t.Setenv("ERROR_RATE", "0")
 	t.Setenv("HANG_RATE", "0.25")
 	t.Setenv("DROP_AFTER_COMMIT_RATE", "1")
+	t.Setenv("LATENCY_MS", "250")
 	t.Setenv("MOCKSAAS_HANG_DURATION", "2m")
 	t.Setenv("MOCKSAAS_OPERATION_TIMEOUT", "3s")
 	t.Setenv("MOCKSAAS_SHUTDOWN_TIMEOUT", "4s")
@@ -28,7 +30,7 @@ func TestConfigFromEnv(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if cfg.MongoURI != "mongodb://example:27017" || cfg.Database != "custom" || cfg.Address != ":9090" || cfg.Faults != (Faults{HangRate: 0.25, DropAfterCommitRate: 1}) || cfg.HangDuration != 2*time.Minute || cfg.OperationTimeout != 3*time.Second || cfg.ShutdownTimeout != 4*time.Second || cfg.ProcessingTimeout != 7*time.Second {
+	if cfg.MongoURI != "mongodb://example:27017" || cfg.Database != "custom" || cfg.Address != ":9090" || cfg.Faults != (Faults{HangRate: 0.25, DropAfterCommitRate: 1, LatencyMS: 250}) || cfg.HangDuration != 2*time.Minute || cfg.OperationTimeout != 3*time.Second || cfg.ShutdownTimeout != 4*time.Second || cfg.ProcessingTimeout != 7*time.Second {
 		t.Fatalf("config = %+v", cfg)
 	}
 	for _, value := range []string{"-1", "1.01", "NaN", "+Inf", "bad"} {
@@ -46,6 +48,31 @@ func TestConfigFromEnv(t *testing.T) {
 			}
 		}
 		t.Setenv(name, "5s")
+	}
+}
+
+func TestLatencyConfigFromEnv(t *testing.T) {
+	for _, name := range []string{"ERROR_RATE", "HANG_RATE", "DROP_AFTER_COMMIT_RATE"} {
+		t.Setenv(name, "0")
+	}
+	for _, value := range []string{"", "-1", "10001", "1.5", "NaN", "bad"} {
+		t.Setenv("LATENCY_MS", value)
+		if _, err := ConfigFromEnv(); err == nil {
+			t.Fatalf("accepted LATENCY_MS=%q", value)
+		}
+	}
+	for _, value := range []string{"0", "10000"} {
+		t.Setenv("LATENCY_MS", value)
+		if _, err := ConfigFromEnv(); err != nil {
+			t.Fatalf("rejected LATENCY_MS=%q: %v", value, err)
+		}
+	}
+	if err := os.Unsetenv("LATENCY_MS"); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := ConfigFromEnv()
+	if err != nil || cfg.Faults.LatencyMS != 0 {
+		t.Fatalf("default latency = %d, error = %v", cfg.Faults.LatencyMS, err)
 	}
 }
 

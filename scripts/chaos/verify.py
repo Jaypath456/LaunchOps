@@ -8,7 +8,7 @@ from pathlib import Path
 import re
 
 
-def verify(config, workflows, accounts, stats, logs, kills, created):
+def verify(config, workflows, accounts, stats, logs, kills, created, pauses=()):
     failures = []
     reports = []
     jobs = []
@@ -54,6 +54,9 @@ def verify(config, workflows, accounts, stats, logs, kills, created):
                             'reason': 'Account exists although job is dead; IT override required'})
     for key in set(account_keys) - set(job_keys):
         failures.append(f'{":".join(key)}: simulator account has no job')
+    for pause in pauses:
+        if not pause.get('end'):
+            failures.append(f'Pause has no end time: {pause.get("container", "unknown")}')
 
     # Count structured finish records once per attempt: store and worker can both log rejection.
     rejected = set()
@@ -66,13 +69,19 @@ def verify(config, workflows, accounts, stats, logs, kills, created):
             if all(key in record for key in ('job_key', 'fence', 'worker_id')):
                 rejected.add((record['job_key'], record['fence'], record['worker_id']))
     exercised = {'replays': stats['replayed'], 'fence_rejections': len(rejected),
-                 'kills': len(kills), 'drops': stats['drop_after_commit_fired']}
+                 'kills': len(kills), 'drops': stats['drop_after_commit_fired'],
+                 'pauses': len(pauses), 'latency_fired': stats.get('latency_fired', 0)}
+    required = ['replays', 'kills', 'drops']
+    if pauses:
+        required.append('fence_rejections')
     invariants_passed = not failures
-    for fault, count in exercised.items():
+    for fault in required:
+        count = exercised[fault]
         if not isinstance(count, int) or isinstance(count, bool) or count <= 0:
             failures.append(f'Fault not exercised: {fault}')
     return {'passed': not failures, 'invariants_passed': invariants_passed,
             'failures': failures, 'dead_with_accounts': reports,
+            'fault_requirements': {'fence_rejections': 'required' if pauses else 'not required'},
             'counts': {'workflows': len(workflows), 'jobs': len(jobs), 'accounts': len(accounts),
                        'statuses': dict(Counter(j['status'] for j in jobs)), **exercised}}
 
@@ -81,7 +90,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('evidence', type=Path)
     parser.add_argument('--dry-run', action='store_true',
-                        help='Check tooling with kills disabled; still report full campaign verification failures.')
+                        help='Check tooling with kills and pauses disabled; still report campaign fault failures.')
     args = parser.parse_args()
     root = args.evidence
     try:
@@ -90,10 +99,18 @@ def main():
         config = read('config.json')
         if args.dry_run and config.get('kill_every') != 0:
             raise ValueError('Dry-run verification requires KILL_EVERY=0')
+        if args.dry_run and config.get('pause_every', 0) != 0:
+            raise ValueError('Dry-run verification requires PAUSE_EVERY=0')
+        # Older kill-only evidence has no pause file. A pause-enabled run must have one.
+        pause_file = root / 'pauses.jsonl'
+        pauses = ([json.loads(line) for line in pause_file.read_text().splitlines()]
+                  if pause_file.exists() or config.get('pause_every', 0) != 0 else [])
+        if args.dry_run and pauses:
+            raise ValueError('Dry-run evidence must not contain pauses')
         result = verify(config, read('jobs.json'), read('mocksaas-accounts.json'),
                         read('mocksaas-stats.json'), (root / 'provisioner.log').read_text(),
                         [json.loads(line) for line in (root / 'kills.jsonl').read_text().splitlines()],
-                        read('created.json'))
+                        read('created.json'), pauses)
     except (OSError, ValueError, KeyError, TypeError) as exc:
         result = {'passed': False, 'invariants_passed': False,
                   'failures': [f'Invalid or missing evidence: {exc}'], 'dead_with_accounts': []}
