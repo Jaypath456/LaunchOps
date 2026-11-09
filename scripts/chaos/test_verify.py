@@ -21,9 +21,11 @@ class VerifyTests(unittest.TestCase):
             jobs = []
             for connector in ['workspace', 'slack', 'github']:
                 ref = f'{username}:{connector}'
-                jobs.append({'connector': connector, 'payload': {'username': username},
+                payload = {'username': username, 'display_name': username, 'department': 'Engineering'}
+                jobs.append({'connector': connector, 'payload': payload,
                              'status': 'succeeded', 'external_ref': ref, 'last_error': None})
-                self.accounts.append({'connector': connector, 'username': username, 'external_ref': ref})
+                self.accounts.append({'connector': connector, 'username': username, 'external_ref': ref,
+                                      'display_name': username, 'department': 'Engineering'})
             self.workflows.append({'id': workflow_id, 'provisioning': jobs})
         self.stats = {'replayed': 1, 'drop_after_commit_fired': 1}
         self.logs = json.dumps({'outcome': 'fence_rejected', 'job_key': 'hire:workspace',
@@ -64,6 +66,8 @@ class VerifyTests(unittest.TestCase):
         result = self.result()
         self.assertTrue(result['passed'])
         self.assertEqual(len(result['dead_with_accounts']), 1)
+        self.assertIn('IT reconciliation required (retry or verified override)',
+                      result['dead_with_accounts'][0]['reason'])
         self.accounts.pop(0)
         self.assertEqual(self.result()['dead_with_accounts'], [])
 
@@ -72,6 +76,77 @@ class VerifyTests(unittest.TestCase):
         self.assertFalse(self.result()['passed'])
         self.accounts[-1] = deepcopy(self.accounts[0])
         self.assertFalse(self.result()['passed'])
+
+    def test_duplicate_external_refs_fail_even_when_job_refs_match(self):
+        shared = self.accounts[0]['external_ref']
+        self.accounts[1]['external_ref'] = shared
+        self.workflows[0]['provisioning'][1]['external_ref'] = shared
+        result = self.result()
+        self.assertFalse(result['passed'])
+        self.assertFalse(result['invariants_passed'])
+        self.assertIn('Duplicate simulator account external references', result['failures'])
+
+    def test_account_refs_must_be_nonempty_strings_even_for_dead_jobs(self):
+        self.workflows[0]['provisioning'][0].update(status='dead', last_error='timeout')
+        for reference in (None, '', '   ', 123, []):
+            with self.subTest(reference=reference):
+                self.accounts[0]['external_ref'] = reference
+                result = self.result()
+                self.assertFalse(result['invariants_passed'])
+                self.assertIn('Simulator account has an invalid external_ref', result['failures'])
+        del self.accounts[0]['external_ref']
+        # A malformed account must fail closed through the CLI as well.
+        code, result = self.run_cli()
+        self.assertEqual(code, 1)
+        self.assertFalse(result['invariants_passed'])
+
+    def test_account_payload_matches_job_in_every_terminal_state(self):
+        for status in ('succeeded', 'dead', 'overridden'):
+            for field in ('display_name', 'department'):
+                for value in ('wrong', None, 123):
+                    with self.subTest(status=status, field=field, value=value):
+                        original = self.accounts[0][field]
+                        self.workflows[0]['provisioning'][0]['status'] = status
+                        self.accounts[0][field] = value
+                        result = self.result()
+                        self.assertFalse(result['passed'])
+                        self.assertFalse(result['invariants_passed'])
+                        self.accounts[0][field] = original
+
+    def test_missing_payload_fields_fail_even_when_both_sides_omit_them(self):
+        for field in ('display_name', 'department'):
+            with self.subTest(field=field):
+                account = deepcopy(self.accounts[0])
+                payload = deepcopy(self.workflows[0]['provisioning'][0]['payload'])
+                del self.accounts[0][field]
+                self.assertFalse(self.result()['invariants_passed'])
+                del self.workflows[0]['provisioning'][0]['payload'][field]
+                self.assertFalse(self.result()['invariants_passed'])
+                self.accounts[0] = account
+                self.workflows[0]['provisioning'][0]['payload'] = payload
+
+    def test_matching_empty_payload_strings_remain_valid(self):
+        for field in ('display_name', 'department'):
+            self.accounts[0][field] = self.workflows[0]['provisioning'][0]['payload'][field] = ''
+        self.assertTrue(self.result()['passed'])
+
+    def test_cli_rejects_reference_alias_and_wrong_payload_in_both_modes(self):
+        for mode in ((), ('--dry-run',)):
+            for mutation in ('reference', 'payload'):
+                with self.subTest(mode=mode, mutation=mutation):
+                    if mode:
+                        self.disable_faults()
+                    original = deepcopy((self.workflows, self.accounts))
+                    if mutation == 'reference':
+                        shared = self.accounts[0]['external_ref']
+                        self.accounts[1]['external_ref'] = shared
+                        self.workflows[0]['provisioning'][1]['external_ref'] = shared
+                    else:
+                        self.accounts[0]['department'] = 'wrong'
+                    code, result = self.run_cli(*mode)
+                    self.assertEqual(code, 1)
+                    self.assertFalse(result['invariants_passed'])
+                    self.workflows, self.accounts = original
 
     def test_missing_and_duplicate_jobs_fail(self):
         job = self.workflows[0]['provisioning'].pop()

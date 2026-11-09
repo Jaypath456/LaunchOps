@@ -35,6 +35,12 @@ def verify(config, workflows, accounts, stats, logs, kills, created, pauses=()):
         failures.append('Duplicate job account identities')
     if len(set(account_keys)) != len(account_keys):
         failures.append('Duplicate simulator account identities')
+    references = [a.get('external_ref') for a in accounts]
+    valid_references = [ref for ref in references if isinstance(ref, str) and ref.strip()]
+    if len(valid_references) != len(references):
+        failures.append('Simulator account has an invalid external_ref')
+    if len(set(valid_references)) != len(valid_references):
+        failures.append('Duplicate simulator account external references')
     by_account = {(a['connector'], a['username']): a for a in accounts}
     for job in jobs:
         key = (job['connector'], job['payload']['username'])
@@ -46,12 +52,19 @@ def verify(config, workflows, accounts, stats, logs, kills, created, pauses=()):
             not account or not job.get('external_ref') or job['external_ref'] != account['external_ref']
         ):
             failures.append(f'{label}: succeeded external_ref does not match simulator account')
+        if account and any(
+            not isinstance(job['payload'].get(field), str)
+            or account.get(field) != job['payload'][field]
+            for field in ('display_name', 'department')
+        ):
+            failures.append(f'{label}: simulator account payload does not match job')
         error = job.get('last_error') or ''
         if job['status'] == 'dead' and re.search(r'\b409\b', error) and 'in progress' not in error.lower():
             failures.append(f'{label}: dead from account conflict: {error}')
         if job['status'] == 'dead' and account:
             reports.append({'connector': key[0], 'username': key[1], 'external_ref': account['external_ref'],
-                            'reason': 'Account exists although job is dead; IT override required'})
+                            'reason': ('Account exists although job is dead; '
+                                       'IT reconciliation required (retry or verified override)')})
     for key in set(account_keys) - set(job_keys):
         failures.append(f'{":".join(key)}: simulator account has no job')
     for pause in pauses:
