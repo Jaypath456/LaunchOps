@@ -1,0 +1,22 @@
+{
+  "passed": false,
+  "invariants_passed": true,
+  "failures": [
+    "Fault not exercised: fence_rejections"
+  ],
+  "dead_with_accounts": [],
+  "counts": {
+    "workflows": 101,
+    "jobs": 303,
+    "accounts": 302,
+    "statuses": {
+      "succeeded": 302,
+      "dead": 1
+    },
+    "replays": 26,
+    "fence_rejections": 0,
+    "kills": 3,
+    "drops": 26
+  },
+  "mode": "campaign"
+}
