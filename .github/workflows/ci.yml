@@ -7,7 +7,7 @@ on:
 
 jobs:
   backend:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       MONGO_URI: mongodb://localhost:27017
       MONGO_DB: launchops_ci
@@ -21,11 +21,12 @@ jobs:
       - name: Start MongoDB
         working-directory: .
         run: |
-          docker run -d --name mongo -p 27017:27017 mongo:8
+          out=$(docker run -d --name mongo -p 27017:27017 mongo:8.0 2>&1) || { echo "::error title=docker run failed::$(echo "$out" | tr '\n' ' ' | cut -c1-900)"; exit 1; }
           for i in $(seq 1 30); do
             if docker exec mongo mongosh --quiet --eval 'db.adminCommand({ping:1}).ok' | grep -q 1; then exit 0; fi
             sleep 2
           done
+          echo "::error title=MongoDB did not become ready::arch=$(uname -m) avx=$(grep -m1 -o -E 'avx2|avx' /proc/cpuinfo | head -1) state=$(docker inspect mongo --format '{{.State.Status}} exit={{.State.ExitCode}} {{.State.Error}}') logs=$(docker logs --tail 15 mongo 2>&1 | tr '\n' ' ' | cut -c1-900)"
           docker logs mongo
           exit 1
       - uses: actions/setup-python@v5
@@ -39,7 +40,7 @@ jobs:
       - run: python -m unittest discover -s ../scripts/chaos -v
 
   provisioner:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       MONGO_URI: mongodb://localhost:27017
     defaults:
@@ -50,11 +51,12 @@ jobs:
       - name: Start MongoDB
         working-directory: .
         run: |
-          docker run -d --name mongo -p 27017:27017 mongo:8
+          out=$(docker run -d --name mongo -p 27017:27017 mongo:8.0 2>&1) || { echo "::error title=docker run failed::$(echo "$out" | tr '\n' ' ' | cut -c1-900)"; exit 1; }
           for i in $(seq 1 30); do
             if docker exec mongo mongosh --quiet --eval 'db.adminCommand({ping:1}).ok' | grep -q 1; then exit 0; fi
             sleep 2
           done
+          echo "::error title=MongoDB did not become ready::arch=$(uname -m) avx=$(grep -m1 -o -E 'avx2|avx' /proc/cpuinfo | head -1) state=$(docker inspect mongo --format '{{.State.Status}} exit={{.State.ExitCode}} {{.State.Error}}') logs=$(docker logs --tail 15 mongo 2>&1 | tr '\n' ' ' | cut -c1-900)"
           docker logs mongo
           exit 1
       - uses: actions/setup-go@v5
