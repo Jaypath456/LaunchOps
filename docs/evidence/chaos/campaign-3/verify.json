@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "invariants_passed": true,
+  "failures": [],
+  "dead_with_accounts": [
+    {
+      "connector": "github",
+      "username": "chaos-employee-0082",
+      "external_ref": "6af15c51cfec60965693e31b",
+      "reason": "Account exists although job is dead; IT override required"
+    },
+    {
+      "connector": "slack",
+      "username": "chaos-employee-0096",
+      "external_ref": "6af15c4fcfec60965693e315",
+      "reason": "Account exists although job is dead; IT override required"
+    }
+  ],
+  "fault_requirements": {
+    "fence_rejections": "required"
+  },
+  "counts": {
+    "workflows": 121,
+    "jobs": 363,
+    "accounts": 363,
+    "statuses": {
+      "succeeded": 361,
+      "dead": 2
+    },
+    "replays": 76,
+    "fence_rejections": 4,
+    "kills": 34,
+    "drops": 43,
+    "pauses": 23,
+    "latency_fired": 635
+  },
+  "mode": "campaign"
+}

@@ -1,0 +1,201 @@
+ Image launchops-chaos-mock-saas Building 
+ Image launchops-chaos-provisioner Building 
+ Image launchops-chaos-backend Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.62kB done
+#1 DONE 0.0s
+
+#2 [mock-saas internal] load build definition from Dockerfile.mocksaas
+#2 transferring dockerfile: 490B done
+#2 DONE 0.0s
+
+#3 [provisioner internal] load build definition from Dockerfile.provisioner
+#3 transferring dockerfile: 633B done
+#3 DONE 0.0s
+
+#4 [backend internal] load build definition from Dockerfile
+#4 transferring dockerfile: 367B done
+#4 DONE 0.0s
+
+#5 [provisioner internal] load metadata for docker.io/library/golang:1.27.3-alpine
+#5 DONE 0.6s
+
+#6 [backend internal] load metadata for docker.io/library/python:3.12-slim
+#6 DONE 0.6s
+
+#7 [mock-saas internal] load .dockerignore
+#7 transferring context: 2B done
+#7 DONE 0.0s
+
+#8 [backend internal] load .dockerignore
+#8 transferring context: 158B done
+#8 DONE 0.1s
+
+#9 [provisioner build  1/10] FROM docker.io/library/golang:1.27.3-alpine@sha256:fa3d596898d9f126af7c01d14ee7597bab3f39cccf392ef36b69fe77cd681f18
+#9 DONE 0.0s
+
+#10 [backend 1/6] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+#10 DONE 0.0s
+
+#11 [provisioner internal] load build context
+#11 transferring context: 137.98kB 0.0s done
+#11 DONE 0.0s
+
+#12 [mock-saas internal] load build context
+#12 transferring context: 70.55kB done
+#12 DONE 0.1s
+
+#13 [backend internal] load build context
+#13 transferring context: 194.88kB 0.0s done
+#13 DONE 0.1s
+
+#14 [provisioner build  3/10] COPY go.mod go.sum ./
+#14 CACHED
+
+#15 [provisioner build  6/10] COPY internal/backoff ./internal/backoff
+#15 CACHED
+
+#16 [provisioner stage-1 1/2] COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+#16 CACHED
+
+#17 [provisioner build 10/10] RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /provisioner ./cmd/provisioner
+#17 CACHED
+
+#18 [provisioner build  4/10] RUN go mod download
+#18 CACHED
+
+#19 [provisioner build  8/10] COPY internal/jobs ./internal/jobs
+#19 CACHED
+
+#20 [provisioner build  5/10] COPY cmd/provisioner ./cmd/provisioner
+#20 CACHED
+
+#21 [provisioner build  7/10] COPY internal/connectors ./internal/connectors
+#21 CACHED
+
+#22 [provisioner build  9/10] COPY internal/worker ./internal/worker
+#22 CACHED
+
+#23 [mock-saas stage-1 1/2] COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+#23 CACHED
+
+#24 [provisioner build  2/10] WORKDIR /src
+#24 CACHED
+
+#25 [mock-saas build 5/7] COPY cmd/mocksaas ./cmd/mocksaas
+#25 CACHED
+
+#26 [mock-saas build 3/7] COPY go.mod go.sum ./
+#26 CACHED
+
+#27 [mock-saas build 4/7] RUN go mod download
+#27 CACHED
+
+#28 [mock-saas build 7/7] RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /mocksaas ./cmd/mocksaas
+#28 CACHED
+
+#29 [mock-saas build 6/7] COPY internal/mocksaas ./internal/mocksaas
+#29 CACHED
+
+#30 [provisioner stage-1 2/2] COPY --from=build /provisioner /provisioner
+#30 CACHED
+
+#31 [mock-saas stage-1 2/2] COPY --from=build /mocksaas /mocksaas
+#31 CACHED
+
+#32 [backend 2/6] WORKDIR /app
+#32 CACHED
+
+#33 [backend 3/6] COPY requirements.txt .
+#33 CACHED
+
+#34 [backend 5/6] COPY . .
+#34 CACHED
+
+#35 [backend 4/6] RUN pip install --no-cache-dir -r requirements.txt
+#35 CACHED
+
+#36 [backend 6/6] RUN chmod +x docker-entrypoint.sh
+#36 CACHED
+
+#37 [provisioner] exporting to image
+#37 exporting layers done
+#37 writing image sha256:637b9bc012af6b03ec9b2c79c4350f618f5548862aa6c64f42ee0fcccc688e76 done
+#37 naming to docker.io/library/launchops-chaos-provisioner done
+#37 DONE 0.0s
+
+#38 [mock-saas] exporting to image
+#38 exporting layers done
+#38 writing image sha256:6c5ea589f6a917dd70e4b2222ba06457ad0c9bf7943b43d3dea0a424f8202519 done
+#38 naming to docker.io/library/launchops-chaos-mock-saas done
+#38 DONE 0.0s
+
+#39 [backend] exporting to image
+#39 exporting layers done
+#39 writing image sha256:a1c799443266a7e85f09bfc1167d8a20c21cdbc30d95413335ca3ae7f5a948a8 done
+#39 naming to docker.io/library/launchops-chaos-backend done
+#39 DONE 0.0s
+
+#40 [mock-saas] resolving provenance for metadata file
+#40 DONE 0.0s
+
+#41 [provisioner] resolving provenance for metadata file
+#41 DONE 0.0s
+
+#42 [backend] resolving provenance for metadata file
+#42 DONE 0.0s
+ Image launchops-chaos-backend Built 
+ Image launchops-chaos-mock-saas Built 
+ Image launchops-chaos-provisioner Built 
+ Network launchops-chaos_default Creating 
+ Volume launchops-chaos-campaign-1-4be8b5ced5404f26ab7ee04556ab5c76 Creating 
+ Volume launchops-chaos-campaign-1-4be8b5ced5404f26ab7ee04556ab5c76 Creating 
+ Network launchops-chaos_default Creating 
+ Volume launchops-chaos-campaign-1-4be8b5ced5404f26ab7ee04556ab5c76 Created 
+ Volume launchops-chaos-campaign-1-4be8b5ced5404f26ab7ee04556ab5c76 Created 
+ Network launchops-chaos_default Created 
+ Network launchops-chaos_default Created 
+ Container launchops-chaos-mongo-1 Creating 
+ Container launchops-chaos-mongo-1 Created 
+ Container launchops-chaos-backend-1 Creating 
+ Container launchops-chaos-mock-saas-1 Creating 
+ Container launchops-chaos-mock-saas-1 Created 
+ Container launchops-chaos-provisioner-1 Creating 
+ Container launchops-chaos-provisioner-2 Creating 
+ Container launchops-chaos-provisioner-3 Creating 
+ Container launchops-chaos-backend-1 Created 
+ Container launchops-chaos-provisioner-2 Created 
+ Container launchops-chaos-provisioner-1 Created 
+ Container launchops-chaos-provisioner-3 Created 
+ Container launchops-chaos-mongo-1 Starting 
+ Container launchops-chaos-mongo-1 Started 
+ Container launchops-chaos-mongo-1 Waiting 
+ Container launchops-chaos-mongo-1 Waiting 
+ Container launchops-chaos-mongo-1 Healthy 
+ Container launchops-chaos-backend-1 Starting 
+ Container launchops-chaos-mongo-1 Healthy 
+ Container launchops-chaos-mock-saas-1 Starting 
+ Container launchops-chaos-backend-1 Started 
+ Container launchops-chaos-mock-saas-1 Started 
+ Container launchops-chaos-mock-saas-1 Waiting 
+ Container launchops-chaos-mongo-1 Waiting 
+ Container launchops-chaos-mongo-1 Healthy 
+ Container launchops-chaos-mock-saas-1 Healthy 
+ Container launchops-chaos-provisioner-2 Starting 
+ Container launchops-chaos-provisioner-2 Started 
+ Container launchops-chaos-provisioner-3 Starting 
+ Container launchops-chaos-provisioner-3 Started 
+ Container launchops-chaos-provisioner-1 Starting 
+ Container launchops-chaos-provisioner-1 Started 
+ Container launchops-chaos-backend-1 Waiting 
+ Container launchops-chaos-mongo-1 Waiting 
+ Container launchops-chaos-mock-saas-1 Waiting 
+ Container launchops-chaos-provisioner-2 Waiting 
+ Container launchops-chaos-provisioner-3 Waiting 
+ Container launchops-chaos-provisioner-1 Waiting 
+ Container launchops-chaos-backend-1 Healthy 
+ Container launchops-chaos-mock-saas-1 Healthy 
+ Container launchops-chaos-mongo-1 Healthy 
+ Container launchops-chaos-provisioner-2 Healthy 
+ Container launchops-chaos-provisioner-3 Healthy 
+ Container launchops-chaos-provisioner-1 Healthy 

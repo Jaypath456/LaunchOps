@@ -1,0 +1,6 @@
+{
+  "error_rate": 0.2,
+  "hang_rate": 0.05,
+  "drop_after_commit_rate": 0.1,
+  "latency_ms": 3000
+}

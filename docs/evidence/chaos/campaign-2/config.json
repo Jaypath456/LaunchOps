@@ -1,0 +1,16 @@
+{
+  "hires": 120,
+  "replicas": 3,
+  "kill_every": 10.0,
+  "pause_every": 15.0,
+  "timeout": 1200.0,
+  "error_rate": 0.2,
+  "hang_rate": 0.05,
+  "drop_rate": 0.1,
+  "pause_for": 35.0,
+  "latency_ms": 3000,
+  "run_id": "campaign-2",
+  "project": "launchops-chaos",
+  "mongo_volume": "launchops-chaos-campaign-2-263e569c7e55423b9eb99b75c577c2de",
+  "lease": "30s"
+}
