@@ -4,7 +4,7 @@ from datetime import UTC
 import sys
 
 from django.conf import settings
-from pymongo import MongoClient
+from pymongo import MongoClient, timeout
 
 
 _client = MongoClient(
@@ -29,3 +29,9 @@ def get_db():
 
 def get_users():
     return get_db()['users']
+
+
+def ping():
+    """Bound the whole readiness probe, including server selection and socket I/O."""
+    with timeout(1.0):
+        get_db().command('ping')

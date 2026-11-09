@@ -34,6 +34,29 @@ jobs:
       - run: python manage.py check
       - run: python manage.py test --noinput --verbosity 1
 
+  provisioner:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:8
+        ports: ["27017:27017"]
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.adminCommand({ping:1}).ok'"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      MONGO_URI: mongodb://localhost:27017
+    defaults:
+      run:
+        working-directory: provisioner
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: provisioner/go.mod
+          cache-dependency-path: provisioner/go.sum
+      - run: go vet ./...
+      - run: go test -race -count=1 ./...
+
   frontend:
     runs-on: ubuntu-latest
     defaults:

@@ -4,9 +4,8 @@ from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from . import domain, repository
+from . import db, domain, repository
 from .auth import get_actor
-from .db import get_db
 from .pagination import WorkflowPagination
 from .serializers import (
     CreateWorkflowSerializer, RescheduleSerializer, clean_idempotency_key, completion_data, events_in_order,
@@ -130,7 +129,7 @@ def directory(request):
 @permission_classes([AllowAny])
 def healthz(request):
     try:
-        get_db().command('ping')
+        db.ping()
     except PyMongoError:
         return Response({'status': 'unavailable'}, status=503)
     return Response({'status': 'ok'})
